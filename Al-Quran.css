@@ -1,0 +1,37 @@
+:root {
+  /* Palette — one place to restyle the whole mushaf */
+  --color-bg: lightyellow;
+  --color-surah-title: purple;
+  --color-verse-label: red;
+  --color-arabic: green;
+  --color-translation: blue;
+
+  /* Layout tokens from the original page-wide rule */
+  --text-align: left;
+  --direction: ltr;
+  --font-size: larger;
+}
+
+* {
+  background-color: var(--color-bg);
+  text-align: var(--text-align);
+  direction: var(--direction);
+  font-size: var(--font-size);
+}
+
+.surah-title {
+  color: var(--color-surah-title);
+  text-align: center;
+}
+
+.verse-label {
+  color: var(--color-verse-label);
+}
+
+.arabic {
+  color: var(--color-arabic);
+}
+
+.translation {
+  color: var(--color-translation);
+}

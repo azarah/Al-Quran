@@ -110,6 +110,82 @@
     { id: "tubba", en: "People of Tubba", ar: "قوم تبع", lon: 44.2, lat: 15.4, verse: "44:37, 50:14", note: "Linked with ancient Yemen." }
   ];
 
+  /* Places / peoples the Qur'an says were destroyed or punished in this world */
+  var DESTROYED = [
+    {
+      id: "nuh-flood", en: "People of Nuh", ar: "قوم نوح",
+      lon: 42.4, lat: 36.5, verse: "11:40–44, 71:25",
+      how: "The Flood", messenger: "Nuh",
+      note: "They were drowned for rejecting Nuh; the Ark rested on Mount Judi when the water abated."
+    },
+    {
+      id: "ad-ahqaf", en: "ʿAd (al-Ahqaf)", ar: "عاد / الأحقاف",
+      lon: 49.0, lat: 17.0, verse: "46:21–25, 69:6–7, 89:6–8",
+      how: "A furious, freezing wind", messenger: "Hud",
+      note: "ʿAd of Iram were destroyed by a howling wind lasting seven nights and eight days; their land is tied to al-Ahqaf."
+    },
+    {
+      id: "thamud-hijr", en: "Thamud (al-Hijr)", ar: "ثمود / الحجر",
+      lon: 37.95, lat: 26.78, verse: "7:73–78, 11:67–68, 15:80–84",
+      how: "The Blast / earthquake", messenger: "Salih",
+      note: "After hamstringing the she-camel, the Cry (or earthquake) seized them in their homes; rock dwellings of al-Hijr remain as a sign."
+    },
+    {
+      id: "lut-cities", en: "Cities of Lut", ar: "قوم لوط / المؤتفكات",
+      lon: 35.5, lat: 31.15, verse: "11:82–83, 15:74, 53:53–54",
+      how: "Overturned; stones of baked clay", messenger: "Lut",
+      note: "The townships were turned upside down and rained with stones — the overthrown cities (al-muʾtafikāt)."
+    },
+    {
+      id: "midian-cry", en: "Midian", ar: "مدين",
+      lon: 35.5, lat: 28.5, verse: "7:85–91, 11:94–95",
+      how: "The Cry / earthquake", messenger: "Shuayb",
+      note: "Those who rejected Shuayb were seized by the Cry and lay fallen in their homes."
+    },
+    {
+      id: "aikah", en: "Companions of the Thicket", ar: "أصحاب الأيكة",
+      lon: 36.2, lat: 28.2, verse: "15:78–79, 26:176–189, 38:13",
+      how: "Punishment of the day of shadow", messenger: "Shuayb",
+      note: "Often joined with Midian; they denied the messengers and were taken by the torment of a day of overshadowing gloom."
+    },
+    {
+      id: "pharaoh-sea", en: "Pharaoh's host", ar: "فرعون وجنوده",
+      lon: 32.55, lat: 30.0, verse: "2:50, 10:90–92, 28:40",
+      how: "Drowned in the sea", messenger: "Musa",
+      note: "Pharaoh and his forces pursued Musa; Allah drowned them in the sea. Pharaoh's body was saved as a sign."
+    },
+    {
+      id: "saba-flood", en: "Saba (Arim flood)", ar: "سبأ / سيل العرم",
+      lon: 45.35, lat: 15.35, verse: "34:15–17",
+      how: "Flood of the dam", messenger: "—",
+      note: "They turned from gratitude; the flood of the dam (sayl al-ʿarim) ruined their gardens, replaced with bitter ones."
+    },
+    {
+      id: "tubba-folk", en: "People of Tubbaʿ", ar: "قوم تبع",
+      lon: 44.2, lat: 15.4, verse: "44:37, 50:12–14",
+      how: "Destroyed like earlier peoples", messenger: "—",
+      note: "Named among those before who denied and were destroyed — with the companions of the Wood, Thamud, and the people of Nuh."
+    },
+    {
+      id: "rass", en: "Companions of ar-Rass", ar: "أصحاب الرس",
+      lon: 40.5, lat: 26.0, verse: "25:38, 50:12",
+      how: "Destroyed after denial", messenger: "—",
+      note: "Listed with ʿAd and Thamud as generations destroyed between; exact site uncertain."
+    },
+    {
+      id: "elephant", en: "Companions of the Elephant", ar: "أصحاب الفيل",
+      lon: 39.83, lat: 21.35, verse: "105:1–5",
+      how: "Flocks of birds / stones of clay", messenger: "—",
+      note: "The army that marched on the House was turned to husks — a punishment near Makkah, not of Makkah itself."
+    },
+    {
+      id: "iram-pillars", en: "Iram of the pillars", ar: "إرم ذات العماد",
+      lon: 49.5, lat: 18.0, verse: "89:6–8",
+      how: "Destroyed with ʿAd", messenger: "Hud",
+      note: "Iram of the lofty pillars, the like of which was not created in the lands — recalled with the end of ʿAd."
+    }
+  ];
+
   var NS = "http://www.w3.org/2000/svg";
   var treeSvg = document.getElementById("tree-svg");
   var treeWrap = document.getElementById("tree-wrap");
@@ -120,6 +196,11 @@
   var mapTip = document.getElementById("map-tip");
   var mapDetail = document.getElementById("map-detail");
   var placeList = document.getElementById("place-list");
+  var doomSvg = document.getElementById("doom-svg");
+  var doomWrap = document.getElementById("doom-wrap");
+  var doomTip = document.getElementById("doom-tip");
+  var doomDetail = document.getElementById("doom-detail");
+  var doomList = document.getElementById("doom-list");
 
   function el(name, attrs) {
     var n = document.createElementNS(NS, name);
@@ -270,48 +351,31 @@
     return { x: x, y: y };
   }
 
-  function drawMap() {
-    if (!mapSvg || !mapWrap) return;
-    while (mapSvg.firstChild) mapSvg.removeChild(mapSvg.firstChild);
-
-    var w = Math.max(640, mapWrap.clientWidth);
-    var h = Math.max(420, Math.round(w * 0.62));
-    var pad = 28;
-    mapSvg.setAttribute("viewBox", "0 0 " + w + " " + h);
-    mapSvg.setAttribute("width", w);
-    mapSvg.setAttribute("height", h);
-
-    // Soft land panel
-    mapSvg.appendChild(el("rect", {
+  function paintBaseMap(svg, w, h, pad, landFill) {
+    svg.appendChild(el("rect", {
       x: 0, y: 0, width: w, height: h,
-      fill: "#f3e9c8"
+      fill: landFill || "#f3e9c8"
     }));
-
-    // Stylised sea / land shapes (approximate silhouettes)
     var mediterranean = "M " + [
       project(20, 37, w, h, pad), project(28, 41, w, h, pad), project(36, 36, w, h, pad),
       project(35, 32, w, h, pad), project(30, 31, w, h, pad), project(25, 32, w, h, pad),
       project(20, 32, w, h, pad)
     ].map(function (p) { return p.x + "," + p.y; }).join(" L ");
-    mapSvg.appendChild(el("path", { d: mediterranean + " Z", fill: "#c5dce8", "fill-opacity": "0.9" }));
-
+    svg.appendChild(el("path", { d: mediterranean + " Z", fill: "#c5dce8", "fill-opacity": "0.9" }));
     var redSea = "M " + [
       project(32.5, 30, w, h, pad), project(34, 28, w, h, pad), project(40, 20, w, h, pad),
       project(43, 14, w, h, pad), project(42, 12.5, w, h, pad), project(39, 15, w, h, pad),
       project(34, 22, w, h, pad), project(32.2, 28, w, h, pad)
     ].map(function (p) { return p.x + "," + p.y; }).join(" L ");
-    mapSvg.appendChild(el("path", { d: redSea + " Z", fill: "#b7d4e3", "fill-opacity": "0.85" }));
-
+    svg.appendChild(el("path", { d: redSea + " Z", fill: "#b7d4e3", "fill-opacity": "0.85" }));
     var persianGulf = "M " + [
       project(48, 30, w, h, pad), project(52, 27, w, h, pad), project(55, 25, w, h, pad),
       project(52, 24, w, h, pad), project(48, 27, w, h, pad)
     ].map(function (p) { return p.x + "," + p.y; }).join(" L ");
-    mapSvg.appendChild(el("path", { d: persianGulf + " Z", fill: "#b7d4e3", "fill-opacity": "0.8" }));
-
-    // Grid / region labels
+    svg.appendChild(el("path", { d: persianGulf + " Z", fill: "#b7d4e3", "fill-opacity": "0.8" }));
     [["Arabia", 42, 22], ["Egypt", 29, 27], ["Levant", 36, 33], ["Mesopotamia", 45, 34], ["Yemen", 46, 15]].forEach(function (lab) {
       var p = project(lab[1], lab[2], w, h, pad);
-      mapSvg.appendChild(el("text", {
+      svg.appendChild(el("text", {
         x: p.x, y: p.y,
         fill: "rgba(74,42,106,0.35)",
         "font-size": 13,
@@ -320,38 +384,84 @@
         text: lab[0]
       }));
     });
-
-    // Frame
-    mapSvg.appendChild(el("rect", {
+    svg.appendChild(el("rect", {
       x: 1, y: 1, width: w - 2, height: h - 2,
       fill: "none", stroke: "#d8d4a8", "stroke-width": 2
     }));
+  }
 
-    PLACES.forEach(function (place, i) {
+  function drawPlaceMap(opts) {
+    var svg = opts.svg, wrap = opts.wrap, tip = opts.tip;
+    var places = opts.places, onSelect = opts.onSelect;
+    var markerFill = opts.markerFill || "#c62828";
+    var landFill = opts.landFill;
+    if (!svg || !wrap) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var w = Math.max(640, wrap.clientWidth);
+    var h = Math.max(420, Math.round(w * 0.62));
+    var pad = 28;
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg.setAttribute("width", w);
+    svg.setAttribute("height", h);
+    paintBaseMap(svg, w, h, pad, landFill);
+
+    places.forEach(function (place) {
       var p = project(place.lon, place.lat, w, h, pad);
       var gEl = el("g");
       gEl.style.cursor = "pointer";
+      if (opts.doomStyle) {
+        // Broken ring: outer stroke + inner fill
+        gEl.appendChild(el("circle", {
+          cx: p.x, cy: p.y, r: 11,
+          fill: "none",
+          stroke: markerFill,
+          "stroke-width": 2,
+          "stroke-dasharray": "3 3",
+          "stroke-opacity": "0.7"
+        }));
+      }
       gEl.appendChild(el("circle", {
-        cx: p.x, cy: p.y, r: 7,
-        fill: "#c62828",
+        cx: p.x, cy: p.y, r: opts.doomStyle ? 6 : 7,
+        fill: markerFill,
         stroke: "#fff",
         "stroke-width": 1.5
       }));
       gEl.appendChild(el("text", {
-        x: p.x + 10, y: p.y + 4,
+        x: p.x + 12, y: p.y + 4,
         fill: "#4a2a6a",
         "font-size": 11,
         "font-family": "Georgia, serif",
-        text: place.en.split(" / ")[0]
+        text: place.en.split(" / ")[0].split(" (")[0]
       }));
       gEl.addEventListener("mousemove", function (evt) {
-        showTip(mapTip, mapWrap, evt,
-          "<b lang=\"ar\" dir=\"rtl\">" + escape(place.ar) + "</b> " + escape(place.en) +
-          "<br><i>" + escape(place.verse) + "</i><br>" + escape(place.note));
+        var tipHtml = "<b lang=\"ar\" dir=\"rtl\">" + escape(place.ar) + "</b> " + escape(place.en) +
+          "<br><i>" + escape(place.verse) + "</i>";
+        if (place.how) tipHtml += "<br><b>" + escape(place.how) + "</b>";
+        tipHtml += "<br>" + escape(place.note);
+        showTip(tip, wrap, evt, tipHtml);
       });
-      gEl.addEventListener("mouseleave", function () { mapTip.hidden = true; });
-      gEl.addEventListener("click", function () { selectPlace(place.id); });
-      mapSvg.appendChild(gEl);
+      gEl.addEventListener("mouseleave", function () { tip.hidden = true; });
+      gEl.addEventListener("click", function () { onSelect(place.id); });
+      svg.appendChild(gEl);
+    });
+  }
+
+  function drawMap() {
+    drawPlaceMap({
+      svg: mapSvg, wrap: mapWrap, tip: mapTip,
+      places: PLACES, onSelect: selectPlace,
+      markerFill: "#c62828"
+    });
+  }
+
+  function drawDoomMap() {
+    drawPlaceMap({
+      svg: doomSvg, wrap: doomWrap, tip: doomTip,
+      places: DESTROYED, onSelect: selectDoom,
+      markerFill: "#8b1a1a",
+      landFill: "#efe2c4",
+      doomStyle: true
     });
   }
 
@@ -369,6 +479,24 @@
     }
   }
 
+  function selectDoom(id) {
+    var place = DESTROYED.filter(function (p) { return p.id === id; })[0];
+    if (!place) return;
+    doomDetail.innerHTML =
+      '<div class="picked"><span class="ar" lang="ar" dir="rtl">' + escape(place.ar) +
+      "</span><div><b>" + escape(place.en) + "</b><div>" + escape(place.verse) +
+      '</div></div></div>' +
+      '<p class="doom-how"><b>Punishment:</b> ' + escape(place.how) +
+      (place.messenger && place.messenger !== "—"
+        ? " · <b>Messenger:</b> " + escape(place.messenger) : "") +
+      "</p><p>" + escape(place.note) + "</p>";
+    if (doomList) {
+      doomList.querySelectorAll("[data-doom]").forEach(function (li) {
+        li.classList.toggle("on", li.getAttribute("data-doom") === id);
+      });
+    }
+  }
+
   function fillPlaceList() {
     if (!placeList) return;
     placeList.innerHTML = PLACES.map(function (p) {
@@ -380,6 +508,20 @@
       var btn = e.target.closest("[data-place]");
       if (!btn) return;
       selectPlace(btn.getAttribute("data-place"));
+    });
+  }
+
+  function fillDoomList() {
+    if (!doomList) return;
+    doomList.innerHTML = DESTROYED.map(function (p) {
+      return '<button type="button" class="place-chip doom-chip" data-doom="' + p.id + '">' +
+        '<b lang="ar" dir="rtl">' + escape(p.ar) + "</b> " + escape(p.en) +
+        '<span class="how">' + escape(p.how) + "</span></button>";
+    }).join("");
+    doomList.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-doom]");
+      if (!btn) return;
+      selectDoom(btn.getAttribute("data-doom"));
     });
   }
 
@@ -410,17 +552,22 @@
       });
       if (id === "tree") drawTree();
       if (id === "map") drawMap();
+      if (id === "doom") drawDoomMap();
     });
   }
 
   fillPlaceList();
+  fillDoomList();
   drawTree();
   drawMap();
+  drawDoomMap();
   selectPerson("ibrahim");
   selectPlace("makkah");
+  selectDoom("ad-ahqaf");
 
   window.addEventListener("resize", function () {
     drawTree();
     drawMap();
+    drawDoomMap();
   });
 })();

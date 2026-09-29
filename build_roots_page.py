@@ -1348,6 +1348,8 @@ tr.d > td {{ background: rgba(128, 0, 128, .04); padding: 10px 12px 12px; }}
 &nbsp;·&nbsp; <a href="#roots">every root</a> &nbsp;·&nbsp; <a href="#surahs-section">surahs</a>
 &nbsp;·&nbsp; <a href="Al-Quran-Calculators.html">calculators</a>
 &nbsp;·&nbsp; <a href="Al-Quran-Genealogy.html">genealogy &amp; places</a>
+&nbsp;·&nbsp; <a href="Al-Quran-Angels.html">angels</a>
+&nbsp;·&nbsp; <a href="Al-Quran-People.html">believers</a>
 &nbsp;·&nbsp; <a href="Al-Quran.html">full text</a></p>
 
 <div class="stats">

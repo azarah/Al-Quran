@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Angels</title>
+<style>
+:root {
+  --color-bg: lightyellow;
+  --color-surah-title: purple;
+  --color-verse-label: red;
+  --color-arabic: green;
+  --color-translation: blue;
+  --color-rule: #d8d4a8;
+}
+body {
+  background-color: var(--color-bg);
+  color: #333;
+  font-family: Georgia, "Times New Roman", serif;
+  margin: 0 auto;
+  max-width: 920px;
+  padding: 24px 18px 64px;
+}
+h1 {
+  color: var(--color-surah-title);
+  margin: 0 0 4px;
+  text-align: center;
+}
+h2 {
+  border-bottom: 2px solid var(--color-rule);
+  color: var(--color-surah-title);
+  margin: 36px 0 10px;
+  padding-bottom: 6px;
+}
+.subtitle {
+  color: var(--color-translation);
+  margin: 0 0 20px;
+  text-align: center;
+}
+.subtitle a { color: var(--color-translation); }
+.note {
+  background: rgba(128, 0, 128, .05);
+  border-left: 4px solid var(--color-surah-title);
+  font-size: .9em;
+  line-height: 1.55;
+  margin: 0 0 22px;
+  padding: 12px 16px;
+}
+.note p { margin: 0 0 8px; }
+.note p:last-child { margin: 0; }
+
+.stats {
+  border-bottom: 2px solid var(--color-rule);
+  border-top: 2px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  justify-content: center;
+  margin-bottom: 22px;
+  padding: 12px 0;
+}
+.stats div { text-align: center; }
+.stats b {
+  color: var(--color-verse-label);
+  display: block;
+  font-size: 1.4em;
+}
+.stats span { font-size: .82em; }
+
+.angel {
+  background: #fffdf0;
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px 16px;
+  grid-template-columns: auto 1fr;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+}
+.angel:hover { border-color: var(--color-surah-title); }
+.rank-badge {
+  align-items: center;
+  background: var(--color-surah-title);
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-size: .72em;
+  height: 52px;
+  justify-content: center;
+  letter-spacing: .04em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  width: 52px;
+}
+.rank-badge b {
+  font-size: 1.35em;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+.angel-body { min-width: 0; }
+.angel-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 4px;
+}
+.angel-ar {
+  color: var(--color-arabic);
+  font-size: 1.55em;
+  line-height: 1.2;
+}
+.angel-en {
+  color: var(--color-surah-title);
+  font-size: 1.15em;
+  font-weight: bold;
+}
+.angel-role {
+  color: var(--color-translation);
+  font-size: .92em;
+}
+.angel-note {
+  font-size: .9em;
+  line-height: 1.45;
+  margin: 4px 0 0;
+}
+.angel-meta {
+  color: #777;
+  font-size: .82em;
+  margin-top: 6px;
+}
+.angel-meta i {
+  color: var(--color-verse-label);
+  font-style: normal;
+  margin-right: 4px;
+}
+.kind {
+  background: rgba(128, 0, 128, .08);
+  border-radius: 3px;
+  color: #666;
+  font-size: .75em;
+  padding: 2px 7px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.tier-label {
+  color: #777;
+  font-size: .8em;
+  letter-spacing: .06em;
+  margin: 22px 0 8px;
+  text-transform: uppercase;
+}
+.tier-label:first-of-type { margin-top: 0; }
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.filter-row button {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 4px;
+  color: var(--color-surah-title);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .88em;
+  padding: 6px 12px;
+}
+.filter-row button[aria-pressed="true"] {
+  background: var(--color-surah-title);
+  color: #fff;
+}
+@media (max-width: 560px) {
+  .angel { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<h1>Angels of the Qur'an</h1>
+<p class="subtitle">
+  Named angels and angelic offices, ordered by role<br>
+  <a href="Al-Quran-Study.html">study app</a> ·
+  <a href="Al-Quran-Roots.html">roots</a> ·
+  <a href="Al-Quran-People.html">believers</a> ·
+  <a href="Al-Quran-Genealogy.html">genealogy &amp; places</a> ·
+  <a href="Al-Quran-Calculators.html">calculators</a> ·
+  <a href="Al-Quran.html">full text</a>
+</p>
+
+<div class="note">
+  <p>The Qur'an names a few angels and describes many by <b>office</b>
+  (revelation, death, record, Throne, Hell). It does not print a numbered
+  hierarchy like a roster. The <b>rank</b> column here is a study order based on
+  how the text itself elevates each role — Jibril as the Spirit who brings the
+  revelation first, then others by the gravity of their charge. Angels known
+  only from later tradition (Israfil, Munkar, Nakir) are omitted.</p>
+</div>
+
+<div class="stats">
+  <div><b id="stat-named">0</b><span>named angels</span></div>
+  <div><b id="stat-offices">0</b><span>offices / hosts</span></div>
+  <div><b id="stat-total">0</b><span>entries</span></div>
+</div>
+
+<div class="filter-row" role="tablist">
+  <button type="button" data-filter="all" aria-pressed="true">All</button>
+  <button type="button" data-filter="named" aria-pressed="false">Named only</button>
+  <button type="button" data-filter="office" aria-pressed="false">Offices &amp; hosts</button>
+</div>
+
+<div id="angel-list"></div>
+
+<script>
+(function () {
+  var ANGELS = [
+    {
+      rank: 1,
+      tier: "Revelation",
+      kind: "named",
+      ar: "جِبْرِيل",
+      en: "Jibril (Gabriel)",
+      role: "The Trustworthy Spirit — bearer of revelation",
+      note: "Brings the revelation down upon the Prophet's heart by Allah's leave. Also called the Holy Spirit (Ruh al-Qudus) and the Trustworthy Spirit (al-Ruh al-Amin). Enmity to him is enmity to Allah.",
+      verses: "2:97–98, 16:102, 26:193–194, 66:4",
+      occ: 3
+    },
+    {
+      rank: 2,
+      tier: "Revelation",
+      kind: "named",
+      ar: "مِيكال",
+      en: "Mikail (Michael)",
+      role: "Named beside Jibril among Allah's angels",
+      note: "Paired with Jibril when the Book warns that enmity to Allah, His angels, His messengers, Jibril and Mikail is rejection of faith. No separate office is detailed beyond that honour of being named.",
+      verses: "2:98",
+      occ: 1
+    },
+    {
+      rank: 3,
+      tier: "Nearness & Throne",
+      kind: "office",
+      ar: "الْمُقَرَّبُون",
+      en: "The nearest angels",
+      role: "Those drawn near to Allah",
+      note: "Christ does not disdain to be a servant, nor do the angels who are nearest. Nearness itself is the mark of their station.",
+      verses: "4:172",
+      occ: null
+    },
+    {
+      rank: 4,
+      tier: "Nearness & Throne",
+      kind: "office",
+      ar: "حَمَلَةُ الْعَرْش",
+      en: "Bearers of the Throne",
+      role: "Carry the Throne of the Lord",
+      note: "Eight will bear the Throne of your Lord on that Day. Those who bear the Throne and those around it glorify their Lord and seek forgiveness for the believers.",
+      verses: "69:17, 40:7",
+      occ: null
+    },
+    {
+      rank: 5,
+      tier: "Death",
+      kind: "office",
+      ar: "مَلَكُ الْمَوْت",
+      en: "The Angel of Death",
+      role: "Takes the soul when its term is due",
+      note: "The Angel of Death, put in charge of you, will take your souls; then to your Lord you will be returned. Other verses speak of angels (plural) who seize the souls of the wrongdoers.",
+      verses: "32:11; cf. 4:97, 6:61, 8:50",
+      occ: null
+    },
+    {
+      rank: 6,
+      tier: "Hell",
+      kind: "named",
+      ar: "مالِك",
+      en: "Malik",
+      role: "Keeper of Hell",
+      note: "They will cry: 'O Malik! Let your Lord make an end of us!' He will say: 'Nay, you will remain.' The warden of the Fire is named; under him stand the zabaniyah.",
+      verses: "43:77",
+      occ: 4
+    },
+    {
+      rank: 7,
+      tier: "Hell",
+      kind: "office",
+      ar: "الزَّبانِيَة",
+      en: "Az-Zabaniyah",
+      role: "Guards who thrust into Hell",
+      note: "Let him call his council; We will call the zabaniyah. Nineteen angels are set over Saqar as a trial for those who disbelieve.",
+      verses: "96:17–18, 74:30–31",
+      occ: 1
+    },
+    {
+      rank: 8,
+      tier: "Watch & record",
+      kind: "office",
+      ar: "الْحَفَظَة / كِرَامًا كَاتِبِين",
+      en: "Guardians & noble scribes",
+      role: "Watch over you and write every deed",
+      note: "Guardians are set over you. Noble scribes know what you do. Two receive — one on the right, one on the left — and not a word is uttered but a watcher ready by him.",
+      verses: "6:61, 13:11, 82:10–12, 50:17–18",
+      occ: null
+    },
+    {
+      rank: 9,
+      tier: "Trial",
+      kind: "named",
+      ar: "هارُوت",
+      en: "Harut",
+      role: "Angel of trial at Babylon",
+      note: "At Babylon, the angels Harut and Marut taught people a trial, warning: 'We are only a test; so do not disbelieve.' What was learned harmed more than it helped.",
+      verses: "2:102",
+      occ: 1
+    },
+    {
+      rank: 10,
+      tier: "Trial",
+      kind: "named",
+      ar: "مارُوت",
+      en: "Marut",
+      role: "Angel of trial at Babylon",
+      note: "Named with Harut in the same verse. Together they are the only angels the Qur'an places at a named city in the context of a test involving magic.",
+      verses: "2:102",
+      occ: 1
+    },
+    {
+      rank: 11,
+      tier: "Hosts",
+      kind: "office",
+      ar: "الصَّافَّات",
+      en: "Those ranged in ranks",
+      role: "Angels standing in ordered ranks",
+      note: "By those ranged in ranks, who drive away with reproof, and recite the Reminder — the opening oaths of Surah as-Saffat describe angels in formation.",
+      verses: "37:1–3",
+      occ: null
+    },
+    {
+      rank: 12,
+      tier: "Hosts",
+      kind: "office",
+      ar: "الْمَلَائِكَةُ الْمُرْسَلُون",
+      en: "Angels sent down in aid",
+      role: "Reinforcement in battle",
+      note: "Allah helped the believers with a thousand angels, ranks on ranks; and promised three thousand, then five thousand, marked with distinction.",
+      verses: "8:9, 3:124–125",
+      occ: null
+    }
+  ];
+
+  var list = document.getElementById("angel-list");
+  var filter = "all";
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function render() {
+    var rows = ANGELS.filter(function (a) {
+      return filter === "all" || a.kind === filter;
+    });
+    var html = "";
+    var lastTier = null;
+    rows.forEach(function (a) {
+      if (a.tier !== lastTier) {
+        html += '<div class="tier-label">' + escape(a.tier) + "</div>";
+        lastTier = a.tier;
+      }
+      html += '<article class="angel" data-kind="' + a.kind + '">';
+      html += '<div class="rank-badge"><span>Rank</span><b>' + a.rank + "</b></div>";
+      html += '<div class="angel-body">';
+      html += '<div class="angel-head">';
+      html += '<span class="angel-ar" lang="ar" dir="rtl">' + escape(a.ar) + "</span>";
+      html += '<span class="angel-en">' + escape(a.en) + "</span>";
+      html += '<span class="kind">' + (a.kind === "named" ? "named" : "office") + "</span>";
+      html += "</div>";
+      html += '<div class="angel-role">' + escape(a.role) + "</div>";
+      html += '<p class="angel-note">' + escape(a.note) + "</p>";
+      html += '<div class="angel-meta"><i>Verses</i> ' + escape(a.verses);
+      if (a.occ != null) html += " · corpus name-tag ×" + a.occ;
+      html += "</div></div></article>";
+    });
+    list.innerHTML = html || "<p>No angels match this filter.</p>";
+  }
+
+  var named = ANGELS.filter(function (a) { return a.kind === "named"; }).length;
+  var offices = ANGELS.filter(function (a) { return a.kind === "office"; }).length;
+  document.getElementById("stat-named").textContent = named;
+  document.getElementById("stat-offices").textContent = offices;
+  document.getElementById("stat-total").textContent = ANGELS.length;
+
+  document.querySelector(".filter-row").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+    filter = btn.getAttribute("data-filter");
+    document.querySelectorAll(".filter-row [data-filter]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+    });
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

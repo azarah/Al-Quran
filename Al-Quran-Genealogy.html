@@ -160,6 +160,28 @@ h2 {
   border-color: var(--color-surah-title);
   box-shadow: 0 0 0 2px rgba(128, 0, 128, .18);
 }
+.doom-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+.doom-chip .how {
+  color: #8b1a1a;
+  font-size: .8em;
+}
+.doom-chip.on {
+  border-color: #8b1a1a;
+  box-shadow: 0 0 0 2px rgba(139, 26, 26, .2);
+}
+.doom-how {
+  background: rgba(139, 26, 26, .06);
+  border-left: 3px solid #8b1a1a;
+  font-size: .92em;
+  margin: 0 0 8px;
+  padding: 8px 12px;
+}
 
 .map-layout {
   display: grid;
@@ -178,8 +200,11 @@ h2 {
 <h1>Genealogy &amp; Places</h1>
 <p class="subtitle">
   Prophetic lineage and lands named in the Qur'an<br>
+  <a href="Al-Quran-Study.html">study app</a> ·
   <a href="Al-Quran-Roots.html">roots</a> ·
   <a href="Al-Quran-Calculators.html">calculators</a> ·
+  <a href="Al-Quran-Angels.html">angels</a> ·
+  <a href="Al-Quran-People.html">believers</a> ·
   <a href="Al-Quran.html">full text</a>
 </p>
 
@@ -192,11 +217,16 @@ h2 {
   <p><b>Map.</b> Markers sit at conventional coordinates for places the Book names
   (Makkah, Yathrib, Badr, Egypt, Midian, Sinai, Babylon, Saba, al-Ahqaf, al-Hijr,
   Mount Judi, and others). Click a pin or chip for the verse cue.</p>
+  <p><b>Destroyed or punished.</b> A separate view gathers peoples and towns the
+  Qur'an says were seized in this world — Flood, wind, blast, overturned cities,
+  drowning of Pharaoh, the Arim flood, and more — with the form of punishment and
+  the messenger sent to them where named.</p>
 </div>
 
 <div class="geo-tabs" role="tablist">
   <button type="button" data-geo="tree" aria-pressed="true">Genealogy</button>
   <button type="button" data-geo="map" aria-pressed="false">Places map</button>
+  <button type="button" data-geo="doom" aria-pressed="false">Destroyed / punished</button>
 </div>
 
 <section class="geo-panel" id="geo-tree">
@@ -234,6 +264,26 @@ h2 {
   </div>
 </section>
 
-<script src="quran_genealogy.js"></script>
+<section class="geo-panel" id="geo-doom" hidden>
+  <h2>Destroyed or punished</h2>
+  <div class="map-layout">
+    <div>
+      <div class="diagram-frame" id="doom-wrap">
+        <svg id="doom-svg" role="img" aria-label="Map of places destroyed or punished in the Qur'an"></svg>
+        <div id="doom-tip" class="tip" hidden></div>
+      </div>
+      <div class="detail" id="doom-detail"></div>
+    </div>
+    <div>
+      <p class="note" style="margin:0 0 10px">These are peoples and sites the Qur'an
+      recounts as seized <em>in the world</em> after they rejected their messengers —
+      not the Fire of the Hereafter. Locations are approximate; some names (ar-Rass,
+      al-Ayka) have uncertain geography and are plotted near related lands.</p>
+      <div class="place-chips" id="doom-list"></div>
+    </div>
+  </div>
+</section>
+
+<script src="quran_genealogy.js?v=doom1"></script>
 </body>
 </html>

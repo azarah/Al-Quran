@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Study</title>
+<style>
+:root {
+  --color-bg: #faf8e8;
+  --color-panel: #fffdf0;
+  --color-surah-title: #6b2d8a;
+  --color-verse-label: #c62828;
+  --color-arabic: #1b5e20;
+  --color-translation: #1565c0;
+  --color-rule: #d8d4a8;
+  --color-ink: #333;
+  --color-muted: #777;
+  --nav-w: 220px;
+  --top-h: 52px;
+}
+* { box-sizing: border-box; }
+html, body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  height: 100%;
+  margin: 0;
+}
+body { display: flex; flex-direction: column; }
+
+/* ---- top bar ---- */
+.app-bar {
+  align-items: center;
+  background: var(--color-panel);
+  border-bottom: 2px solid var(--color-rule);
+  display: flex;
+  gap: 12px;
+  height: var(--top-h);
+  padding: 0 14px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.app-bar .brand {
+  color: var(--color-surah-title);
+  font-size: 1.15em;
+  font-weight: bold;
+  letter-spacing: .02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.app-bar .brand span {
+  color: var(--color-muted);
+  font-size: .78em;
+  font-weight: normal;
+  margin-left: 6px;
+}
+.menu-toggle {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 4px;
+  color: var(--color-surah-title);
+  cursor: pointer;
+  display: none;
+  font-family: inherit;
+  font-size: .85em;
+  padding: 4px 10px;
+}
+.global-search {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  max-width: 520px;
+}
+.global-search input {
+  background: #fff;
+  border: 2px solid var(--color-rule);
+  border-radius: 4px;
+  flex: 1;
+  font-family: inherit;
+  font-size: .95em;
+  min-width: 0;
+  padding: 6px 10px;
+}
+.global-search input:focus {
+  border-color: var(--color-surah-title);
+  outline: none;
+}
+.global-search button,
+.tool-btn {
+  background: var(--color-surah-title);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .88em;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+.tool-btn.ghost {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  color: var(--color-surah-title);
+}
+.bar-actions { display: flex; gap: 6px; margin-left: auto; }
+
+/* ---- layout ---- */
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.side-nav {
+  background: var(--color-panel);
+  border-right: 2px solid var(--color-rule);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 2px;
+  overflow-y: auto;
+  padding: 12px 10px;
+  width: var(--nav-w);
+}
+.side-nav button {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .92em;
+  padding: 9px 12px;
+  text-align: left;
+}
+.side-nav button:hover { background: rgba(107, 45, 138, .08); }
+.side-nav button[aria-current="page"] {
+  background: var(--color-surah-title);
+  color: #fff;
+}
+.side-nav .nav-label {
+  color: var(--color-muted);
+  font-size: .72em;
+  letter-spacing: .06em;
+  margin: 12px 8px 4px;
+  text-transform: uppercase;
+}
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+.view {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 20px 48px;
+}
+.view.active { display: flex; }
+.view.iframe-view { padding: 0; }
+.view.iframe-view iframe {
+  border: 0;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
+h1 {
+  color: var(--color-surah-title);
+  font-size: 1.55em;
+  margin: 0 0 6px;
+}
+.lead {
+  color: var(--color-translation);
+  margin: 0 0 18px;
+}
+.note {
+  background: rgba(107, 45, 138, .05);
+  border-left: 4px solid var(--color-surah-title);
+  font-size: .9em;
+  line-height: 1.55;
+  margin: 0 0 18px;
+  padding: 12px 16px;
+}
+.note p { margin: 0 0 8px; }
+.note p:last-child { margin: 0; }
+
+/* ---- home ---- */
+.module-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  margin-bottom: 22px;
+}
+.module-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  padding: 14px 16px;
+  text-align: left;
+  text-decoration: none;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+  font-family: inherit;
+}
+.module-card:hover {
+  border-color: var(--color-surah-title);
+  box-shadow: 0 0 0 2px rgba(107, 45, 138, .12);
+}
+.module-card b {
+  color: var(--color-surah-title);
+  display: block;
+  font-size: 1.05em;
+  margin-bottom: 4px;
+}
+.module-card span {
+  color: var(--color-muted);
+  font-size: .86em;
+  line-height: 1.4;
+}
+.home-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1.2fr 1fr;
+  margin-top: 8px;
+}
+@media (max-width: 900px) {
+  .home-row { grid-template-columns: 1fr; }
+}
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.panel h2 {
+  border-bottom: 2px solid var(--color-rule);
+  color: var(--color-surah-title);
+  font-size: 1.05em;
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+}
+.stats {
+  border-bottom: 2px solid var(--color-rule);
+  border-top: 2px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  justify-content: center;
+  margin: 0 0 20px;
+  padding: 12px 0;
+}
+.stats div { text-align: center; }
+.stats b {
+  color: var(--color-verse-label);
+  display: block;
+  font-size: 1.35em;
+}
+.stats span { font-size: .8em; }
+
+/* ---- reader ---- */
+.reader-toolbar {
+  align-items: end;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: -18px -20px 16px;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.reader-toolbar label {
+  display: flex;
+  flex-direction: column;
+  font-size: .78em;
+  gap: 3px;
+  color: var(--color-muted);
+}
+.reader-toolbar select,
+.reader-toolbar input[type=number] {
+  border: 2px solid var(--color-rule);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1em;
+  padding: 6px 8px;
+}
+.reader-toolbar .nav-btns { display: flex; gap: 6px; margin-left: auto; }
+.verse-block {
+  border-bottom: 1px solid var(--color-rule);
+  padding: 14px 4px 16px;
+  scroll-margin-top: 90px;
+}
+.verse-block.flash {
+  animation: flash 1.2s ease;
+}
+@keyframes flash {
+  0%, 100% { background: transparent; }
+  25% { background: rgba(107, 45, 138, .12); }
+}
+.verse-meta {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.verse-ref {
+  color: var(--color-verse-label);
+  font-weight: bold;
+  font-size: .95em;
+}
+.bm-btn {
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .78em;
+  padding: 2px 8px;
+}
+.bm-btn.on {
+  border-color: var(--color-surah-title);
+  color: var(--color-surah-title);
+}
+.arabic {
+  color: var(--color-arabic);
+  direction: rtl;
+  display: block;
+  font-size: 1.45em;
+  line-height: 1.85;
+  margin: 6px 0 8px;
+  text-align: right;
+}
+.translation {
+  color: var(--color-translation);
+  display: block;
+  font-size: 1.02em;
+  line-height: 1.55;
+}
+.surah-head {
+  color: var(--color-surah-title);
+  font-size: 1.35em;
+  margin: 8px 0 4px;
+  text-align: center;
+}
+.surah-sub {
+  color: var(--color-muted);
+  font-size: .9em;
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+/* ---- search ---- */
+.search-panel input {
+  border: 2px solid var(--color-rule);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1.05em;
+  padding: 10px 12px;
+  width: 100%;
+  max-width: 640px;
+}
+.search-meta {
+  color: var(--color-muted);
+  font-size: .88em;
+  margin: 10px 0 14px;
+}
+.hit {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 10px 14px;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+}
+.hit:hover { border-color: var(--color-surah-title); }
+.hit .ref { color: var(--color-verse-label); font-weight: bold; }
+.hit .ar {
+  color: var(--color-arabic);
+  direction: rtl;
+  display: block;
+  margin: 4px 0;
+  text-align: right;
+}
+.hit .en { color: var(--color-translation); font-size: .95em; }
+.hit mark {
+  background: rgba(198, 40, 40, .18);
+  color: inherit;
+  padding: 0 1px;
+}
+
+/* ---- bookmarks ---- */
+.bm-list { list-style: none; margin: 0; padding: 0; }
+.bm-list li {
+  align-items: flex-start;
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+}
+.bm-list button.go {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  flex: 1;
+  font-family: inherit;
+  padding: 0;
+  text-align: left;
+}
+.bm-list .ref { color: var(--color-verse-label); font-weight: bold; }
+.bm-list .en { color: var(--color-translation); font-size: .9em; margin-top: 4px; }
+.bm-list .rm {
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .8em;
+  padding: 4px 8px;
+}
+
+.status-banner {
+  background: rgba(198, 40, 40, .08);
+  border-left: 4px solid var(--color-verse-label);
+  display: none;
+  font-size: .9em;
+  margin: 0 0 14px;
+  padding: 10px 14px;
+}
+.status-banner.show { display: block; }
+.empty {
+  color: var(--color-muted);
+  font-style: italic;
+  padding: 20px 0;
+}
+.continue-btn {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 4px;
+  color: var(--color-surah-title);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .95em;
+  margin-top: 8px;
+  padding: 8px 14px;
+}
+
+/* ---- As-Sirat game ---- */
+.sirat { max-width: 760px; }
+.sirat-head {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sirat-head h1 { margin-bottom: 2px; }
+.sirat-status {
+  color: var(--color-surah-title);
+  font-size: .92em;
+  font-weight: bold;
+  margin: 8px 0 0;
+}
+.sirat-meters {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin: 0 0 14px;
+}
+.sirat-meter {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.sirat-meter span {
+  color: var(--color-muted);
+  display: block;
+  font-size: .75em;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.sirat-meter b {
+  color: var(--color-surah-title);
+  display: block;
+  font-size: 1.15em;
+  margin-top: 2px;
+}
+.sirat-meter small {
+  color: var(--color-muted);
+  font-size: .78em;
+}
+.sirat-bar {
+  background: rgba(107, 45, 138, .12);
+  border-radius: 2px;
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.sirat-bar i {
+  background: var(--color-surah-title);
+  display: block;
+  height: 100%;
+}
+.sirat-roots { margin-bottom: 12px; }
+.sirat-label {
+  color: var(--color-muted);
+  display: block;
+  font-size: .75em;
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.sirat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sirat-chip {
+  background: transparent;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  color: var(--color-muted);
+  font-size: .82em;
+  padding: 4px 8px;
+}
+.sirat-chip.on {
+  border-color: var(--color-arabic);
+  color: var(--color-arabic);
+}
+.sirat-map {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  position: relative;
+}
+.sirat-map-art {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+.sirat-pin {
+  background: #fffdf0;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 6px;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: inherit;
+  min-width: 76px;
+  padding: 6px 8px;
+  position: absolute;
+  text-align: left;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.sirat-pin strong { display: block; font-size: .88em; color: var(--color-surah-title); }
+.sirat-pin em {
+  color: var(--color-muted);
+  display: block;
+  font-size: .72em;
+  font-style: normal;
+}
+.sirat-pin:hover:not(:disabled) { background: #fff; }
+.sirat-pin.done { border-color: var(--color-arabic); }
+.sirat-pin.done strong { color: var(--color-arabic); }
+.sirat-pin.locked {
+  border-color: var(--color-rule);
+  color: var(--color-muted);
+  cursor: not-allowed;
+  opacity: .55;
+}
+.sirat-pin.locked strong { color: var(--color-muted); }
+.sirat-hint {
+  color: var(--color-muted);
+  font-size: .86em;
+  margin: 0;
+}
+.sirat-overlay {
+  align-items: flex-start;
+  background: rgba(50, 40, 20, .35);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  overflow: auto;
+  padding: 24px 12px 40px;
+  position: fixed;
+  right: 0;
+  top: var(--top-h);
+  z-index: 40;
+}
+.sirat-panel {
+  background: var(--color-panel);
+  border: 2px solid var(--color-rule);
+  border-radius: 10px;
+  max-width: 520px;
+  padding: 18px 18px 14px;
+  width: 100%;
+}
+.sirat-panel h2 {
+  border-bottom: 2px solid var(--color-rule);
+  color: var(--color-surah-title);
+  font-size: 1.15em;
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+}
+.sirat-panel-body { font-size: .95em; line-height: 1.55; }
+.sirat-panel-body p { margin: 0 0 10px; }
+.sirat-ar {
+  color: var(--color-arabic);
+  font-size: 1.2em;
+  line-height: 1.8;
+  text-align: right;
+}
+.sirat-role {
+  color: var(--color-translation);
+  font-size: .88em;
+}
+.sirat-muted { color: var(--color-muted); font-size: .9em; }
+.sirat-gain {
+  background: rgba(27, 94, 32, .08);
+  border-left: 3px solid var(--color-arabic);
+  padding: 8px 10px;
+}
+.sirat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.sirat-btn {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 4px;
+  color: var(--color-surah-title);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .9em;
+  padding: 7px 12px;
+}
+.sirat-btn.primary {
+  background: var(--color-surah-title);
+  color: #fff;
+}
+.sirat-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+}
+.sirat-choice {
+  background: #fff;
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .92em;
+  padding: 10px 12px;
+  text-align: left;
+}
+.sirat-choice:hover { border-color: var(--color-surah-title); }
+.sirat-choice.done {
+  border-color: var(--color-arabic);
+  color: var(--color-arabic);
+}
+.sirat-link {
+  background: none;
+  border: none;
+  color: var(--color-translation);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-align: left;
+}
+.sirat-book-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.sirat-book-list li {
+  border-bottom: 1px solid var(--color-rule);
+  padding: 8px 0;
+}
+.sirat-book-list span {
+  color: var(--color-muted);
+  display: block;
+  font-size: .85em;
+  margin-top: 2px;
+}
+.sirat-complete {
+  background: rgba(107, 45, 138, .08);
+  border-left: 4px solid var(--color-surah-title);
+  margin: 12px 0;
+  padding: 10px 12px;
+}
+
+@media (max-width: 760px) {
+  .menu-toggle { display: inline-block; }
+  .side-nav {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    top: var(--top-h);
+    transform: translateX(-105%);
+    transition: transform .2s ease;
+    z-index: 30;
+    box-shadow: 4px 0 20px rgba(0,0,0,.12);
+  }
+  .side-nav.open { transform: translateX(0); }
+  .global-search { max-width: none; }
+  .app-bar .brand span { display: none; }
+  .bar-actions .tool-btn.ghost { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-bar">
+  <button type="button" class="menu-toggle" id="menu-toggle" aria-label="Open menu">Menu</button>
+  <a class="brand" href="#/home">Al-Quran <span>Study</span></a>
+  <form class="global-search" id="global-search-form" action="#">
+    <input id="global-q" type="search" placeholder="Search Arabic or English…" autocomplete="off">
+    <button type="submit">Search</button>
+  </form>
+  <div class="bar-actions">
+    <button type="button" class="tool-btn ghost" id="btn-continue" title="Resume last reading">Continue</button>
+  </div>
+</header>
+
+<div class="app-body">
+  <nav class="side-nav" id="side-nav" aria-label="Study sections">
+    <div class="nav-label">Study</div>
+    <button type="button" data-route="home">Home</button>
+    <button type="button" data-route="read">Read</button>
+    <button type="button" data-route="search">Search</button>
+    <button type="button" data-route="bookmarks">Bookmarks</button>
+    <div class="nav-label">Play</div>
+    <button type="button" data-route="game">As-Sirat</button>
+    <div class="nav-label">Knowledge</div>
+    <button type="button" data-route="roots">Roots &amp; letters</button>
+    <button type="button" data-route="genealogy">Genealogy &amp; places</button>
+    <button type="button" data-route="angels">Angels</button>
+    <button type="button" data-route="people">Believers</button>
+    <button type="button" data-route="calculators">Calculators</button>
+    <div class="nav-label">Source</div>
+    <button type="button" data-route="fulltext">Full text page</button>
+  </nav>
+
+  <main class="main">
+    <!-- HOME -->
+    <section class="view active" id="view-home" data-view="home">
+      <h1>Unified Study</h1>
+      <p class="lead">One place to read the Book, search it, and open the knowledge tools built from it.</p>
+      <div class="status-banner" id="load-status"></div>
+      <div class="stats" id="home-stats">
+        <div><b>—</b><span>surahs</span></div>
+        <div><b>—</b><span>verses</span></div>
+        <div><b>—</b><span>bookmarks</span></div>
+      </div>
+      <div class="module-grid" id="module-grid">
+        <button type="button" class="module-card" data-go="read"><b>Read</b><span>Arabic with English, surah by surah</span></button>
+        <button type="button" class="module-card" data-go="search"><b>Search</b><span>Find words and phrases in both languages</span></button>
+        <button type="button" class="module-card" data-go="roots"><b>Roots &amp; letters</b><span>1,651 roots, diagrams, letter keywords</span></button>
+        <button type="button" class="module-card" data-go="genealogy"><b>Genealogy &amp; places</b><span>Prophets, map, destroyed peoples</span></button>
+        <button type="button" class="module-card" data-go="angels"><b>Angels</b><span>Named angels and offices in the text</span></button>
+        <button type="button" class="module-card" data-go="people"><b>Believers</b><span>Types of faith and rejection</span></button>
+        <button type="button" class="module-card" data-go="calculators"><b>Calculators</b><span>Inheritance, iddah, Ramadan, oaths, booty</span></button>
+        <button type="button" class="module-card" data-go="bookmarks"><b>Bookmarks</b><span>Saved verses on this device</span></button>
+        <button type="button" class="module-card" data-go="game"><b>As-Sirat</b><span>Midian slice — well, mentor, measure, signs</span></button>
+      </div>
+      <div class="home-row">
+        <div class="panel" id="continue-panel">
+          <h2>Continue reading</h2>
+          <p class="empty" id="continue-empty">Open any surah to begin. Your place is saved on this device.</p>
+          <div id="continue-body" hidden></div>
+        </div>
+        <div class="panel">
+          <h2>How this fits together</h2>
+          <div class="note" style="margin:0">
+            <p><b>Read &amp; Search</b> use the bilingual text in <code>Al-Quran.txt</code>.</p>
+            <p><b>Roots, Genealogy, Angels, People, Calculators</b> open your existing study pages inside this shell — same data, one navigation.</p>
+            <p><b>As-Sirat</b> is a playable Midian chapter: Stance choices, root unlocks, and verse hunts that open the reader.</p>
+            <p>Verse references in search open the reader at that ayah.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- READ -->
+    <section class="view" id="view-read" data-view="read">
+      <div class="reader-toolbar">
+        <label>Surah
+          <select id="surah-select"></select>
+        </label>
+        <label>Ayah
+          <input id="ayah-jump" type="number" min="1" value="1" style="width:72px">
+        </label>
+        <button type="button" class="tool-btn" id="btn-jump">Go</button>
+        <div class="nav-btns">
+          <button type="button" class="tool-btn ghost" id="btn-prev">← Prev</button>
+          <button type="button" class="tool-btn ghost" id="btn-next">Next →</button>
+        </div>
+      </div>
+      <div class="status-banner" id="read-status"></div>
+      <h2 class="surah-head" id="surah-title"></h2>
+      <p class="surah-sub" id="surah-sub"></p>
+      <div id="verse-list"></div>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="view" id="view-search" data-view="search">
+      <h1>Search</h1>
+      <p class="lead">Match Arabic or English across all 6,236 verses.</p>
+      <input id="search-q" type="search" placeholder="e.g. رحمن · guidance · Ibrahim · straight way">
+      <p class="search-meta" id="search-meta">Type at least 2 characters.</p>
+      <div id="search-results"></div>
+    </section>
+
+    <!-- BOOKMARKS -->
+    <section class="view" id="view-bookmarks" data-view="bookmarks">
+      <h1>Bookmarks</h1>
+      <p class="lead">Saved on this device only.</p>
+      <ul class="bm-list" id="bm-list"></ul>
+      <p class="empty" id="bm-empty">No bookmarks yet. Use ★ Save beside any verse in the reader.</p>
+    </section>
+
+    <!-- AS-SIRAT -->
+    <section class="view" id="view-game" data-view="game">
+      <div id="game-root"></div>
+    </section>
+
+    <!-- IFRAME MODULES -->
+    <section class="view iframe-view" id="view-roots" data-view="roots">
+      <iframe title="Root words" src="Al-Quran-Roots.html" loading="lazy"></iframe>
+    </section>
+    <section class="view iframe-view" id="view-genealogy" data-view="genealogy">
+      <iframe title="Genealogy and places" src="Al-Quran-Genealogy.html" loading="lazy"></iframe>
+    </section>
+    <section class="view iframe-view" id="view-angels" data-view="angels">
+      <iframe title="Angels" src="Al-Quran-Angels.html" loading="lazy"></iframe>
+    </section>
+    <section class="view iframe-view" id="view-people" data-view="people">
+      <iframe title="Believers and non-believers" src="Al-Quran-People.html" loading="lazy"></iframe>
+    </section>
+    <section class="view iframe-view" id="view-calculators" data-view="calculators">
+      <iframe title="Rule calculators" src="Al-Quran-Calculators.html" loading="lazy"></iframe>
+    </section>
+  </main>
+</div>
+
+<script src="quran_game.js?v=2"></script>
+<script src="quran_study.js?v=5"></script>
+</body>
+</html>

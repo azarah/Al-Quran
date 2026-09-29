@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>As-Sirat — Quran RPG Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f3efe6;
+  --bg-deep: #e8e1d2;
+  --panel: rgba(255, 252, 246, 0.88);
+  --panel-solid: #fffcf6;
+  --ink: #2f3a36;
+  --muted: #6b756f;
+  --soft: #8a938c;
+  --accent: #3d6b5a;
+  --accent-soft: #5a8f7b;
+  --accent-wash: rgba(61, 107, 90, 0.1);
+  --gold: #b08a4a;
+  --gold-wash: rgba(176, 138, 74, 0.12);
+  --rose: #9a5b5b;
+  --line: rgba(61, 107, 90, 0.14);
+  --shadow-soft: 0 18px 50px rgba(47, 58, 54, 0.07);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --max: 920px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Nunito", system-ui, sans-serif;
+  font-weight: 500;
+  line-height: 1.6;
+  background:
+    radial-gradient(ellipse 90% 55% at 12% -10%, rgba(90, 143, 123, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 100% 8%, rgba(176, 138, 74, 0.14), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(154, 91, 91, 0.08), transparent 45%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  background-attachment: fixed;
+}
+
+a { color: var(--accent); }
+a:hover { color: var(--accent-soft); }
+
+.shell {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 28px 20px 72px;
+}
+
+.top-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 28px;
+  font-size: 0.92rem;
+}
+.top-links a {
+  text-decoration: none;
+  color: var(--muted);
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.top-links a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent-soft);
+}
+
+.hero {
+  position: relative;
+  padding: 8px 0 28px;
+  animation: rise 0.7s ease both;
+}
+.kicker {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--gold-wash);
+  color: #8a6a35;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  margin: 0 0 12px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+.hero .lead {
+  margin: 0;
+  max-width: 38em;
+  color: var(--muted);
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 22px;
+  animation: rise 0.7s ease 0.08s both;
+}
+.tab {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(255, 252, 246, 0.65);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.tab:hover {
+  border-color: var(--accent-soft);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+.tab[aria-selected="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #f7faf8;
+}
+
+.panel {
+  display: none;
+  animation: fade 0.35s ease both;
+}
+.panel.active { display: block; }
+
+.section { margin-bottom: 28px; }
+.section h2 {
+  margin: 0 0 10px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 650;
+  color: var(--ink);
+}
+.section h3 {
+  margin: 18px 0 8px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.12rem;
+  font-weight: 650;
+  color: var(--accent);
+}
+.section p,
+.section li {
+  color: var(--ink);
+  font-size: 1rem;
+}
+.section .quiet {
+  color: var(--muted);
+  margin-top: 0;
+}
+
+.callout {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
+}
+.callout.soft-green {
+  background: linear-gradient(135deg, rgba(90, 143, 123, 0.12), rgba(255, 252, 246, 0.9));
+  border-color: rgba(61, 107, 90, 0.2);
+}
+.callout.soft-gold {
+  background: linear-gradient(135deg, rgba(176, 138, 74, 0.12), rgba(255, 252, 246, 0.92));
+}
+.callout .label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.callout p { margin: 0; }
+
+.stats {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 18px 0;
+}
+.stat {
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 16px 14px;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.stat:hover {
+  transform: translateY(-2px);
+  border-color: rgba(61, 107, 90, 0.28);
+}
+.stat b {
+  display: block;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 650;
+  color: var(--accent);
+}
+.stat span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.rules {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.rules li {
+  position: relative;
+  padding: 14px 16px 14px 42px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.rules li::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 1.15em;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  opacity: 0.75;
+}
+
+.split {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+.split.three { grid-template-columns: repeat(3, 1fr); }
+.card {
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-soft);
+}
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+.card ul {
+  margin: 0;
+  padding-left: 1.1em;
+  color: var(--muted);
+}
+.card li { margin-bottom: 6px; }
+.card .tag {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-wash);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sell {
+  margin: 8px 0 0;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  background: var(--accent-wash);
+  border-left: 4px solid var(--accent);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--accent);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-solid);
+  box-shadow: var(--shadow-soft);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+th, td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  background: rgba(61, 107, 90, 0.07);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(61, 107, 90, 0.04); }
+td.prio {
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.encounter-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+.encounter {
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.encounter h3 { margin-top: 0; }
+.encounter p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+.phases {
+  display: grid;
+  gap: 10px;
+}
+.phase {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.phase strong {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+.phase p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 18px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-primary {
+  background: var(--accent);
+  color: #f7faf8;
+}
+.btn-primary:hover {
+  background: var(--accent-soft);
+  color: #fff;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid rgba(61, 107, 90, 0.3);
+}
+.btn-ghost:hover {
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.footer-note {
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--soft);
+  font-size: 0.88rem;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .stats,
+  .split,
+  .split.three,
+  .encounter-grid { grid-template-columns: 1fr; }
+  .phase { grid-template-columns: 1fr; }
+  .shell { padding: 20px 16px 56px; }
+}
+</style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="top-links" aria-label="Related pages">
+      <a href="Al-Quran-Study.html">Study home</a>
+      <a href="Al-Quran-Study.html#/game">Play Midian slice</a>
+      <a href="Al-Quran-Genealogy.html">Genealogy &amp; places</a>
+      <a href="Al-Quran-Roots.html">Roots &amp; letters</a>
+    </nav>
+
+    <header class="hero">
+      <p class="kicker">Game design pitch · from the Al-Quran study suite</p>
+      <h1>As-Sirat — The Straight Path</h1>
+      <p class="lead">
+        A respectful knowledge RPG: you are a seeker, not a prophet. You travel
+        Qurʾanic places, learn from messengers as mentors, face moral forks,
+        and unlock roots of Arabic as living abilities.
+      </p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Pitch sections">
+      <button type="button" class="tab" role="tab" id="tab-pitch" aria-controls="panel-pitch" aria-selected="true" data-tab="pitch">Pitch</button>
+      <button type="button" class="tab" role="tab" id="tab-world" aria-controls="panel-world" aria-selected="false" data-tab="world">World</button>
+      <button type="button" class="tab" role="tab" id="tab-systems" aria-controls="panel-systems" aria-selected="false" data-tab="systems">Systems</button>
+      <button type="button" class="tab" role="tab" id="tab-arcs" aria-controls="panel-arcs" aria-selected="false" data-tab="arcs">Campaign</button>
+      <button type="button" class="tab" role="tab" id="tab-build" aria-controls="panel-build" aria-selected="false" data-tab="build">From your data</button>
+    </div>
+
+    <!-- PITCH -->
+    <section class="panel active" id="panel-pitch" role="tabpanel" aria-labelledby="tab-pitch">
+      <div class="section">
+        <div class="callout soft-green">
+          <span class="label">Core fantasy</span>
+          <p>
+            You wake as a traveler whose Book of Signs is blank. Across ages and
+            lands named in the Qurʾan, you collect clear proofs (āyāt), choose
+            between paths of belief and denial, and grow in knowledge — until the
+            Straight Path is no longer a map, but who you have become.
+          </p>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><b>Seeker</b><span>Player role</span></div>
+          <div class="stat"><b>Mentors</b><span>Prophets (never playable)</span></div>
+          <div class="stat"><b>Knowledge</b><span>Combat &amp; progression</span></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Tone rules</h2>
+        <ul class="rules">
+          <li>Prophets, Maryam, and angels are guides and witnesses — never bosses, loot drops, or romance options.</li>
+          <li>“Combat” is trial, patience, argument, and refuge — not gore or mockery of sacred figures.</li>
+          <li>Every quest cites real verses from your corpus; wrong answers cost Clarity, not blasphemy jokes.</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>Genre mix</h2>
+        <div class="split">
+          <article class="card">
+            <h3>What it feels like</h3>
+            <ul>
+              <li>Exploration RPG + moral dialogue tree</li>
+              <li>Language-learning as magic system</li>
+              <li>Chapter structure like Surahs / story cycles</li>
+              <li>Party of virtues, not murder-hobos</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>What it is not</h3>
+            <ul>
+              <li>Not a prophet simulator</li>
+              <li>Not a jihad action shooter</li>
+              <li>Not trivia with XP slapped on</li>
+              <li>Not sectarian propaganda campaigns</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>One-sentence sell</h2>
+        <p class="sell">
+          Walk the lands of the Reminder, learn the roots of speech, and choose —
+          again and again — who you stand with when signs arrive.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="Al-Quran-Study.html#/game">Play the Midian slice</a>
+          <a class="btn btn-ghost" href="Al-Quran-Study.html">Open Study</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORLD -->
+    <section class="panel" id="panel-world" role="tabpanel" aria-labelledby="tab-world" hidden>
+      <div class="section">
+        <h2>Map of Signs</h2>
+        <p class="quiet">
+          Overworld hubs drawn from your genealogy Places layer (~18 sites). Travel
+          unlocks story cycles; destroyed peoples appear as ruined zones with
+          cautionary quests.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Hub</th><th>Story cycle</th><th>Mentor presence</th><th>Tone</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Makkah / Bakkah</td><td>House &amp; covenant</td><td>Ibrahim · Ismail</td><td>Sanctuary</td></tr>
+              <tr><td>Yathrib</td><td>Migration &amp; community</td><td>Seal of prophecy (witness)</td><td>Refuge</td></tr>
+              <tr><td>Egypt</td><td>Betrayal → trust → deliverance</td><td>Yusuf · Musa · Harun</td><td>Palace &amp; river</td></tr>
+              <tr><td>Midian</td><td>Exile &amp; justice in trade</td><td>Shuayb · Musa young</td><td>Desert well</td></tr>
+              <tr><td>Sinai / the Mount</td><td>Covenant &amp; law</td><td>Musa</td><td>Revelation</td></tr>
+              <tr><td>Saba</td><td>Gratitude vs arrogance</td><td>Sulayman (envoy tale)</td><td>Garden kingdom</td></tr>
+              <tr><td>al-Ahqaf / Iram</td><td>Warning after pride</td><td>Hud (echo)</td><td>Ruined sands</td></tr>
+              <tr><td>al-Hijr</td><td>Signs ignored</td><td>Salih (echo)</td><td>Carved cliffs</td></tr>
+              <tr><td>Mount Judi</td><td>Mercy after flood</td><td>Nuh (echo)</td><td>Resting ark</td></tr>
+              <tr><td>Holy Land</td><td>Promise &amp; responsibility</td><td>Dawud · Isa line</td><td>Threshold</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Ruined zones</h2>
+        <p>
+          Optional hard areas: People of Nuh, ʿAd, Thamud, Cities of Lut, Pharaoh’s
+          host, Companions of the Elephant. You do not “defeat” them — you
+          witness, recover buried āyāt, and refuse the same mistake.
+        </p>
+        <div class="callout soft-gold" style="margin-top:14px">
+          <span class="label">Genealogy as living lore</span>
+          <p>
+            Your prophetic tree becomes NPC relationship memory: meeting Yusuf
+            soft-locks Egypt chapters; knowing Ibrahim’s line opens Makkah side
+            quests. Edges (parent / sibling / guardian) power “who belongs with
+            whom?” puzzles in dialogue.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SYSTEMS -->
+    <section class="panel" id="panel-systems" role="tabpanel" aria-labelledby="tab-systems" hidden>
+      <div class="section">
+        <h2>Three meters</h2>
+        <div class="split three">
+          <article class="card">
+            <span class="tag">Core</span>
+            <h3>Clarity</h3>
+            <p class="quiet" style="margin:0">
+              How clearly you see signs. Raised by correct verse recall, root
+              mastery, and keeping promises. Low Clarity blurs map labels and
+              weakens counsel from mentors.
+            </p>
+          </article>
+          <article class="card">
+            <span class="tag">Moral</span>
+            <h3>Stance</h3>
+            <p class="quiet" style="margin:0">
+              A spectrum toward believer or denier archetypes from your People
+              page (26 types). Choices tag you: grateful, patient, arrogant,
+              mocking, just, heedless — not a Good/Evil bar with cartoon horns.
+            </p>
+          </article>
+          <article class="card">
+            <span class="tag">Language</span>
+            <h3>Roots</h3>
+            <p class="quiet" style="margin:0">
+              Skill tree of Arabic roots and letter themes. Learning ر ح م
+              unlocks Mercy dialogue options; ص ب ر unlocks Patience trials.
+              Letter keywords + TTS become tutorial “utterances.”
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Party: Companions of Character</h2>
+        <p class="quiet">Not hired mercenaries — virtues that join when your Stance matches.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Companion</th><th>Unlocks when you…</th><th>Ability</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Sabr (Patience)</td><td>Endure a timed trial without rage options</td><td>Slow a crisis; retry once</td></tr>
+              <tr><td>Shukr (Gratitude)</td><td>Refuse greed in Saba / booty scenarios</td><td>Reveal hidden map caches</td></tr>
+              <tr><td>Tawakkul (Trust)</td><td>Act on incomplete information after counsel</td><td>Auto-succeed one leap of faith</td></tr>
+              <tr><td>Adl (Justice)</td><td>Settle a Midian trade dispute fairly</td><td>Unlock fair inheritance puzzles</td></tr>
+              <tr><td>Taqwa (God-consciousness)</td><td>Walk away from a denier bait dialogue</td><td>Detect false signs</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Encounters (not slash combat)</h2>
+        <div class="encounter-grid">
+          <div class="encounter">
+            <h3>Trial of Speech</h3>
+            <p>Debate denier archetypes using roots you unlocked. Wrong root = Clarity damage. Angels of office may intervene as one-time counsel — never as player weapons.</p>
+          </div>
+          <div class="encounter">
+            <h3>Trial of Deed</h3>
+            <p>Scenario puzzles from your Calculators: inheritance shares, oath expiation, iddah waiting — applied as village quests with verse-cited solutions.</p>
+          </div>
+          <div class="encounter">
+            <h3>Trial of Patience</h3>
+            <p>Hold stance under pressure (Ayyub-pattern nights, Yusuf prison chapters). Mini-games: steady breath meter, refuse three escalating taunts.</p>
+          </div>
+          <div class="encounter">
+            <h3>Hunt of Signs</h3>
+            <p>Verse-hunt using Study search: given English/Arabic fragment, find the ayah in the world (inscribed stones, dreams, mentor speech).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Book of Signs</h2>
+        <p>
+          Collected āyāt, names of Allah (99), prophet seals, and letter themes
+          fill a living codex. Endgame: the Book is complete enough to walk a
+          final Sirat sequence where Stance + Roots decide which companions walk
+          with you.
+        </p>
+      </div>
+    </section>
+
+    <!-- CAMPAIGN -->
+    <section class="panel" id="panel-arcs" role="tabpanel" aria-labelledby="tab-arcs" hidden>
+      <div class="section">
+        <h2>Campaign — five ages</h2>
+        <p class="quiet">
+          Linear spine with optional ruined zones. About 12–20 hours for a first
+          playthrough; New Game+ shuffles Stance forks.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Age</th><th>Hubs</th><th>Player learns</th><th>Climax choice</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1 · Origins</td><td>Judi → early lands</td><td>First roots; Clarity basics</td><td>Board the ark of trust — or mock the warning</td></tr>
+              <tr><td>2 · Fathers</td><td>Makkah · Midian</td><td>Covenant, hospitality, trade justice</td><td>Break idols in the heart — or keep a hidden one</td></tr>
+              <tr><td>3 · Egypt</td><td>Egypt · Sinai</td><td>Betrayal, patience, law</td><td>Stand with the oppressed — or Pharaoh’s comfort</td></tr>
+              <tr><td>4 · Kingdoms</td><td>Holy Land · Saba</td><td>Power, gratitude, queen’s test</td><td>Rule with Adl — or with spectacle</td></tr>
+              <tr><td>5 · Reminder</td><td>Badr · Yathrib · House</td><td>Community, migration, seal of prophecy</td><td>Final Sirat: who walks with your Book?</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Sample quest: The Well at Midian</h2>
+        <div class="callout">
+          <span class="label">Act beat</span>
+          <p style="margin-bottom:10px">
+            You arrive thirsty. Two flocks wait; women delay. Choices tag Stance
+            (help / ignore / demand pay). Helping unlocks Shuayb’s counsel and
+            roots of watering and patience.
+          </p>
+          <p style="margin-bottom:10px">
+            Side puzzle: a merchant short-weights grain. Trial of Deed uses
+            fairness judgment. Success adds Companion Adl; failure opens a ruined
+            Midian echo later.
+          </p>
+          <p style="margin:0;color:var(--muted)">
+            Verses cited on success — same pattern as your study tools. Playable now in Study → As-Sirat.
+          </p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>End states</h2>
+        <div class="split">
+          <article class="card">
+            <h3>Guided</h3>
+            <p class="quiet" style="margin:0">
+              High Clarity + believer Stance + full Mentors witnessed. Sirat is
+              bright; Book of Signs becomes a permanent in-app study deck.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Scattered</h3>
+            <p class="quiet" style="margin:0">
+              High denier tags or abandoned roots. Map fragments; mentors speak
+              in warning only. Replay encouraged — not an “evil ending” meme.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUILD -->
+    <section class="panel" id="panel-build" role="tabpanel" aria-labelledby="tab-build" hidden>
+      <div class="section">
+        <h2>Mapped to your repo</h2>
+        <p class="quiet">Nothing below invents new scripture — it reuses structures you already built.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Your asset</th><th>RPG use</th><th>Priority</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Al-Quran.txt (6236 ayahs)</td><td>Verse hunt, mentor speech, codex</td><td class="prio">P0</td></tr>
+              <tr><td>PLACES (~18)</td><td>Overworld hubs + travel</td><td class="prio">P0</td></tr>
+              <tr><td>DESTROYED (~12)</td><td>Ruined optional zones</td><td class="prio">P1</td></tr>
+              <tr><td>Genealogy NODES/EDGES</td><td>Mentor roster + kinship puzzles</td><td class="prio">P0</td></tr>
+              <tr><td>LETTER_KEYWORDS + TTS</td><td>Tutorial utterances / root unlock FX</td><td class="prio">P0</td></tr>
+              <tr><td>Roots (1651) + glosses</td><td>Skill tree &amp; Trial of Speech</td><td class="prio">P0</td></tr>
+              <tr><td>People types (26)</td><td>Stance tags &amp; debate enemies</td><td class="prio">P0</td></tr>
+              <tr><td>Angels (12)</td><td>One-time counsel events</td><td class="prio">P1</td></tr>
+              <tr><td>Asma / prophets / names</td><td>Codex seals &amp; name trials</td><td class="prio">P1</td></tr>
+              <tr><td>Calculators</td><td>Trial of Deed village quests</td><td class="prio">P2</td></tr>
+              <tr><td>Study bookmarks</td><td>Spaced-review New Game+ deck</td><td class="prio">P2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Build path</h2>
+        <div class="phases">
+          <div class="phase">
+            <strong>Phase A</strong>
+            <p><b>Vertical slice (done):</b> Midian hub — map, mentor, Stance fork, roots, verse hunts, Book of Signs.</p>
+          </div>
+          <div class="phase">
+            <strong>Phase B</strong>
+            <p><b>Spine:</b> Egypt → Sinai → Makkah. Genealogy gates. People-type debates.</p>
+          </div>
+          <div class="phase">
+            <strong>Phase C</strong>
+            <p><b>Depth:</b> Ruined zones, Asma seals, calculator quests, full Sirat ending.</p>
+          </div>
+        </div>
+        <div class="callout soft-green" style="margin-top:16px">
+          <span class="label">Why this fits</span>
+          <p>
+            As-Sirat is not a separate product bolted on — it is your Study,
+            Roots, Genealogy, People, Angels, and Calculators turned into one
+            continuous journey. Players finish with more knowledge of the Qurʾan,
+            not less.
+          </p>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="Al-Quran-Study.html#/game">Play Midian now</a>
+          <a class="btn btn-ghost" href="Al-Quran-Study.html">Back to Study</a>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Soft pitch page for As-Sirat · companion to the Study shell Midian prototype.
+    </p>
+  </div>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll(".tab");
+  var panels = document.querySelectorAll(".panel");
+
+  function show(id) {
+    tabs.forEach(function (tab) {
+      var on = tab.getAttribute("data-tab") === id;
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    panels.forEach(function (panel) {
+      var on = panel.id === "panel-" + id;
+      panel.classList.toggle("active", on);
+      if (on) panel.removeAttribute("hidden");
+      else panel.setAttribute("hidden", "");
+    });
+    if (history.replaceState) {
+      history.replaceState(null, "", "#" + id);
+    } else {
+      location.hash = id;
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      show(tab.getAttribute("data-tab"));
+    });
+  });
+
+  var hash = (location.hash || "#pitch").replace(/^#/, "");
+  if (!document.getElementById("panel-" + hash)) hash = "pitch";
+  show(hash);
+})();
+</script>
+</body>
+</html>

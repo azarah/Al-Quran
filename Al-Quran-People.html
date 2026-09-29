@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Believers &amp; Non-believers</title>
+<style>
+:root {
+  --color-bg: lightyellow;
+  --color-surah-title: purple;
+  --color-verse-label: red;
+  --color-arabic: green;
+  --color-translation: blue;
+  --color-rule: #d8d4a8;
+  --color-believe: #2e7d32;
+  --color-deny: #8b1a1a;
+}
+body {
+  background-color: var(--color-bg);
+  color: #333;
+  font-family: Georgia, "Times New Roman", serif;
+  margin: 0 auto;
+  max-width: 920px;
+  padding: 24px 18px 64px;
+}
+h1 {
+  color: var(--color-surah-title);
+  margin: 0 0 4px;
+  text-align: center;
+}
+.subtitle {
+  color: var(--color-translation);
+  margin: 0 0 20px;
+  text-align: center;
+}
+.subtitle a { color: var(--color-translation); }
+.note {
+  background: rgba(128, 0, 128, .05);
+  border-left: 4px solid var(--color-surah-title);
+  font-size: .9em;
+  line-height: 1.55;
+  margin: 0 0 22px;
+  padding: 12px 16px;
+}
+.note p { margin: 0 0 8px; }
+.note p:last-child { margin: 0; }
+
+.stats {
+  border-bottom: 2px solid var(--color-rule);
+  border-top: 2px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  justify-content: center;
+  margin-bottom: 22px;
+  padding: 12px 0;
+}
+.stats div { text-align: center; }
+.stats b {
+  color: var(--color-verse-label);
+  display: block;
+  font-size: 1.4em;
+}
+.stats span { font-size: .82em; }
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.filter-row button {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 4px;
+  color: var(--color-surah-title);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .88em;
+  padding: 6px 12px;
+}
+.filter-row button[aria-pressed="true"] {
+  background: var(--color-surah-title);
+  color: #fff;
+}
+.filter-row button.believe[aria-pressed="true"] {
+  background: var(--color-believe);
+  border-color: var(--color-believe);
+}
+.filter-row button.deny[aria-pressed="true"] {
+  background: var(--color-deny);
+  border-color: var(--color-deny);
+}
+
+.person {
+  background: #fffdf0;
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px 16px;
+  grid-template-columns: auto 1fr;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+}
+.person.believe { border-left: 4px solid var(--color-believe); }
+.person.deny { border-left: 4px solid var(--color-deny); }
+.person:hover { border-color: var(--color-surah-title); }
+
+.rank-badge {
+  align-items: center;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  font-size: .7em;
+  height: 52px;
+  justify-content: center;
+  letter-spacing: .03em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  width: 52px;
+}
+.person.believe .rank-badge { background: var(--color-believe); }
+.person.deny .rank-badge { background: var(--color-deny); }
+.rank-badge b {
+  font-size: 1.35em;
+  font-weight: bold;
+  letter-spacing: 0;
+}
+
+.person-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-bottom: 4px;
+}
+.person-ar {
+  color: var(--color-arabic);
+  font-size: 1.45em;
+  line-height: 1.2;
+}
+.person-en {
+  color: var(--color-surah-title);
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.person-role {
+  color: var(--color-translation);
+  font-size: .92em;
+}
+.person-note {
+  font-size: .9em;
+  line-height: 1.45;
+  margin: 4px 0 0;
+}
+.person-meta {
+  color: #777;
+  font-size: .82em;
+  margin-top: 6px;
+}
+.person-meta i {
+  color: var(--color-verse-label);
+  font-style: normal;
+  margin-right: 4px;
+}
+.kind {
+  border-radius: 3px;
+  font-size: .72em;
+  letter-spacing: .04em;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+.kind.believe {
+  background: rgba(46, 125, 50, .12);
+  color: var(--color-believe);
+}
+.kind.deny {
+  background: rgba(139, 26, 26, .1);
+  color: var(--color-deny);
+}
+.tier-label {
+  color: #777;
+  font-size: .8em;
+  letter-spacing: .06em;
+  margin: 22px 0 8px;
+  text-transform: uppercase;
+}
+.tier-label:first-of-type { margin-top: 0; }
+@media (max-width: 560px) {
+  .person { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<h1>Believers &amp; Non-believers</h1>
+<p class="subtitle">
+  Types of people the Qur'an names, ordered by role<br>
+  <a href="Al-Quran-Study.html">study app</a> ·
+  <a href="Al-Quran-Roots.html">roots</a> ·
+  <a href="Al-Quran-Angels.html">angels</a> ·
+  <a href="Al-Quran-Genealogy.html">genealogy &amp; places</a> ·
+  <a href="Al-Quran.html">full text</a>
+</p>
+
+<div class="note">
+  <p>The Book sorts people by <b>faith and conduct</b>, not by tribe alone.
+  Believers run from the foremost drawn near, through the God-fearing and the
+  submitters. Non-believers run from open rejection and idolatry to hypocrisy
+  and wrongdoing. <b>Rank</b> here is a study order within each side — how the
+  text itself elevates or condemns the type — not a census of souls.</p>
+  <p>Surah al-Waqiʿah (56) names three companies on that Day: the foremost, the
+  companions of the right, and the companions of the left. Those threads appear
+  below with the other standing labels of the Book.</p>
+</div>
+
+<div class="stats">
+  <div><b id="stat-believe">0</b><span>believer types</span></div>
+  <div><b id="stat-deny">0</b><span>non-believer types</span></div>
+  <div><b id="stat-total">0</b><span>entries</span></div>
+</div>
+
+<div class="filter-row" role="tablist">
+  <button type="button" data-filter="all" aria-pressed="true">All</button>
+  <button type="button" class="believe" data-filter="believe" aria-pressed="false">Believers</button>
+  <button type="button" class="deny" data-filter="deny" aria-pressed="false">Non-believers</button>
+</div>
+
+<div id="people-list"></div>
+
+<script>
+(function () {
+  var PEOPLE = [
+    /* ---------- Believers (rank = nearness / praise in the text) ---------- */
+    {
+      side: "believe", rank: 1, tier: "The foremost",
+      ar: "السَّابِقُونَ الْمُقَرَّبُون",
+      en: "The foremost — those drawn near",
+      role: "First in faith and nearest to Allah",
+      note: "The foremost are the foremost: they are the ones brought near, in Gardens of bliss — a throng of the ancients and a few of the later folk.",
+      verses: "56:10–14; cf. 35:32",
+      lemma: "سابِق", occ: 7
+    },
+    {
+      side: "believe", rank: 2, tier: "The foremost",
+      ar: "الصِّدِّيقُون",
+      en: "The truthful (siddiqun)",
+      role: "Those who confirm truth with their lives",
+      note: "Whoever obeys Allah and the Messenger is with those Allah has favoured: the prophets, the truthful, the witnesses, and the righteous — a beautiful fellowship.",
+      verses: "4:69",
+      lemma: "صَدِيق", occ: 2
+    },
+    {
+      side: "believe", rank: 3, tier: "The foremost",
+      ar: "الشُّهَداء",
+      en: "The witnesses / martyrs",
+      role: "Those who bear witness and may give their lives",
+      note: "Joined with prophets, the truthful, and the righteous in 4:69. Do not say of those slain in Allah's way that they are dead; they are alive.",
+      verses: "4:69, 2:154, 3:169",
+      lemma: "شَهِيد", occ: 56
+    },
+    {
+      side: "believe", rank: 4, tier: "The foremost",
+      ar: "الصَّالِحُون",
+      en: "The righteous",
+      role: "Those whose deeds are sound",
+      note: "The fourth of the favoured company in 4:69. The earth is inherited by Allah's righteous servants.",
+      verses: "4:69, 21:105",
+      lemma: "صالِح", occ: 74
+    },
+    {
+      side: "believe", rank: 5, tier: "Companions of the Right",
+      ar: "أَصْحَابُ الْيَمِين",
+      en: "Companions of the Right",
+      role: "The blessed company on the Day of Sorting",
+      note: "Those on the right — what of those on the right? Among thornless lote-trees and clustered bananas, in shade extended.",
+      verses: "56:8, 56:27–40",
+      lemma: null, occ: null
+    },
+    {
+      side: "believe", rank: 6, tier: "Emigrants & helpers",
+      ar: "الْمُهَاجِرُون وَالْأَنْصَار",
+      en: "Emigrants and Helpers",
+      role: "Those who emigrated and those who gave them a home",
+      note: "The first emigrants and helpers, and those who followed them in excellence — Allah is pleased with them and they with Him. He has prepared Gardens beneath which rivers flow.",
+      verses: "9:100, 8:72–74",
+      lemma: null, occ: null
+    },
+    {
+      side: "believe", rank: 7, tier: "God-fearing",
+      ar: "الْمُتَّقُون",
+      en: "The God-fearing (muttaqun)",
+      role: "Those who guard themselves from displeasing Allah",
+      note: "Guidance for the God-fearing: who believe in the Unseen, establish prayer, and spend of what We provided. Their end is forgiveness and a great reward.",
+      verses: "2:2–5, 3:133–136",
+      lemma: "مُتَّقي", occ: 49
+    },
+    {
+      side: "believe", rank: 8, tier: "Faith & submission",
+      ar: "الْمُؤْمِنُون",
+      en: "The believers (mu'minun)",
+      role: "Those who have faith",
+      note: "The believers have succeeded: who are humble in prayer, turn away from idle talk, pay the purifying dues, and guard their chastity. Believing men and women are protecting friends of one another.",
+      verses: "23:1–11, 9:71, 49:14–15",
+      lemma: "مُؤْمِن", occ: 202
+    },
+    {
+      side: "believe", rank: 9, tier: "Faith & submission",
+      ar: "الْمُسْلِمُون",
+      en: "Those who submit (muslimun)",
+      role: "Those who surrender their will to Allah",
+      note: "Abraham and Ishmael prayed to be made muslims. The only religion with Allah is Islam. Say: We believe and we are muslims. The desert Arabs said 'We believe'; — say: You have submitted; faith has not yet entered your hearts.",
+      verses: "2:128, 3:19, 3:84, 49:14",
+      lemma: "مُسْلِم", occ: 39
+    },
+    {
+      side: "believe", rank: 10, tier: "Excellence of deed",
+      ar: "الْمُحْسِنُون",
+      en: "The doers of good (muhsinun)",
+      role: "Those who excel in beautiful conduct",
+      note: "Allah loves the doers of good. For those who do good is the best reward — and more. Ihsan is worshipping Allah as though you see Him.",
+      verses: "2:195, 3:134, 10:26, 16:128",
+      lemma: "مُحْسِن", occ: 38
+    },
+    {
+      side: "believe", rank: 11, tier: "Excellence of deed",
+      ar: "الْمُقْتَصِدُون",
+      en: "The moderate (muqtasidun)",
+      role: "Those of the Book who keep a middle course",
+      note: "Among the heirs of the Book: some wrong themselves, some are moderate, and some race ahead in good deeds by Allah's leave.",
+      verses: "35:32",
+      lemma: null, occ: null
+    },
+    {
+      side: "believe", rank: 12, tier: "Turning back to Allah",
+      ar: "التَّائِبُون / الْأَوَّابُون",
+      en: "The repentant & oft-returning",
+      note: "Those who repent, worship, praise, travel (or fast), bow, prostrate, enjoin good, forbid evil, and keep Allah's limits — give glad tidings to the believers. David was an awwab — oft-returning.",
+      role: "Those who turn and keep turning",
+      verses: "9:112, 38:17, 38:30",
+      lemma: "تائِب", occ: 1
+    },
+    {
+      side: "believe", rank: 13, tier: "Turning back to Allah",
+      ar: "الْحُنَفَاء",
+      en: "The upright (hunafa')",
+      role: "Pure devotion to Allah alone, after Abraham",
+      note: "Abraham was neither Jew nor Christian, but a hanif, muslim, and not of the idolaters. So set your face to the religion as a hanif.",
+      verses: "3:67, 6:161, 10:105, 30:30",
+      lemma: "حَنِيف", occ: 12
+    },
+    {
+      side: "believe", rank: 14, tier: "Turning back to Allah",
+      ar: "الْمُخْلِصُون",
+      en: "The sincere (mukhlisun)",
+      role: "Those whose religion is purely for Allah",
+      note: "We have sent down the Book to you in truth; so worship Allah, making the religion sincere for Him. Is it not to Allah that sincere religion is due?",
+      verses: "39:2–3, 39:11–14",
+      lemma: "مُخْلِص", occ: 11
+    },
+
+    /* ---------- Non-believers (rank = severity / clarity of blame) ---------- */
+    {
+      side: "deny", rank: 1, tier: "Open rejection",
+      ar: "الْكَافِرُون",
+      en: "Those who reject faith (kafirun)",
+      role: "Those who cover or deny the truth",
+      note: "As for those who reject Faith, it is the same whether you warn them or not — they will not believe. Their parable is one who shouts to what hears nothing but calls and cries.",
+      verses: "2:6–7, 2:171, 109:1–6",
+      lemma: "كافِر", occ: 156
+    },
+    {
+      side: "deny", rank: 2, tier: "Open rejection",
+      ar: "الْمُشْرِكُون",
+      en: "Those who associate partners (mushrikun)",
+      role: "Idolaters — who set up partners with Allah",
+      note: "Do not marry unbelieving women (idolaters) until they believe. The mushrikun are unclean in the sacred precincts. Associating partners is a tremendous wrong.",
+      verses: "2:221, 4:48, 9:28, 31:13",
+      lemma: "مُشْرِك", occ: 44
+    },
+    {
+      side: "deny", rank: 3, tier: "Hidden rejection",
+      ar: "الْمُنَافِقُون",
+      en: "The hypocrites (munafiqun)",
+      role: "Those who claim faith while concealing disbelief",
+      note: "Of the people are some who say 'We believe' while they do not. When they meet the believers they say we believe; when alone with their satans they say we were only mocking. The hypocrites will be in the lowest depth of the Fire.",
+      verses: "2:8–20, 4:145, 63:1–8",
+      lemma: "مُنافِق", occ: 27
+    },
+    {
+      side: "deny", rank: 4, tier: "Companions of the Left",
+      ar: "أَصْحَابُ الشِّمَال",
+      en: "Companions of the Left",
+      role: "The wretched company on the Day of Sorting",
+      note: "Those on the left — what of those on the left? In scorching wind and scalding water, and a shadow of black smoke.",
+      verses: "56:9, 56:41–56",
+      lemma: null, occ: null
+    },
+    {
+      side: "deny", rank: 5, tier: "Wrongdoing & crime",
+      ar: "الظَّالِمُون",
+      en: "The wrongdoers (zalimun)",
+      role: "Those who oppress or place things where they do not belong",
+      note: "Who is more wrong than one who invents a lie against Allah? The wrongdoers will have no helpers. Darknesses upon darknesses.",
+      verses: "2:254, 6:21, 24:40",
+      lemma: "ظالِم", occ: 129
+    },
+    {
+      side: "deny", rank: 6, tier: "Wrongdoing & crime",
+      ar: "الْمُجْرِمُون",
+      en: "The criminals (mujrimun)",
+      role: "Those steeped in crime against Allah's signs",
+      note: "The criminals will be known by their marks and seized by the forelocks and the feet. On that Day We shall gather the criminals blue-eyed with terror.",
+      verses: "55:41, 20:102, 25:31",
+      lemma: "مُجْرِم", occ: 52
+    },
+    {
+      side: "deny", rank: 7, tier: "Wrongdoing & crime",
+      ar: "الْفَاسِقُون",
+      en: "The defiantly disobedient (fasiqun)",
+      role: "Those who break out of obedience",
+      note: "Allah does not guide the defiantly disobedient people. Who does greater wrong than one reminded of the signs of his Lord then turns away? We shall take vengeance on the criminals.",
+      verses: "5:108, 9:24, 32:18–22",
+      lemma: "فاسِق", occ: 37
+    },
+    {
+      side: "deny", rank: 8, tier: "Pride & excess",
+      ar: "الْمُسْتَكْبِرُون",
+      en: "The arrogant (mustakbirun)",
+      role: "Those who refuse truth out of pride",
+      note: "Those who dispute Allah's signs without authority — grievous in hatred in Allah's sight. Enter the gates of Hell, abiding therein: evil is the abode of the arrogant.",
+      verses: "40:35, 40:60, 16:29",
+      lemma: "مُسْتَكْبِر", occ: 6
+    },
+    {
+      side: "deny", rank: 9, tier: "Pride & excess",
+      ar: "الْمُسْرِفُون",
+      en: "The transgressors (musrifun)",
+      role: "Those who go beyond the limits",
+      note: "Do not obey the bidding of the transgressors, who spread corruption in the land and do not reform. Allah does not love the musrifun.",
+      verses: "26:151–152, 7:31, 40:28",
+      lemma: "مُسْرِف", occ: 15
+    },
+    {
+      side: "deny", rank: 10, tier: "Pride & excess",
+      ar: "الضَّالُّون",
+      en: "Those astray (dallun)",
+      role: "Those who have lost the path",
+      note: "Guide us on the straight path — the path of those You have favoured, not of those who earn anger, nor of those who go astray.",
+      verses: "1:7, 56:51, 15:56",
+      lemma: "ضالّ", occ: 14
+    },
+    {
+      side: "deny", rank: 11, tier: "After belief",
+      ar: "الَّذِينَ ارْتَدُّوا",
+      en: "Those who turn back after belief",
+      role: "Apostasy — rejecting after having accepted",
+      note: "How shall Allah guide those who reject Faith after they accepted it and bore witness that the Messenger was true? Those who reject after accepting, then grow in disbelief — their repentance will not be accepted.",
+      verses: "3:86–90, 4:137, 5:54",
+      lemma: null, occ: null
+    },
+    {
+      side: "deny", rank: 12, tier: "After belief",
+      ar: "أَصْحَابُ الْمَشْأَمَة",
+      en: "Companions of the Omen (left)",
+      role: "Those of the wretched side",
+      note: "Those of the left hand — what of those of the left hand? Parallel to the companions of the left in the great sorting of mankind.",
+      verses: "90:19–20, 56:9",
+      lemma: null, occ: null
+    }
+  ];
+
+  var list = document.getElementById("people-list");
+  var filter = "all";
+
+  function escape(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function render() {
+    var rows = PEOPLE.filter(function (p) {
+      return filter === "all" || p.side === filter;
+    });
+    var html = "";
+    var lastKey = null;
+    rows.forEach(function (p) {
+      var key = p.side + ":" + p.tier;
+      if (key !== lastKey) {
+        var sideWord = p.side === "believe" ? "Believers" : "Non-believers";
+        html += '<div class="tier-label">' + escape(sideWord) + " — " + escape(p.tier) + "</div>";
+        lastKey = key;
+      }
+      html += '<article class="person ' + p.side + '">';
+      html += '<div class="rank-badge"><span>Rank</span><b>' + p.rank + "</b></div>";
+      html += '<div>';
+      html += '<div class="person-head">';
+      html += '<span class="person-ar" lang="ar" dir="rtl">' + escape(p.ar) + "</span>";
+      html += '<span class="person-en">' + escape(p.en) + "</span>";
+      html += '<span class="kind ' + p.side + '">' +
+        (p.side === "believe" ? "believer" : "non-believer") + "</span>";
+      html += "</div>";
+      html += '<div class="person-role">' + escape(p.role) + "</div>";
+      html += '<p class="person-note">' + escape(p.note) + "</p>";
+      html += '<div class="person-meta"><i>Verses</i> ' + escape(p.verses);
+      if (p.occ != null) html += " · corpus lemma ×" + p.occ;
+      html += "</div></div></article>";
+    });
+    list.innerHTML = html || "<p>No types match this filter.</p>";
+  }
+
+  var nBelieve = PEOPLE.filter(function (p) { return p.side === "believe"; }).length;
+  var nDeny = PEOPLE.filter(function (p) { return p.side === "deny"; }).length;
+  document.getElementById("stat-believe").textContent = nBelieve;
+  document.getElementById("stat-deny").textContent = nDeny;
+  document.getElementById("stat-total").textContent = PEOPLE.length;
+
+  document.querySelector(".filter-row").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+    filter = btn.getAttribute("data-filter");
+    document.querySelectorAll(".filter-row [data-filter]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+    });
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

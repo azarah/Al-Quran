@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Genealogy & Places</title>
+<style>
+:root {
+  --color-bg: lightyellow;
+  --color-surah-title: purple;
+  --color-verse-label: red;
+  --color-arabic: green;
+  --color-translation: blue;
+  --color-rule: #d8d4a8;
+}
+body {
+  background-color: var(--color-bg);
+  color: #333;
+  font-family: Georgia, "Times New Roman", serif;
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 24px 18px 64px;
+}
+h1 {
+  color: var(--color-surah-title);
+  margin: 0 0 4px;
+  text-align: center;
+}
+h2 {
+  border-bottom: 2px solid var(--color-rule);
+  color: var(--color-surah-title);
+  margin: 8px 0 10px;
+  padding-bottom: 6px;
+}
+.subtitle {
+  color: var(--color-translation);
+  margin: 0 0 20px;
+  text-align: center;
+}
+.subtitle a { color: var(--color-translation); }
+.note {
+  background: rgba(128, 0, 128, .05);
+  border-left: 4px solid var(--color-surah-title);
+  font-size: .9em;
+  line-height: 1.55;
+  margin: 0 0 18px;
+  padding: 12px 16px;
+}
+.note p { margin: 0 0 8px; }
+.note p:last-child { margin: 0; }
+
+.geo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+.geo-tabs button {
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  border-radius: 4px;
+  color: var(--color-surah-title);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .95em;
+  padding: 8px 14px;
+}
+.geo-tabs button[aria-pressed="true"] {
+  background: var(--color-surah-title);
+  color: #fff;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  font-size: .85em;
+  margin: 0 0 12px;
+}
+.legend i {
+  display: inline-block;
+  width: 28px;
+  height: 0;
+  border-top: 3px solid;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.legend .parent { border-color: #6b2d8a; }
+.legend .sibling { border-color: #2e7d32; }
+.legend .people { border-color: #c62828; border-top-style: dashed; }
+.legend .line { border-color: #8d6e63; border-top-style: dashed; }
+.legend .guard { border-color: #1565c0; border-top-style: dashed; }
+
+.diagram-frame {
+  background: #fffdf0;
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  overflow: auto;
+  position: relative;
+}
+.diagram-frame svg { display: block; max-width: none; }
+.tip {
+  background: #fff;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
+  font-size: .85em;
+  line-height: 1.4;
+  max-width: 260px;
+  padding: 7px 9px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+
+.detail {
+  margin-top: 14px;
+}
+.picked {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.picked .ar {
+  color: var(--color-arabic);
+  font-size: 2em;
+  line-height: 1;
+}
+.picked b { color: var(--color-surah-title); }
+.link-list {
+  font-size: .92em;
+  line-height: 1.5;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.place-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.place-chip {
+  background: #fff;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .85em;
+  padding: 5px 9px;
+}
+.place-chip b {
+  color: var(--color-arabic);
+  font-weight: normal;
+  margin-right: 4px;
+}
+.place-chip.on {
+  border-color: var(--color-surah-title);
+  box-shadow: 0 0 0 2px rgba(128, 0, 128, .18);
+}
+
+.map-layout {
+  display: grid;
+  gap: 14px;
+}
+@media (min-width: 900px) {
+  .map-layout {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+</style>
+</head>
+<body>
+
+<h1>Genealogy &amp; Places</h1>
+<p class="subtitle">
+  Prophetic lineage and lands named in the Qur'an<br>
+  <a href="Al-Quran-Roots.html">roots</a> ·
+  <a href="Al-Quran-Calculators.html">calculators</a> ·
+  <a href="Al-Quran.html">full text</a>
+</p>
+
+<div class="note">
+  <p><b>Genealogy.</b> Solid purple lines are parent → child stated in the text
+  (Azar–Ibrahim, Ibrahim–Ismail/Ishaq, Ishaq–Yaqub, Yaqub–Yusuf, Dawud–Sulayman,
+  Zakariya–Yahya, Imran–Maryam, Maryam–Isa). Green is siblinghood (Musa–Harun).
+  Dashed lines are broader prophetic or people links the Qur'an places in sequence
+  or company, not always a birth record.</p>
+  <p><b>Map.</b> Markers sit at conventional coordinates for places the Book names
+  (Makkah, Yathrib, Badr, Egypt, Midian, Sinai, Babylon, Saba, al-Ahqaf, al-Hijr,
+  Mount Judi, and others). Click a pin or chip for the verse cue.</p>
+</div>
+
+<div class="geo-tabs" role="tablist">
+  <button type="button" data-geo="tree" aria-pressed="true">Genealogy</button>
+  <button type="button" data-geo="map" aria-pressed="false">Places map</button>
+</div>
+
+<section class="geo-panel" id="geo-tree">
+  <h2>Prophetic genealogy</h2>
+  <div class="legend">
+    <span><i class="parent"></i> Parent → child</span>
+    <span><i class="sibling"></i> Siblings</span>
+    <span><i class="guard"></i> Guardianship</span>
+    <span><i class="people"></i> People / mission link</span>
+    <span><i class="line"></i> Prophetic line / kinship</span>
+  </div>
+  <div class="diagram-frame" id="tree-wrap">
+    <svg id="tree-svg" role="img" aria-label="Qur'anic genealogical tree"></svg>
+    <div id="tree-tip" class="tip" hidden></div>
+  </div>
+  <div class="detail" id="tree-detail"></div>
+</section>
+
+<section class="geo-panel" id="geo-map" hidden>
+  <h2>Notable locations</h2>
+  <div class="map-layout">
+    <div>
+      <div class="diagram-frame" id="map-wrap">
+        <svg id="map-svg" role="img" aria-label="Map of places named in the Qur'an"></svg>
+        <div id="map-tip" class="tip" hidden></div>
+      </div>
+      <div class="detail" id="map-detail"></div>
+    </div>
+    <div>
+      <p class="note" style="margin:0 0 10px">All markers below are names that appear in the
+      Qur'an (or clear English equivalents of those names). Coordinates are modern
+      scholarly approximations for reading geography — not GPS claims from the text.</p>
+      <div class="place-chips" id="place-list"></div>
+    </div>
+  </div>
+</section>
+
+<script src="quran_genealogy.js"></script>
+</body>
+</html>

@@ -48,6 +48,7 @@ surah_root_words = Counter()               # surah -> root-bearing words
 surah_words = defaultdict(set)             # surah -> {(verse, word)}
 surah_verses = Counter()                   # surah -> verse count
 lemmas = defaultdict(Counter)
+root_forms = defaultdict(Counter)
 
 for line in MORPH.read_text(encoding="utf-8").splitlines():
     cols = line.split("\t")
@@ -69,6 +70,7 @@ for line in MORPH.read_text(encoding="utf-8").splitlines():
     lem = re.search(r"LEM:([^|]+)", feats)
     if lem:
         lemmas[root][lem.group(1)] += 1
+    root_forms[root][form] += 1
 
 total_words = sum(len(v) for v in surah_words.values())
 root_words = sum(surah_root_words.values())
@@ -289,6 +291,15 @@ LETTERS = {
     "ي": ("yāʾ", "Day and certainty"),
 }
 
+LETTER_AR_NAMES = {
+    "أ": "ألف", "ب": "باء", "ت": "تاء", "ث": "ثاء", "ج": "جيم",
+    "ح": "حاء", "خ": "خاء", "د": "دال", "ذ": "ذال", "ر": "راء",
+    "ز": "زاي", "س": "سين", "ش": "شين", "ص": "صاد", "ض": "ضاد",
+    "ط": "طاء", "ظ": "ظاء", "ع": "عين", "غ": "غين", "ف": "فاء",
+    "ق": "قاف", "ك": "كاف", "ل": "لام", "م": "ميم", "ن": "نون",
+    "ه": "هاء", "و": "واو", "ي": "ياء",
+}
+
 CLUSTERS = {
     "أ": [("God and faith", ["أله", "أمن"]),
           ("People and kin", ["أنس", "أهل", "أمم", "أبو"]),
@@ -440,6 +451,74 @@ for _letter, (_name, _theme) in LETTERS.items():
 ranked = count.most_common()
 top_count = ranked[0][1]
 DEFAULT_SHOWN = 100
+
+def _strip_marks(word):
+    return re.sub(r"[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]", "", word)
+
+
+def _fold_letter(ch):
+    if ch in "أإآٱا":
+        return "أ"
+    if ch == "ة":
+        return "ه"
+    if ch in "ىي":
+        return "ي"
+    return ch
+
+
+def _keyword_for(letter, root):
+    """Prefer a lemma that begins with the letter, so the card reads as an abjad."""
+    ranked_lems = lemmas[root].most_common()
+    starts = []
+    for form, n in ranked_lems:
+        stripped = _strip_marks(form)
+        if stripped and _fold_letter(stripped[0]) == letter:
+            starts.append((form, n))
+    if starts:
+        return starts[0][0]
+    if ranked_lems:
+        return ranked_lems[0][0]
+    return root_forms[root].most_common(1)[0][0]
+
+
+# One Quranic keyword per letter: a frequent lemma of that letter's most
+# common root, so the alphabet can be heard as words, not only as names.
+letter_keywords = []
+for letter, (en_name, theme) in LETTERS.items():
+    roots = [r for r, _n in ranked if r[0] == letter]
+    top_root = roots[0]
+    keyword = _keyword_for(letter, top_root)
+    spoken = root_forms[top_root].most_common(1)[0][0]
+    letter_keywords.append({
+        "letter": letter,
+        "arName": LETTER_AR_NAMES[letter],
+        "enName": en_name,
+        "sound": letter + "\u064e",  # letter + fatha, the usual alphabet chant
+        "theme": theme,
+        "root": top_root,
+        "keyword": keyword,
+        "spoken": spoken,
+        "keywordEn": GLOSS.get(top_root, ""),
+        "occ": count[top_root],
+    })
+assert len(letter_keywords) == 28, f"expected 28 letters, got {len(letter_keywords)}"
+
+keyword_cards = []
+for i, k in enumerate(letter_keywords):
+    gloss = htmllib.escape(k["keywordEn"])
+    keyword_cards.append(
+        f'<article class="kw-card" data-i="{i}">'
+        f'<div class="kw-letter" lang="ar" dir="rtl">{k["letter"]}</div>'
+        f'<div class="kw-name"><span lang="ar" dir="rtl">{k["arName"]}</span>'
+        f' · {htmllib.escape(k["enName"])}</div>'
+        f'<div class="kw-word" lang="ar" dir="rtl">{k["keyword"]}</div>'
+        f'<div class="kw-en">{gloss}</div>'
+        f'<div class="kw-meta">root <b lang="ar" dir="rtl">{k["root"]}</b>'
+        f' · {k["occ"]:,}×</div>'
+        f'<button type="button" class="kw-play" data-i="{i}"'
+        f' aria-label="Play {htmllib.escape(k["enName"])}">Play</button>'
+        f"</article>"
+    )
 
 root_rows = []
 for rank, (root, n) in enumerate(ranked, 1):
@@ -776,6 +855,136 @@ name_diagram_data.append({
 })
 name_diagram_data.sort(key=lambda n: -n["occ"])
 
+# The traditional 99 Beautiful Names (al-Asma al-Husna). Occurrences are
+# lemma tallies from the morphology file when that exact form is tagged;
+# names without a matching lemma still appear, linked by letter and root.
+lemma_occ = Counter()
+for _root, ctr in lemmas.items():
+    for lem, n in ctr.items():
+        lemma_occ[lem] += n
+
+# (Arabic display, English, root, corpus lemma or "")
+ASMA_CATALOG = [
+    ("الرَّحْمٰن", "The Most Merciful", "رحم", "رَحْمٰن"),
+    ("الرَّحِيم", "The Especially Merciful", "رحم", "رَحِيم"),
+    ("المَلِك", "The King", "ملك", "مَلِك"),
+    ("القُدُّوس", "The Most Holy", "قدس", "قُدُّوس"),
+    ("السَّلام", "The Source of Peace", "سلم", "سَلام"),
+    ("المُؤْمِن", "The Guardian of Faith", "أمن", "مُؤْمِن"),
+    ("المُهَيْمِن", "The Protector", "همن", "مُهَيْمِن"),
+    ("العَزِيز", "The Almighty", "عزز", "عَزِيز"),
+    ("الجَبَّار", "The Compeller", "جبر", "جَبّار"),
+    ("المُتَكَبِّر", "The Supreme", "كبر", "مُتَكَبِّر"),
+    ("الخالِق", "The Creator", "خلق", "خالِق"),
+    ("البارِئ", "The Originator", "برأ", "بارِئ"),
+    ("المُصَوِّر", "The Fashioner", "صور", "مُصَوِّر"),
+    ("الغَفّار", "The Perpetual Forgiver", "غفر", "غَفّار"),
+    ("القَهّار", "The Subduer", "قهر", "قَهّار"),
+    ("الوَهّاب", "The Bestower", "وهب", "وَهّاب"),
+    ("الرَّزّاق", "The Provider", "رزق", "رَزّاق"),
+    ("الفَتّاح", "The Opener", "فتح", "فَتّاح"),
+    ("العَلِيم", "The All-Knowing", "علم", "عَلِيم"),
+    ("القابِض", "The Withholder", "قبض", ""),
+    ("الباسِط", "The Extender", "بسط", "باسِط"),
+    ("الخافِض", "The Abaser", "خفض", ""),
+    ("الرافِع", "The Exalter", "رفع", "رافِع"),
+    ("المُعِزّ", "The Honourer", "عزز", ""),
+    ("المُذِلّ", "The Dishonourer", "ذلل", ""),
+    ("السَّمِيع", "The All-Hearing", "سمع", "سَمِيع"),
+    ("البَصِير", "The All-Seeing", "بصر", "بَصِير"),
+    ("الحَكَم", "The Judge", "حكم", "حَكَم"),
+    ("العَدْل", "The Just", "عدل", "عَدْل"),
+    ("اللَّطِيف", "The Subtle", "لطف", "لَطِيف"),
+    ("الخَبِير", "The All-Aware", "خبر", "خَبِير"),
+    ("الحَلِيم", "The Forbearing", "حلم", "حَلِيم"),
+    ("العَظِيم", "The Magnificent", "عظم", "عَظِيم"),
+    ("الغَفُور", "The Forgiving", "غفر", "غَفُور"),
+    ("الشَّكُور", "The Appreciative", "شكر", "شَكُور"),
+    ("العَلِيّ", "The Most High", "علو", "عَلِيّ"),
+    ("الكَبِير", "The Greatest", "كبر", "كَبِير"),
+    ("الحَفِيظ", "The Preserver", "حفظ", "حَفِيظ"),
+    ("المُقِيت", "The Sustainer", "قوت", "مُقِيت"),
+    ("الحَسِيب", "The Reckoner", "حسب", "حَسِيب"),
+    ("الجَلِيل", "The Majestic", "جلل", ""),
+    ("الكَرِيم", "The Generous", "كرم", "كَرِيم"),
+    ("الرَّقِيب", "The Watchful", "رقب", "رَقِيب"),
+    ("المُجِيب", "The Responsive", "جوب", "مُجِيب"),
+    ("الواسِع", "The Vast", "وسع", "واسِع"),
+    ("الحَكِيم", "The Wise", "حكم", "حَكِيم"),
+    ("الوَدُود", "The Loving", "ودد", "وَدُود"),
+    ("المَجِيد", "The Glorious", "مجد", "مَجِيد"),
+    ("الباعِث", "The Resurrector", "بعث", ""),
+    ("الشَّهِيد", "The Witness", "شهد", "شَهِيد"),
+    ("الحَقّ", "The Truth", "حقق", "حَقّ"),
+    ("الوَكِيل", "The Trustee", "وكل", "وَكِيل"),
+    ("القَوِيّ", "The Strong", "قوي", "قَوِيّ"),
+    ("المَتِين", "The Firm", "متن", "مَتِين"),
+    ("الوَلِيّ", "The Protecting Friend", "ولي", "وَلِيّ"),
+    ("الحَمِيد", "The Praiseworthy", "حمد", "حَمِيد"),
+    ("المُحْصِي", "The Counter", "حصي", ""),
+    ("المُبْدِئ", "The Initiator", "بدأ", ""),
+    ("المُعِيد", "The Restorer", "عود", ""),
+    ("المُحْيِي", "The Giver of Life", "حيي", ""),
+    ("المُمِيت", "The Taker of Life", "موت", ""),
+    ("الحَيّ", "The Ever-Living", "حيي", "حَيّ"),
+    ("القَيُّوم", "The Self-Subsisting", "قوم", "قَيُّوم"),
+    ("الواجِد", "The Finder", "وجد", ""),
+    ("الماجِد", "The Noble", "مجد", ""),
+    ("الواحِد", "The One", "وحد", "واحِد"),
+    ("الأَحَد", "The Unique", "أحد", "أَحَد"),
+    ("الصَّمَد", "The Eternal Refuge", "صمد", "صَمَد"),
+    ("القادِر", "The Able", "قدر", "قادِر"),
+    ("المُقْتَدِر", "The Powerful", "قدر", "مُقْتَدِر"),
+    ("المُقَدِّم", "The Expediter", "قدم", ""),
+    ("المُؤَخِّر", "The Delayer", "أخر", ""),
+    ("الأَوَّل", "The First", "أول", "أَوَّل"),
+    ("الآخِر", "The Last", "أخر", "آخِر"),
+    ("الظّاهِر", "The Manifest", "ظهر", "ظاهِر"),
+    ("الباطِن", "The Hidden", "بطن", "باطِن"),
+    ("الوالِي", "The Governor", "ولي", ""),
+    ("المُتَعالِي", "The Most Exalted", "علو", "مُتَعال"),
+    ("البَرّ", "The Kind", "برر", "بَرّ"),
+    ("التَّوّاب", "The Acceptor of Repentance", "توب", "تَوّاب"),
+    ("المُنْتَقِم", "The Avenger", "نقم", "مُنتَقِم"),
+    ("العَفُوّ", "The Pardoner", "عفو", "عَفُوّ"),
+    ("الرَّءُوف", "The Compassionate", "رأف", "رَءُوف"),
+    ("مالِك المُلْك", "Owner of Sovereignty", "ملك", "مالِك"),
+    ("ذُو الجَلالِ والإِكْرام", "Lord of Majesty and Honour", "جلل", ""),
+    ("المُقْسِط", "The Equitable", "قسط", "مُقْسِط"),
+    ("الجامِع", "The Gatherer", "جمع", "جامِع"),
+    ("الغَنِيّ", "The Self-Sufficient", "غني", "غَنِيّ"),
+    ("المُغْنِي", "The Enricher", "غني", "مُغْني"),
+    ("المانِع", "The Preventer", "منع", ""),
+    ("الضّارّ", "The Distresser", "ضرر", "ضارّ"),
+    ("النّافِع", "The Benefactor", "نفع", ""),
+    ("النُّور", "The Light", "نور", "نُور"),
+    ("الهادِي", "The Guide", "هدي", "هادِي"),
+    ("البَدِيع", "The Incomparable", "بدع", "بَدِيع"),
+    ("الباقِي", "The Everlasting", "بقي", ""),
+    ("الوارِث", "The Inheritor", "ورث", "وارِث"),
+    ("الرَّشِيد", "The Guide to the Right Path", "رشد", "رَشِيد"),
+    ("الصَّبُور", "The Patient", "صبر", ""),
+]
+assert len(ASMA_CATALOG) == 99, len(ASMA_CATALOG)
+
+asma_diagram_data = []
+for arabic, english, root, lemma in ASMA_CATALOG:
+    assert root in count, f"Asma root missing from Qur'an: {root} ({english})"
+    assert root[0] in LETTERS, f"Asma root letter unknown: {root}"
+    if lemma:
+        assert lemma in lemma_occ, f"Asma lemma not in corpus: {lemma} ({english})"
+        occ = lemma_occ[lemma]
+    else:
+        occ = 0
+    asma_diagram_data.append({
+        "en": english,
+        "ar": arabic,
+        "occ": occ,
+        "root": root,
+        "links": name_links(arabic, root),
+    })
+assert len(asma_diagram_data) == 99
+
 # --------------------------------------------------------------- embedded data
 root_surah_data = [
     [[s, c] for s, c in root_surah[root].most_common()] for root, _ in ranked
@@ -1073,6 +1282,58 @@ tr.d > td {{ background: rgba(128, 0, 128, .04); padding: 10px 12px 12px; }}
 
 .diagram-picked .letter {{ font-size: 2.4em; }}
 
+.kw-toolbar {{
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 4px;
+}}
+#kw-stop {{
+  background: transparent;
+  border: 2px solid var(--color-surah-title);
+  color: var(--color-surah-title);
+}}
+#kw-voice-status {{ color: #666; font-size: .85em; }}
+.kw-grid {{
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  margin-top: 14px;
+}}
+.kw-card {{
+  background: #fffdf0;
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  padding: 12px 10px 14px;
+  text-align: center;
+}}
+.kw-card.playing {{
+  border-color: var(--color-surah-title);
+  box-shadow: 0 0 0 2px rgba(128, 0, 128, .22);
+}}
+.kw-letter {{
+  color: var(--color-arabic);
+  font-size: 2.6em;
+  line-height: 1.1;
+}}
+.kw-name {{ color: #777; font-size: .85em; margin: 2px 0 4px; }}
+.kw-word {{
+  color: var(--color-arabic);
+  font-size: 1.45em;
+  line-height: 1.3;
+  margin: 4px 0 2px;
+}}
+.kw-en {{
+  color: var(--color-translation);
+  font-size: .82em;
+  line-height: 1.3;
+  min-height: 2.4em;
+}}
+.kw-meta {{ color: #999; font-size: .78em; margin: 4px 0 8px; }}
+.kw-meta b {{ font-weight: normal; }}
+.kw-play {{ font-size: .85em; padding: 6px 12px; }}
+
 @media (max-width: 900px) {{
   .bar, .forms, .sen {{ display: none; }}
 }}
@@ -1082,8 +1343,11 @@ tr.d > td {{ background: rgba(128, 0, 128, .04); padding: 10px 12px 12px; }}
 
 <h1>Root Words of the Qur'an</h1>
 <p class="subtitle">All {len(ranked):,} Arabic roots, ranked by how often they occur<br>
-<a href="#diagrams">diagrams</a> &nbsp;·&nbsp; <a href="#letters-section">letter groups</a>
+<a href="#diagrams">diagrams</a> &nbsp;·&nbsp; <a href="#keywords">letter keywords</a>
+&nbsp;·&nbsp; <a href="#letters-section">letter groups</a>
 &nbsp;·&nbsp; <a href="#roots">every root</a> &nbsp;·&nbsp; <a href="#surahs-section">surahs</a>
+&nbsp;·&nbsp; <a href="Al-Quran-Calculators.html">calculators</a>
+&nbsp;·&nbsp; <a href="Al-Quran-Genealogy.html">genealogy &amp; places</a>
 &nbsp;·&nbsp; <a href="Al-Quran.html">full text</a></p>
 
 <div class="stats">
@@ -1116,12 +1380,13 @@ roots of each letter group below. Surah names are the ones used in
 
 <h2 id="diagrams">Letter-group diagrams</h2>
 <p class="note" style="border:0;background:none;padding:0;margin:0 0 4px">
-The first four size letters by how often their roots occur. <em>Prophets</em> and
-<em>Names</em> keep the theme wheel and draw a line from each letter group to a
-name — solid if the name begins with that letter, dashed if the corpus tags the
-name with a root from that group. <em>Names</em> includes every proper name the
-corpus marks, plus Dhul-Qarnayn (split across two words, so not a single name
-tag). Switch diagrams with the buttons.</p>
+The first four size letters by how often their roots occur. <em>Prophets</em>,
+<em>Names</em>, and <em>99 Names</em> keep the theme wheel and draw a line from
+each letter group to a name — solid if the name begins with that letter, dashed
+if the name's root belongs to that group. <em>Names</em> covers every proper name
+the corpus marks, plus Dhul-Qarnayn. <em>99 Names</em> is the traditional list of
+the Beautiful Names of Allah; counts are lemma tallies where the corpus tags that
+form. Switch diagrams with the buttons.</p>
 
 <div class="diagram-toolbar">
   <div class="diagram-views" role="tablist">
@@ -1131,6 +1396,7 @@ tag). Switch diagrams with the buttons.</p>
     <button type="button" data-view="wheel">Theme wheel</button>
     <button type="button" data-view="prophets">Prophets</button>
     <button type="button" data-view="names">Names</button>
+    <button type="button" data-view="asma">99 Names</button>
   </div>
   <label class="diagram-letter-pick">Letter
     <select id="diagram-letter"></select>
@@ -1142,6 +1408,22 @@ tag). Switch diagrams with the buttons.</p>
   <div id="diagram-tip" hidden></div>
 </div>
 <div id="diagram-detail"></div>
+
+<h2 id="keywords">Letters as keywords</h2>
+<p class="note" style="border:0;background:none;padding:0;margin:0 0 4px">
+Each letter of the alphabet becomes one Qur'anic keyword: a frequent form of
+the most common root that begins with that letter, chosen so the word itself
+starts with the letter. Play a card to hear the letter's sound, its Arabic
+name, and the keyword. Playback uses this browser's Arabic voice when one is
+installed.</p>
+<div class="kw-toolbar">
+  <button type="button" id="kw-play-all">Play alphabet</button>
+  <button type="button" id="kw-stop" hidden>Stop</button>
+  <span id="kw-voice-status"></span>
+</div>
+<div class="kw-grid" id="kw-grid">
+{chr(10).join(keyword_cards)}
+</div>
 
 <h2 id="letters-section">Roots grouped by first letter</h2>
 <p class="note" style="border:0;background:none;padding:0;margin:0 0 4px">
@@ -1220,8 +1502,11 @@ var SURAH_NAMES = {json.dumps(names_data, ensure_ascii=False, separators=(",", "
 var LETTER_DATA = {json.dumps(letter_diagram_data, ensure_ascii=False, separators=(",", ":"))};
 var PROPHET_DATA = {json.dumps(prophet_diagram_data, ensure_ascii=False, separators=(",", ":"))};
 var NAME_DATA = {json.dumps(name_diagram_data, ensure_ascii=False, separators=(",", ":"))};
+var ASMA_DATA = {json.dumps(asma_diagram_data, ensure_ascii=False, separators=(",", ":"))};
+var LETTER_KEYWORDS = {json.dumps(letter_keywords, ensure_ascii=False, separators=(",", ":"))};
 </script>
-<script src="letter_diagrams.js"></script>
+<script src="letter_diagrams.js?v=asma3"></script>
+<script src="letter_keywords.js"></script>
 <script>
 (function () {{
   var names = {{}};
@@ -1349,6 +1634,10 @@ var NAME_DATA = {json.dumps(name_diagram_data, ensure_ascii=False, separators=("
 DST.write_text(page, encoding="utf-8")
 print(f"wrote {DST} ({DST.stat().st_size:,} bytes)")
 print(f"roots={len(ranked)} root_words={root_words} words={total_words}")
+print(f"asma={len(asma_diagram_data)} with_lemma={sum(1 for a in asma_diagram_data if a['occ'])}")
+print("letter keywords:")
+for k in letter_keywords:
+    print(f"  {k['letter']} {k['arName']:<4} → {k['keyword']}  ({k['root']}, {k['occ']})")
 print("top surahs by distinct roots:")
 for r in by_roots[:5]:
     print(f"  {r['n']:>3} {r['en']:<12} roots={r['roots']:>4} rootwords={r['rootwords']:>5} words={r['words']:>5}")

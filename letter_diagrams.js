@@ -3,6 +3,7 @@
   var data = window.LETTER_DATA;
   var prophets = window.PROPHET_DATA || [];
   var allNames = window.NAME_DATA || [];
+  var asma = window.ASMA_DATA || [];
   if (!data || !data.length) return;
 
   var svg = document.getElementById("diagram");
@@ -42,13 +43,42 @@
     bubbles: "Circle size is how often the letter's roots occur. Click a bubble to inspect its theme.",
     wheel: "The selected letter sits at the centre. Petals are its sense clusters, sized by frequency. Click a petal to list its roots.",
     prophets: "Theme wheel plus prophets, including Dhul-Qarnayn. A solid line is a name that begins with that letter; a dashed line is a name the corpus tags with a root from that group. Click a letter to open its wheel, or the centre to return to every letter.",
-    names: "Theme wheel plus every proper name the corpus marks, and Dhul-Qarnayn. Same link rule as Prophets. Click a letter to open its wheel; hover a name for its English form and count."
+    names: "Theme wheel plus every proper name the corpus marks, and Dhul-Qarnayn. Same link rule as Prophets. Click a letter to open its wheel; hover a name for its English form and count.",
+    asma: "Theme wheel plus the traditional 99 Beautiful Names of Allah. Solid lines follow the first letter of the name; dashed lines follow the name's Arabic root. Counts are lemma tallies where the morphology tags that form. Click a letter to focus; click the centre to return."
   };
 
-  function isRingView() { return view === "prophets" || view === "names"; }
-  function ringItems() { return view === "names" ? allNames : prophets; }
-  function ringNoun() { return view === "names" ? "name" : "prophet"; }
-  function ringNouns() { return view === "names" ? "names" : "prophets"; }
+  function isRingView() {
+    return view === "prophets" || view === "names" || view === "asma";
+  }
+  function ringItems() {
+    if (view === "names") return allNames;
+    if (view === "asma") return asma;
+    return prophets;
+  }
+  function ringNoun() {
+    if (view === "prophets") return "prophet";
+    return "name";
+  }
+  function ringNouns() {
+    if (view === "prophets") return "prophets";
+    if (view === "asma") return "Beautiful Names";
+    return "names";
+  }
+  function ringTitle() {
+    if (view === "names") return "All names";
+    if (view === "asma") return "99 Beautiful Names";
+    return "Named prophets";
+  }
+  function ringTitleFocused() {
+    if (view === "names") return "Names linked to this letter";
+    if (view === "asma") return "Beautiful Names linked to this letter";
+    return "Prophets linked to this letter";
+  }
+  function ringEmpty() {
+    if (view === "names") return "No names link to this letter";
+    if (view === "asma") return "No Beautiful Name links to this letter";
+    return "No named prophet links to this letter";
+  }
 
   function el(name, attrs) {
     var n = document.createElementNS(NS, name);
@@ -66,7 +96,10 @@
   function size() {
     var w = Math.max(320, wrap.clientWidth);
     var tall = isRingView();
-    var h = Math.max(360, Math.min(tall ? 680 : 560, Math.round(w * (tall ? 0.78 : 0.62))));
+    var asmaTall = view === "asma";
+    var h = Math.max(asmaTall ? 640 : 360,
+      Math.min(asmaTall ? 820 : tall ? 680 : 560,
+        Math.round(w * (asmaTall ? 1.05 : tall ? 0.78 : 0.62))));
     svg.setAttribute("viewBox", "0 0 " + w + " " + h);
     svg.setAttribute("width", w);
     svg.setAttribute("height", h);
@@ -144,24 +177,23 @@
         var via = p.links.map(function (L) {
           return L.letter + " " + escapeHtml(L.theme) + " (" + howLabel(L.how) + ")";
         }).join("; ");
+        var countBit = p.occ ? " <i>&times;" + fmt(p.occ) + "</i>" : "";
         return '<span class="chip"><b lang="ar" dir="rtl">' + p.ar + "</b> " +
-          escapeHtml(p.en) + " <i>&times;" + fmt(p.occ) + "</i><br><u>" +
+          escapeHtml(p.en) + countBit + "<br><u>" +
           via + "</u></span>";
       }).join("");
-      var empty = view === "names" ? "No names link to this letter" : "No named prophet links to this letter";
       prophetBlock = '<div class="cluster"><div class="clabel">' +
-        (prophetOverview ? (view === "names" ? "All names" : "Named prophets")
-          : (view === "names" ? "Names linked to this letter" : "Prophets linked to this letter")) +
+        (prophetOverview ? ringTitle() : ringTitleFocused()) +
         "<u>" + list.length + "</u></div><div class=\"chips\">" +
-        (chips || "<span class=\"chip\">" + empty + "</span>") +
+        (chips || "<span class=\"chip\">" + ringEmpty() + "</span>") +
         "</div></div>";
     }
     if (isRingView() && prophetOverview) {
       detail.innerHTML =
         '<div class="diagram-picked"><div><b class="theme">' +
-        (view === "names" ? "All names" : "Named prophets") + "</b>" +
+        ringTitle() + "</b>" +
         "<div>Linked to letter groups by the first letter of the name, or by the " +
-        "name's tagged root</div></div></div>" + prophetBlock;
+        "name's root</div></div></div>" + prophetBlock;
       return;
     }
     detail.innerHTML =
@@ -531,16 +563,17 @@
       return L.letter + " — " + escapeHtml(L.theme) + " (" + howLabel(L.how) +
         (L.root ? ", " + L.root : "") + ")";
     }).join("<br>");
+    var countLine = p.occ ? ("<br>" + fmt(p.occ) + " mentions") : "<br>not tagged as this lemma";
     return "<b lang=\"ar\" dir=\"rtl\">" + p.ar + "</b> " + escapeHtml(p.en) +
-      "<br>" + fmt(p.occ) + " mentions<br>" + via;
+      countLine + "<br>" + via;
   }
 
   function drawProphetOverview(box) {
     var items = ringItems();
     var dense = items.length > 40;
     var cx = box.w / 2, cy = box.h / 2;
-    var R_out = Math.min(box.w, box.h) / 2 - (dense ? 42 : 58);
-    var R_in = R_out * (dense ? 0.36 : 0.40);
+    var R_out = Math.min(box.w, box.h) / 2 - (dense ? 48 : 58);
+    var R_in = R_out * (dense ? 0.34 : 0.40);
     var letterSet = {};
     items.forEach(function (p) {
       p.links.forEach(function (L) { letterSet[L.letter] = true; });
@@ -643,9 +676,9 @@
       x: cx, y: cy + 4,
       "text-anchor": "middle",
       fill: "#fff",
-      "font-size": 11,
+      "font-size": view === "asma" ? 10 : 11,
       "font-family": "Georgia, serif",
-      text: "themes"
+      text: view === "asma" ? "99 names" : "themes"
     }));
     svg.appendChild(hub);
   }

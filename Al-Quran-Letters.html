@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Letter Context</title>
+<style>
+:root {
+  --color-bg: lightyellow;
+  --color-surah-title: purple;
+  --color-verse-label: red;
+  --color-arabic: green;
+  --color-translation: blue;
+  --color-rule: #d8d4a8;
+  --color-panel: #fffdf0;
+}
+* { box-sizing: border-box; }
+body {
+  background-color: var(--color-bg);
+  color: #333;
+  font-family: Georgia, "Times New Roman", serif;
+  margin: 0 auto;
+  max-width: 920px;
+  padding: 24px 18px 64px;
+}
+h1 {
+  color: var(--color-surah-title);
+  margin: 0 0 4px;
+  text-align: center;
+}
+.subtitle {
+  color: var(--color-translation);
+  margin: 0 0 20px;
+  text-align: center;
+}
+.subtitle a { color: var(--color-translation); }
+.note {
+  background: rgba(128, 0, 128, .05);
+  border-left: 4px solid var(--color-surah-title);
+  font-size: .9em;
+  line-height: 1.55;
+  margin: 0 0 22px;
+  padding: 12px 16px;
+}
+.note p { margin: 0 0 8px; }
+.note p:last-child { margin: 0; }
+.stats {
+  border-bottom: 2px solid var(--color-rule);
+  border-top: 2px solid var(--color-rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  justify-content: center;
+  margin-bottom: 18px;
+  padding: 12px 0;
+}
+.stats div { text-align: center; }
+.stats b {
+  color: var(--color-verse-label);
+  display: block;
+  font-size: 1.4em;
+}
+.stats span { font-size: .82em; }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.toolbar input {
+  flex: 1;
+  min-width: 180px;
+  border: 2px solid var(--color-rule);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1em;
+  padding: 8px 12px;
+  background: #fff;
+}
+.toolbar input:focus {
+  border-color: var(--color-surah-title);
+  outline: none;
+}
+.voice-status {
+  color: #777;
+  font-size: .82em;
+  margin: 0 0 12px;
+}
+.alpha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 22px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-rule);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+  z-index: 5;
+}
+.alpha-btn {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  min-width: 2.2em;
+  padding: 6px 8px;
+  color: var(--color-arabic);
+  font-size: 1.15em;
+}
+.alpha-btn:hover {
+  border-color: var(--color-surah-title);
+  color: var(--color-surah-title);
+}
+.letter-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-rule);
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 18px 18px 16px;
+  scroll-margin-top: 72px;
+}
+.letter-card:hover { border-color: var(--color-surah-title); }
+.letter-card.flash { animation: flash 1s ease; }
+@keyframes flash {
+  0%, 100% { background: var(--color-panel); }
+  30% { background: rgba(128, 0, 128, .08); }
+}
+.letter-head {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.glyph {
+  color: var(--color-arabic);
+  font-size: 3.2em;
+  line-height: 1;
+  min-width: 1.2em;
+  text-align: center;
+}
+.meta h2 {
+  color: var(--color-surah-title);
+  font-size: 1.35em;
+  margin: 0 0 4px;
+}
+.ar-name {
+  color: var(--color-arabic);
+  font-weight: normal;
+  font-size: .9em;
+  margin-left: 6px;
+}
+.theme {
+  color: var(--color-translation);
+  font-size: 1.05em;
+  margin: 0 0 10px;
+  font-weight: bold;
+}
+.nums {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: .88em;
+  color: #555;
+}
+.nums b { color: var(--color-verse-label); }
+.keyword {
+  background: rgba(27, 94, 32, .05);
+  border: 1px solid rgba(27, 94, 32, .18);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+}
+.kw-label {
+  color: #777;
+  font-size: .72em;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.kw-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.kw-ar {
+  color: var(--color-arabic);
+  font-size: 1.55em;
+}
+.kw-en { color: var(--color-translation); }
+.kw-meta { font-size: .88em; color: #555; margin-bottom: 8px; }
+.speak {
+  background: transparent;
+  border: 2px solid var(--color-arabic);
+  border-radius: 4px;
+  color: var(--color-arabic);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: .85em;
+  padding: 5px 10px;
+}
+.speak:hover { background: rgba(27, 94, 32, .08); }
+.speak.playing {
+  border-color: var(--color-surah-title);
+  color: var(--color-surah-title);
+}
+.letter-card h3 {
+  color: var(--color-surah-title);
+  font-size: 1.05em;
+  margin: 0 0 4px;
+  border-bottom: 2px solid var(--color-rule);
+  padding-bottom: 6px;
+}
+.cluster-lead {
+  color: #777;
+  font-size: .88em;
+  margin: 0 0 12px;
+}
+.cluster { margin-bottom: 12px; }
+.clabel {
+  color: var(--color-surah-title);
+  font-weight: bold;
+  font-size: .95em;
+  margin-bottom: 6px;
+}
+.clabel u {
+  text-decoration: none;
+  color: #777;
+  font-weight: normal;
+  font-size: .85em;
+  margin-left: 8px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  background: #fff;
+  border: 1px solid var(--color-rule);
+  border-radius: 6px;
+  font-size: .86em;
+  padding: 5px 9px;
+}
+.chip b {
+  color: var(--color-arabic);
+  margin-right: 4px;
+}
+.chip i {
+  color: #888;
+  font-style: normal;
+  font-size: .9em;
+}
+.empty-c { color: #777; font-style: italic; }
+.letter-card[hidden] { display: none; }
+@media (max-width: 560px) {
+  .letter-head { grid-template-columns: 1fr; }
+  .glyph { font-size: 2.6em; text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<h1>Letter Context</h1>
+<p class="subtitle">
+  What each Arabic letter gathers in the Qurʾan<br>
+  <a href="Al-Quran-Study.html">study app</a> ·
+  <a href="Al-Quran-Roots.html">roots &amp; letters</a> ·
+  <a href="Al-Quran-Angels.html">angels</a> ·
+  <a href="Al-Quran-People.html">believers</a> ·
+  <a href="Al-Quran-Names.html">names of Allah</a> ·
+  <a href="Al-Quran-Genealogy.html">genealogy &amp; places</a> ·
+  <a href="Al-Quran.html">full text</a>
+</p>
+
+<div class="note">
+  <p>Every Arabic root in the Book begins with a letter. Grouping those roots by
+  first letter reveals a <b>theme</b> — a field of meaning that letter tends to
+  open: God and humanity for ʾalif, mercy and lordship for rāʾ, speech for qāf,
+  and so on.</p>
+  <p>Below, each letter shows its theme, a signature Quranic keyword, and the
+  <b>sense clusters</b> of roots that begin with it. Counts come from Quranic
+  Arabic Corpus morphology. Order is by total root occurrences.</p>
+</div>
+
+<div class="stats">
+  <div><b>28</b><span>letters</span></div>
+  <div><b>1,651</b><span>root entries</span></div>
+  <div><b>50,269</b><span>root occurrences</span></div>
+</div>
+
+<div class="toolbar">
+  <input id="filter" type="search" placeholder="Filter by letter, name, or theme…" autocomplete="off">
+</div>
+<p class="voice-status" id="voice-status"></p>
+
+<nav class="alpha" aria-label="Jump to letter">
+<button type="button" class="alpha-btn" data-go="L0" title="God and humanity"><span lang="ar" dir="rtl">أ</span></button><button type="button" class="alpha-btn" data-go="L1" title="Speech and standing"><span lang="ar" dir="rtl">ق</span></button><button type="button" class="alpha-btn" data-go="L2" title="Being and disbelief"><span lang="ar" dir="rtl">ك</span></button><button type="button" class="alpha-btn" data-go="L3" title="Knowledge and worship"><span lang="ar" dir="rtl">ع</span></button><button type="button" class="alpha-btn" data-go="L4" title="Lordship and mercy"><span lang="ar" dir="rtl">ر</span></button><button type="button" class="alpha-btn" data-go="L5" title="Revelation and favour"><span lang="ar" dir="rtl">ن</span></button><button type="button" class="alpha-btn" data-go="L6" title="Clarity and distinction"><span lang="ar" dir="rtl">ب</span></button><button type="button" class="alpha-btn" data-go="L7" title="Heaven and worship"><span lang="ar" dir="rtl">س</span></button><button type="button" class="alpha-btn" data-go="L8" title="Truth and judgement"><span lang="ar" dir="rtl">ح</span></button><button type="button" class="alpha-btn" data-go="L9" title="Piety and protection"><span lang="ar" dir="rtl">و</span></button><button type="button" class="alpha-btn" data-go="L10" title="Making and gathering"><span lang="ar" dir="rtl">ج</span></button><button type="button" class="alpha-btn" data-go="L11" title="Creation and outcome"><span lang="ar" dir="rtl">خ</span></button><button type="button" class="alpha-btn" data-go="L12" title="Will and witness"><span lang="ar" dir="rtl">ش</span></button><button type="button" class="alpha-btn" data-go="L13" title="Kingdom and death"><span lang="ar" dir="rtl">م</span></button><button type="button" class="alpha-btn" data-go="L14" title="Righteousness and patience"><span lang="ar" dir="rtl">ص</span></button><button type="button" class="alpha-btn" data-go="L15" title="Doing and corruption"><span lang="ar" dir="rtl">ف</span></button><button type="button" class="alpha-btn" data-go="L16" title="Calling and nearness"><span lang="ar" dir="rtl">د</span></button><button type="button" class="alpha-btn" data-go="L17" title="Forgiveness and concealment"><span lang="ar" dir="rtl">غ</span></button><button type="button" class="alpha-btn" data-go="L18" title="Day and certainty"><span lang="ar" dir="rtl">ي</span></button><button type="button" class="alpha-btn" data-go="L19" title="Meeting and night"><span lang="ar" dir="rtl">ل</span></button><button type="button" class="alpha-btn" data-go="L20" title="Guidance and destruction"><span lang="ar" dir="rtl">ه</span></button><button type="button" class="alpha-btn" data-go="L21" title="Remembrance"><span lang="ar" dir="rtl">ذ</span></button><button type="button" class="alpha-btn" data-go="L22" title="Obedience and purity"><span lang="ar" dir="rtl">ط</span></button><button type="button" class="alpha-btn" data-go="L23" title="Following and returning"><span lang="ar" dir="rtl">ت</span></button><button type="button" class="alpha-btn" data-go="L24" title="Wrongdoing and darkness"><span lang="ar" dir="rtl">ظ</span></button><button type="button" class="alpha-btn" data-go="L25" title="Straying and harm"><span lang="ar" dir="rtl">ض</span></button><button type="button" class="alpha-btn" data-go="L26" title="Increase and adornment"><span lang="ar" dir="rtl">ز</span></button><button type="button" class="alpha-btn" data-go="L27" title="Number and measure"><span lang="ar" dir="rtl">ث</span></button>
+</nav>
+
+<div id="letters">
+
+<article class="letter-card" id="L0" data-letter="أ" data-theme="god and humanity" data-name="ʾalif">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">أ</div>
+    <div class="meta">
+      <h2>ʾalif <span class="ar-name" lang="ar" dir="rtl">ألف</span></h2>
+      <p class="theme">God and humanity</p>
+      <div class="nums">
+        <span><b>70</b> roots</span>
+        <span><b>8,022</b> occurrences</span>
+        <span><b>6</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">اللَّه</span>
+      <span class="kw-en">God, deity</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">أله</b>
+      · spoken <span lang="ar" dir="rtl">ٱللَّهُ</span>
+      · &times;2,851
+    </div>
+    <button type="button" class="speak" data-i="0">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">God and faith<u>2 roots · 3,730&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">أله</b> God, deity <i>&times;2,851</i></span><span class="chip"><b lang="ar" dir="rtl">أمن</b> to believe, have faith; safety <i>&times;879</i></span></div></div><div class="cluster"><div class="clabel">People and kin<u>4 roots · 701&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">أنس</b> mankind, human being <i>&times;338</i></span><span class="chip"><b lang="ar" dir="rtl">أهل</b> family, people of <i>&times;127</i></span><span class="chip"><b lang="ar" dir="rtl">أمم</b> community, nation; mother <i>&times;119</i></span><span class="chip"><b lang="ar" dir="rtl">أبو</b> father, forefathers <i>&times;117</i></span></div></div><div class="cluster"><div class="clabel">Coming and taking<u>2 roots · 822&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">أتي</b> to come; to give <i>&times;549</i></span><span class="chip"><b lang="ar" dir="rtl">أخذ</b> to take, seize <i>&times;273</i></span></div></div><div class="cluster"><div class="clabel">First and last<u>2 roots · 375&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">أخر</b> last, hereafter; other <i>&times;250</i></span><span class="chip"><b lang="ar" dir="rtl">أول</b> first, former; interpretation <i>&times;125</i></span></div></div><div class="cluster"><div class="clabel">Signs and command<u>2 roots · 845&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">أيي</b> sign, verse; which <i>&times;597</i></span><span class="chip"><b lang="ar" dir="rtl">أمر</b> command, affair; to order <i>&times;248</i></span></div></div><div class="cluster"><div class="clabel">The earth<u>1 roots · 461&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">أرض</b> earth, land <i>&times;461</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L1" data-letter="ق" data-theme="speech and standing" data-name="qāf">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ق</div>
+    <div class="meta">
+      <h2>qāf <span class="ar-name" lang="ar" dir="rtl">قاف</span></h2>
+      <p class="theme">Speech and standing</p>
+      <div class="nums">
+        <span><b>81</b> roots</span>
+        <span><b>4,082</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">قالَ</span>
+      <span class="kw-en">to say, speak; word</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">قول</b>
+      · spoken <span lang="ar" dir="rtl">قَالَ</span>
+      · &times;1,722
+    </div>
+    <button type="button" class="speak" data-i="1">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Speech and recitation<u>2 roots · 1,810&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">قول</b> to say, speak; word <i>&times;1,722</i></span><span class="chip"><b lang="ar" dir="rtl">قرأ</b> to recite; Qur'an <i>&times;88</i></span></div></div><div class="cluster"><div class="clabel">People and standing<u>1 roots · 660&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">قوم</b> people; to stand, establish <i>&times;660</i></span></div></div><div class="cluster"><div class="clabel">Before and nearness<u>2 roots · 390&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">قبل</b> before; to accept <i>&times;294</i></span><span class="chip"><b lang="ar" dir="rtl">قرب</b> near, close <i>&times;96</i></span></div></div><div class="cluster"><div class="clabel">Heart and power<u>2 roots · 300&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">قلب</b> heart; to turn over <i>&times;168</i></span><span class="chip"><b lang="ar" dir="rtl">قدر</b> power, to decree <i>&times;132</i></span></div></div><div class="cluster"><div class="clabel">Fighting<u>1 roots · 170&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">قتل</b> to kill, fight <i>&times;170</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L2" data-letter="ك" data-theme="being and disbelief" data-name="kāf">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ك</div>
+    <div class="meta">
+      <h2>kāf <span class="ar-name" lang="ar" dir="rtl">كاف</span></h2>
+      <p class="theme">Being and disbelief</p>
+      <div class="nums">
+        <span><b>61</b> roots</span>
+        <span><b>3,839</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">كانَ</span>
+      <span class="kw-en">to be, become</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">كون</b>
+      · spoken <span lang="ar" dir="rtl">كَانَ</span>
+      · &times;1,390
+    </div>
+    <button type="button" class="speak" data-i="2">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Being and totality<u>2 roots · 1,767&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">كون</b> to be, become <i>&times;1,390</i></span><span class="chip"><b lang="ar" dir="rtl">كلل</b> all, every <i>&times;377</i></span></div></div><div class="cluster"><div class="clabel">Disbelief and lying<u>2 roots · 807&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">كفر</b> to disbelieve, reject faith <i>&times;525</i></span><span class="chip"><b lang="ar" dir="rtl">كذب</b> to lie, deny as false <i>&times;282</i></span></div></div><div class="cluster"><div class="clabel">Scripture and writing<u>1 roots · 319&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">كتب</b> book, scripture; to write <i>&times;319</i></span></div></div><div class="cluster"><div class="clabel">Greatness and abundance<u>2 roots · 328&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">كثر</b> many, much <i>&times;167</i></span><span class="chip"><b lang="ar" dir="rtl">كبر</b> great; to be arrogant <i>&times;161</i></span></div></div><div class="cluster"><div class="clabel">Manner<u>1 roots · 83&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">كيف</b> how <i>&times;83</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L3" data-letter="ع" data-theme="knowledge and worship" data-name="ʿayn">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ع</div>
+    <div class="meta">
+      <h2>ʿayn <span class="ar-name" lang="ar" dir="rtl">عين</span></h2>
+      <p class="theme">Knowledge and worship</p>
+      <div class="nums">
+        <span><b>102</b> roots</span>
+        <span><b>3,751</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">عَلِمَ</span>
+      <span class="kw-en">to know; knowledge</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">علم</b>
+      · spoken <span lang="ar" dir="rtl">يَعْلَمُ</span>
+      · &times;854
+    </div>
+    <button type="button" class="speak" data-i="3">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Knowledge<u>1 roots · 854&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">علم</b> to know; knowledge <i>&times;854</i></span></div></div><div class="cluster"><div class="clabel">Worship and work<u>2 roots · 635&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">عمل</b> to do, work; deed <i>&times;360</i></span><span class="chip"><b lang="ar" dir="rtl">عبد</b> servant; to worship <i>&times;275</i></span></div></div><div class="cluster"><div class="clabel">Punishment and enmity<u>2 roots · 479&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">عذب</b> punishment, torment <i>&times;373</i></span><span class="chip"><b lang="ar" dir="rtl">عدو</b> enemy, enmity <i>&times;106</i></span></div></div><div class="cluster"><div class="clabel">Might and greatness<u>2 roots · 248&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">عظم</b> great, mighty; bones <i>&times;128</i></span><span class="chip"><b lang="ar" dir="rtl">عزز</b> might, honour; Almighty <i>&times;120</i></span></div></div><div class="cluster"><div class="clabel">Nearness<u>1 roots · 201&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">عند</b> with, near <i>&times;201</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L4" data-letter="ر" data-theme="lordship and mercy" data-name="rāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ر</div>
+    <div class="meta">
+      <h2>rāʾ <span class="ar-name" lang="ar" dir="rtl">راء</span></h2>
+      <p class="theme">Lordship and mercy</p>
+      <div class="nums">
+        <span><b>88</b> roots</span>
+        <span><b>3,291</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">رَبّ</span>
+      <span class="kw-en">lord, master; to nurture</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">ربب</b>
+      · spoken <span lang="ar" dir="rtl">رَبِّ</span>
+      · &times;980
+    </div>
+    <button type="button" class="speak" data-i="4">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Lordship and mercy<u>2 roots · 1,319&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ربب</b> lord, master; to nurture <i>&times;980</i></span><span class="chip"><b lang="ar" dir="rtl">رحم</b> mercy, compassion <i>&times;339</i></span></div></div><div class="cluster"><div class="clabel">Messengers and sending<u>1 roots · 513&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">رسل</b> messenger; to send <i>&times;513</i></span></div></div><div class="cluster"><div class="clabel">Seeing and willing<u>2 roots · 476&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">رأي</b> to see, perceive <i>&times;328</i></span><span class="chip"><b lang="ar" dir="rtl">رود</b> to want, intend <i>&times;148</i></span></div></div><div class="cluster"><div class="clabel">Provision and pleasure<u>2 roots · 196&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">رزق</b> to provide; provision <i>&times;123</i></span><span class="chip"><b lang="ar" dir="rtl">رضو</b> to be pleased <i>&times;73</i></span></div></div><div class="cluster"><div class="clabel">Returning<u>1 roots · 104&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">رجع</b> to return <i>&times;104</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L5" data-letter="ن" data-theme="revelation and favour" data-name="nūn">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ن</div>
+    <div class="meta">
+      <h2>nūn <span class="ar-name" lang="ar" dir="rtl">نون</span></h2>
+      <p class="theme">Revelation and favour</p>
+      <div class="nums">
+        <span><b>105</b> roots</span>
+        <span><b>2,637</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">نَفْس</span>
+      <span class="kw-en">soul, self</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">نفس</b>
+      · spoken <span lang="ar" dir="rtl">أَنفُسِ</span>
+      · &times;298
+    </div>
+    <button type="button" class="speak" data-i="5">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">The soul<u>1 roots · 298&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">نفس</b> soul, self <i>&times;298</i></span></div></div><div class="cluster"><div class="clabel">Revelation and prophethood<u>2 roots · 453&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">نزل</b> to send down, reveal <i>&times;293</i></span><span class="chip"><b lang="ar" dir="rtl">نبأ</b> prophet; news <i>&times;160</i></span></div></div><div class="cluster"><div class="clabel">Light and rivers<u>2 roots · 307&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">نور</b> light; fire <i>&times;194</i></span><span class="chip"><b lang="ar" dir="rtl">نهر</b> daytime; river <i>&times;113</i></span></div></div><div class="cluster"><div class="clabel">Help and favour<u>2 roots · 298&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">نصر</b> to help, give victory <i>&times;158</i></span><span class="chip"><b lang="ar" dir="rtl">نعم</b> favour, blessing; cattle <i>&times;140</i></span></div></div><div class="cluster"><div class="clabel">Warning and looking<u>2 roots · 259&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">نذر</b> to warn; warner <i>&times;130</i></span><span class="chip"><b lang="ar" dir="rtl">نظر</b> to look, wait <i>&times;129</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L6" data-letter="ب" data-theme="clarity and distinction" data-name="bāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ب</div>
+    <div class="meta">
+      <h2>bāʾ <span class="ar-name" lang="ar" dir="rtl">باء</span></h2>
+      <p class="theme">Clarity and distinction</p>
+      <div class="nums">
+        <span><b>84</b> roots</span>
+        <span><b>2,442</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">بَيْن</span>
+      <span class="kw-en">between; clear, manifest</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">بين</b>
+      · spoken <span lang="ar" dir="rtl">بَيْنَ</span>
+      · &times;523
+    </div>
+    <button type="button" class="speak" data-i="6">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Seeing and clarity<u>2 roots · 671&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">بين</b> between; clear, manifest <i>&times;523</i></span><span class="chip"><b lang="ar" dir="rtl">بصر</b> to see; sight <i>&times;148</i></span></div></div><div class="cluster"><div class="clabel">Announcing and reaching<u>2 roots · 200&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">بشر</b> good news; human being <i>&times;123</i></span><span class="chip"><b lang="ar" dir="rtl">بلغ</b> to reach, convey <i>&times;77</i></span></div></div><div class="cluster"><div class="clabel">Kin and parts<u>2 roots · 342&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">بني</b> son, child; to build <i>&times;184</i></span><span class="chip"><b lang="ar" dir="rtl">بعض</b> some, part <i>&times;158</i></span></div></div><div class="cluster"><div class="clabel">Distance and seeking<u>2 roots · 331&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">بعد</b> after; far, distant <i>&times;235</i></span><span class="chip"><b lang="ar" dir="rtl">بغي</b> to seek; to transgress <i>&times;96</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L7" data-letter="س" data-theme="heaven and worship" data-name="sīn">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">س</div>
+    <div class="meta">
+      <h2>sīn <span class="ar-name" lang="ar" dir="rtl">سين</span></h2>
+      <p class="theme">Heaven and worship</p>
+      <div class="nums">
+        <span><b>106</b> roots</span>
+        <span><b>2,373</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">سَماء</span>
+      <span class="kw-en">sky, heaven; name</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">سمو</b>
+      · spoken <span lang="ar" dir="rtl">سَّمَٰوَٰتِ</span>
+      · &times;381
+    </div>
+    <button type="button" class="speak" data-i="7">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Heaven and name<u>1 roots · 381&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">سمو</b> sky, heaven; name <i>&times;381</i></span></div></div><div class="cluster"><div class="clabel">Hearing and asking<u>2 roots · 314&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">سمع</b> to hear, listen <i>&times;185</i></span><span class="chip"><b lang="ar" dir="rtl">سأل</b> to ask, question <i>&times;129</i></span></div></div><div class="cluster"><div class="clabel">Path and peace<u>2 roots · 316&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">سبل</b> way, path <i>&times;176</i></span><span class="chip"><b lang="ar" dir="rtl">سلم</b> peace; to submit <i>&times;140</i></span></div></div><div class="cluster"><div class="clabel">Glorifying and prostration<u>2 roots · 184&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">سبح</b> to glorify, extol <i>&times;92</i></span><span class="chip"><b lang="ar" dir="rtl">سجد</b> to prostrate <i>&times;92</i></span></div></div><div class="cluster"><div class="clabel">Evil<u>1 roots · 167&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">سوأ</b> evil, bad <i>&times;167</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L8" data-letter="ح" data-theme="truth and judgement" data-name="ḥāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ح</div>
+    <div class="meta">
+      <h2>ḥāʾ <span class="ar-name" lang="ar" dir="rtl">حاء</span></h2>
+      <p class="theme">Truth and judgement</p>
+      <div class="nums">
+        <span><b>98</b> roots</span>
+        <span><b>2,167</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">حَقّ</span>
+      <span class="kw-en">truth, right; to be true</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">حقق</b>
+      · spoken <span lang="ar" dir="rtl">حَقِّ</span>
+      · &times;287
+    </div>
+    <button type="button" class="speak" data-i="8">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Truth and judgement<u>2 roots · 497&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">حقق</b> truth, right; to be true <i>&times;287</i></span><span class="chip"><b lang="ar" dir="rtl">حكم</b> to judge; wisdom <i>&times;210</i></span></div></div><div class="cluster"><div class="clabel">Goodness and praise<u>2 roots · 262&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">حسن</b> good, beautiful; to do good <i>&times;194</i></span><span class="chip"><b lang="ar" dir="rtl">حمد</b> praise <i>&times;68</i></span></div></div><div class="cluster"><div class="clabel">Life and love<u>2 roots · 284&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">حيي</b> life, to live <i>&times;189</i></span><span class="chip"><b lang="ar" dir="rtl">حبب</b> love; grain <i>&times;95</i></span></div></div><div class="cluster"><div class="clabel">Reckoning and prohibition<u>2 roots · 192&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">حسب</b> to reckon; account <i>&times;109</i></span><span class="chip"><b lang="ar" dir="rtl">حرم</b> to forbid; sacred <i>&times;83</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L9" data-letter="و" data-theme="piety and protection" data-name="wāw">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">و</div>
+    <div class="meta">
+      <h2>wāw <span class="ar-name" lang="ar" dir="rtl">واو</span></h2>
+      <p class="theme">Piety and protection</p>
+      <div class="nums">
+        <span><b>77</b> roots</span>
+        <span><b>1,823</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">وَقَى</span>
+      <span class="kw-en">to guard, be mindful</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">وقي</b>
+      · spoken <span lang="ar" dir="rtl">ٱتَّقُ</span>
+      · &times;258
+    </div>
+    <button type="button" class="speak" data-i="9">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Piety and protection<u>2 roots · 490&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">وقي</b> to guard, be mindful <i>&times;258</i></span><span class="chip"><b lang="ar" dir="rtl">ولي</b> protector, ally; to turn away <i>&times;232</i></span></div></div><div class="cluster"><div class="clabel">Promise and revelation<u>2 roots · 229&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">وعد</b> to promise <i>&times;151</i></span><span class="chip"><b lang="ar" dir="rtl">وحي</b> to reveal; inspiration <i>&times;78</i></span></div></div><div class="cluster"><div class="clabel">Offspring and finding<u>2 roots · 209&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">وجد</b> to find <i>&times;107</i></span><span class="chip"><b lang="ar" dir="rtl">ولد</b> child, to beget <i>&times;102</i></span></div></div><div class="cluster"><div class="clabel">Face and reliance<u>2 roots · 148&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">وجه</b> face, direction <i>&times;78</i></span><span class="chip"><b lang="ar" dir="rtl">وكل</b> to trust, entrust <i>&times;70</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L10" data-letter="ج" data-theme="making and gathering" data-name="jīm">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ج</div>
+    <div class="meta">
+      <h2>jīm <span class="ar-name" lang="ar" dir="rtl">جيم</span></h2>
+      <p class="theme">Making and gathering</p>
+      <div class="nums">
+        <span><b>69</b> roots</span>
+        <span><b>1,695</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">جَعَلَ</span>
+      <span class="kw-en">to make, appoint</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">جعل</b>
+      · spoken <span lang="ar" dir="rtl">جَعَلْ</span>
+      · &times;346
+    </div>
+    <button type="button" class="speak" data-i="10">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Making and coming<u>2 roots · 624&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">جعل</b> to make, appoint <i>&times;346</i></span><span class="chip"><b lang="ar" dir="rtl">جيأ</b> to come <i>&times;278</i></span></div></div><div class="cluster"><div class="clabel">Gathering and recompense<u>2 roots · 247&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">جمع</b> to gather; all together <i>&times;129</i></span><span class="chip"><b lang="ar" dir="rtl">جزي</b> to recompense; reward <i>&times;118</i></span></div></div><div class="cluster"><div class="clabel">Garden and concealment<u>1 roots · 201&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">جنن</b> garden, paradise; jinn <i>&times;201</i></span></div></div><div class="cluster"><div class="clabel">Crime and answer<u>2 roots · 109&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">جرم</b> crime, sinner <i>&times;66</i></span><span class="chip"><b lang="ar" dir="rtl">جوب</b> to answer, respond <i>&times;43</i></span></div></div><div class="cluster"><div class="clabel">Flowing<u>1 roots · 64&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">جري</b> to flow, run <i>&times;64</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L11" data-letter="خ" data-theme="creation and outcome" data-name="khāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">خ</div>
+    <div class="meta">
+      <h2>khāʾ <span class="ar-name" lang="ar" dir="rtl">خاء</span></h2>
+      <p class="theme">Creation and outcome</p>
+      <div class="nums">
+        <span><b>71</b> roots</span>
+        <span><b>1,591</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">خَلَقَ</span>
+      <span class="kw-en">to create; creation</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">خلق</b>
+      · spoken <span lang="ar" dir="rtl">خَلَقَ</span>
+      · &times;261
+    </div>
+    <button type="button" class="speak" data-i="11">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Creation and emergence<u>2 roots · 443&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">خلق</b> to create; creation <i>&times;261</i></span><span class="chip"><b lang="ar" dir="rtl">خرج</b> to go out, bring forth <i>&times;182</i></span></div></div><div class="cluster"><div class="clabel">Good and abiding<u>2 roots · 283&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">خير</b> good, better <i>&times;196</i></span><span class="chip"><b lang="ar" dir="rtl">خلد</b> to abide forever <i>&times;87</i></span></div></div><div class="cluster"><div class="clabel">Fear and loss<u>2 roots · 189&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">خوف</b> fear, to be afraid <i>&times;124</i></span><span class="chip"><b lang="ar" dir="rtl">خسر</b> to lose; loss <i>&times;65</i></span></div></div><div class="cluster"><div class="clabel">Difference and news<u>2 roots · 179&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">خلف</b> to differ, succeed; behind <i>&times;127</i></span><span class="chip"><b lang="ar" dir="rtl">خبر</b> news; All-Aware <i>&times;52</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L12" data-letter="ش" data-theme="will and witness" data-name="shīn">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ش</div>
+    <div class="meta">
+      <h2>shīn <span class="ar-name" lang="ar" dir="rtl">شين</span></h2>
+      <p class="theme">Will and witness</p>
+      <div class="nums">
+        <span><b>63</b> roots</span>
+        <span><b>1,590</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">شَىْء</span>
+      <span class="kw-en">thing; to will, wish</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">شيأ</b>
+      · spoken <span lang="ar" dir="rtl">شَىْءٍ</span>
+      · &times;519
+    </div>
+    <button type="button" class="speak" data-i="12">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Will and things<u>1 roots · 519&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">شيأ</b> thing; to will, wish <i>&times;519</i></span></div></div><div class="cluster"><div class="clabel">Partners and Satan<u>2 roots · 256&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">شرك</b> to associate partners <i>&times;168</i></span><span class="chip"><b lang="ar" dir="rtl">شطن</b> Satan <i>&times;88</i></span></div></div><div class="cluster"><div class="clabel">Witness and perception<u>2 roots · 200&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">شهد</b> to witness, testify <i>&times;160</i></span><span class="chip"><b lang="ar" dir="rtl">شعر</b> to perceive; poet <i>&times;40</i></span></div></div><div class="cluster"><div class="clabel">Thanks and severity<u>2 roots · 177&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">شدد</b> severe, strong <i>&times;102</i></span><span class="chip"><b lang="ar" dir="rtl">شكر</b> to thank; gratitude <i>&times;75</i></span></div></div><div class="cluster"><div class="clabel">Drinking<u>1 roots · 39&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">شرب</b> to drink <i>&times;39</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L13" data-letter="م" data-theme="kingdom and death" data-name="mīm">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">م</div>
+    <div class="meta">
+      <h2>mīm <span class="ar-name" lang="ar" dir="rtl">ميم</span></h2>
+      <p class="theme">Kingdom and death</p>
+      <div class="nums">
+        <span><b>67</b> roots</span>
+        <span><b>1,415</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">مَلَك</span>
+      <span class="kw-en">angel; kingdom, to own</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">ملك</b>
+      · spoken <span lang="ar" dir="rtl">مَلَٰٓئِكَةُ</span>
+      · &times;206
+    </div>
+    <button type="button" class="speak" data-i="13">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Kingdom and angels<u>1 roots · 206&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ملك</b> angel; kingdom, to own <i>&times;206</i></span></div></div><div class="cluster"><div class="clabel">Death and touch<u>2 roots · 226&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">موت</b> death, to die <i>&times;165</i></span><span class="chip"><b lang="ar" dir="rtl">مسس</b> to touch, afflict <i>&times;61</i></span></div></div><div class="cluster"><div class="clabel">Likeness and scheming<u>2 roots · 212&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">مثل</b> likeness, parable <i>&times;169</i></span><span class="chip"><b lang="ar" dir="rtl">مكر</b> to plot, scheme <i>&times;43</i></span></div></div><div class="cluster"><div class="clabel">Wealth and enjoyment<u>2 roots · 156&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">مول</b> wealth <i>&times;86</i></span><span class="chip"><b lang="ar" dir="rtl">متع</b> enjoyment, provision <i>&times;70</i></span></div></div><div class="cluster"><div class="clabel">Water<u>1 roots · 63&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">موه</b> water <i>&times;63</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L14" data-letter="ص" data-theme="righteousness and patience" data-name="ṣād">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ص</div>
+    <div class="meta">
+      <h2>ṣād <span class="ar-name" lang="ar" dir="rtl">صاد</span></h2>
+      <p class="theme">Righteousness and patience</p>
+      <div class="nums">
+        <span><b>63</b> roots</span>
+        <span><b>1,245</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">صالِح</span>
+      <span class="kw-en">righteous; to reconcile</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">صلح</b>
+      · spoken <span lang="ar" dir="rtl">صَّٰلِحَٰتِ</span>
+      · &times;180
+    </div>
+    <button type="button" class="speak" data-i="14">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Truth and righteousness<u>2 roots · 335&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">صلح</b> righteous; to reconcile <i>&times;180</i></span><span class="chip"><b lang="ar" dir="rtl">صدق</b> truthful; to confirm <i>&times;155</i></span></div></div><div class="cluster"><div class="clabel">Patience and prayer<u>2 roots · 202&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">صبر</b> patience, to endure <i>&times;103</i></span><span class="chip"><b lang="ar" dir="rtl">صلو</b> prayer <i>&times;99</i></span></div></div><div class="cluster"><div class="clabel">Companions and breast<u>2 roots · 143&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">صحب</b> companion <i>&times;97</i></span><span class="chip"><b lang="ar" dir="rtl">صدر</b> breast, chest <i>&times;46</i></span></div></div><div class="cluster"><div class="clabel">Path and affliction<u>2 roots · 122&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">صوب</b> to strike, afflict <i>&times;77</i></span><span class="chip"><b lang="ar" dir="rtl">صرط</b> path, way <i>&times;45</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L15" data-letter="ف" data-theme="doing and corruption" data-name="fāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ف</div>
+    <div class="meta">
+      <h2>fāʾ <span class="ar-name" lang="ar" dir="rtl">فاء</span></h2>
+      <p class="theme">Doing and corruption</p>
+      <div class="nums">
+        <span><b>72</b> roots</span>
+        <span><b>1,127</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">فَعَلَ</span>
+      <span class="kw-en">to do, act</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">فعل</b>
+      · spoken <span lang="ar" dir="rtl">يَفْعَلُ</span>
+      · &times;108
+    </div>
+    <button type="button" class="speak" data-i="15">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Doing and bounty<u>2 roots · 212&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">فعل</b> to do, act <i>&times;108</i></span><span class="chip"><b lang="ar" dir="rtl">فضل</b> bounty, favour <i>&times;104</i></span></div></div><div class="cluster"><div class="clabel">Separation and above<u>2 roots · 115&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">فرق</b> to separate; party <i>&times;72</i></span><span class="chip"><b lang="ar" dir="rtl">فوق</b> above, over <i>&times;43</i></span></div></div><div class="cluster"><div class="clabel">Trial and fabrication<u>2 roots · 120&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">فتن</b> trial, temptation <i>&times;60</i></span><span class="chip"><b lang="ar" dir="rtl">فري</b> to invent, fabricate <i>&times;60</i></span></div></div><div class="cluster"><div class="clabel">Corruption and transgression<u>2 roots · 104&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">فسق</b> to transgress <i>&times;54</i></span><span class="chip"><b lang="ar" dir="rtl">فسد</b> corruption <i>&times;50</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L16" data-letter="د" data-theme="calling and nearness" data-name="dāl">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">د</div>
+    <div class="meta">
+      <h2>dāl <span class="ar-name" lang="ar" dir="rtl">دال</span></h2>
+      <p class="theme">Calling and nearness</p>
+      <div class="nums">
+        <span><b>46</b> roots</span>
+        <span><b>1,016</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">دَعا</span>
+      <span class="kw-en">to call, pray</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">دعو</b>
+      · spoken <span lang="ar" dir="rtl">تَدْعُ</span>
+      · &times;212
+    </div>
+    <button type="button" class="speak" data-i="16">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Calling and entering<u>2 roots · 338&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">دعو</b> to call, pray <i>&times;212</i></span><span class="chip"><b lang="ar" dir="rtl">دخل</b> to enter, admit <i>&times;126</i></span></div></div><div class="cluster"><div class="clabel">Nearness and below<u>2 roots · 277&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">دون</b> besides, below <i>&times;144</i></span><span class="chip"><b lang="ar" dir="rtl">دنو</b> near; this world <i>&times;133</i></span></div></div><div class="cluster"><div class="clabel">Religion and dwelling<u>2 roots · 156&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">دين</b> religion; debt <i>&times;101</i></span><span class="chip"><b lang="ar" dir="rtl">دور</b> house, dwelling <i>&times;55</i></span></div></div><div class="cluster"><div class="clabel">Knowing and pondering<u>2 roots · 73&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">دبر</b> to ponder; behind <i>&times;44</i></span><span class="chip"><b lang="ar" dir="rtl">دري</b> to know <i>&times;29</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L17" data-letter="غ" data-theme="forgiveness and concealment" data-name="ghayn">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">غ</div>
+    <div class="meta">
+      <h2>ghayn <span class="ar-name" lang="ar" dir="rtl">غين</span></h2>
+      <p class="theme">Forgiveness and concealment</p>
+      <div class="nums">
+        <span><b>50</b> roots</span>
+        <span><b>901</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">غَفُور</span>
+      <span class="kw-en">to forgive</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">غفر</b>
+      · spoken <span lang="ar" dir="rtl">غَفُورٌ</span>
+      · &times;234
+    </div>
+    <button type="button" class="speak" data-i="17">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Forgiveness<u>1 roots · 234&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">غفر</b> to forgive <i>&times;234</i></span></div></div><div class="cluster"><div class="clabel">Unseen and heedlessness<u>2 roots · 95&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">غيب</b> unseen, hidden <i>&times;60</i></span><span class="chip"><b lang="ar" dir="rtl">غفل</b> heedless <i>&times;35</i></span></div></div><div class="cluster"><div class="clabel">Change and otherness<u>1 roots · 154&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">غير</b> other than; to change <i>&times;154</i></span></div></div><div class="cluster"><div class="clabel">Wealth and victory<u>2 roots · 104&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">غني</b> rich, to enrich <i>&times;73</i></span><span class="chip"><b lang="ar" dir="rtl">غلب</b> to overcome, prevail <i>&times;31</i></span></div></div><div class="cluster"><div class="clabel">Delusion and covering<u>2 roots · 56&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">غشو</b> to cover, overwhelm <i>&times;29</i></span><span class="chip"><b lang="ar" dir="rtl">غرر</b> to delude; deception <i>&times;27</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L18" data-letter="ي" data-theme="day and certainty" data-name="yāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ي</div>
+    <div class="meta">
+      <h2>yāʾ <span class="ar-name" lang="ar" dir="rtl">ياء</span></h2>
+      <p class="theme">Day and certainty</p>
+      <div class="nums">
+        <span><b>11</b> roots</span>
+        <span><b>791</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">يَوْم</span>
+      <span class="kw-en">day</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">يوم</b>
+      · spoken <span lang="ar" dir="rtl">يَوْمَ</span>
+      · &times;475
+    </div>
+    <button type="button" class="speak" data-i="18">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">The day<u>1 roots · 475&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">يوم</b> day <i>&times;475</i></span></div></div><div class="cluster"><div class="clabel">Hand and right<u>2 roots · 191&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">يدي</b> hand <i>&times;120</i></span><span class="chip"><b lang="ar" dir="rtl">يمن</b> right hand; oath <i>&times;71</i></span></div></div><div class="cluster"><div class="clabel">Certainty and ease<u>2 roots · 72&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">يسر</b> easy, to ease <i>&times;44</i></span><span class="chip"><b lang="ar" dir="rtl">يقن</b> certainty <i>&times;28</i></span></div></div><div class="cluster"><div class="clabel">Orphan and despair<u>2 roots · 36&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">يتم</b> orphan <i>&times;23</i></span><span class="chip"><b lang="ar" dir="rtl">يأس</b> to despair <i>&times;13</i></span></div></div><div class="cluster"><div class="clabel">The sea<u>1 roots · 11&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">يمم</b> sea <i>&times;11</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L19" data-letter="ل" data-theme="meeting and night" data-name="lām">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ل</div>
+    <div class="meta">
+      <h2>lām <span class="ar-name" lang="ar" dir="rtl">لام</span></h2>
+      <p class="theme">Meeting and night</p>
+      <div class="nums">
+        <span><b>55</b> roots</span>
+        <span><b>674</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">لِقاء</span>
+      <span class="kw-en">to meet; to cast</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">لقي</b>
+      · spoken <span lang="ar" dir="rtl">لِقَآءَ</span>
+      · &times;146
+    </div>
+    <button type="button" class="speak" data-i="19">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Meeting and casting<u>1 roots · 146&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">لقي</b> to meet; to cast <i>&times;146</i></span></div></div><div class="cluster"><div class="clabel">Night and tarrying<u>2 roots · 123&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ليل</b> night <i>&times;92</i></span><span class="chip"><b lang="ar" dir="rtl">لبث</b> to remain, tarry <i>&times;31</i></span></div></div><div class="cluster"><div class="clabel">Curse and negation<u>2 roots · 130&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ليس</b> is not <i>&times;89</i></span><span class="chip"><b lang="ar" dir="rtl">لعن</b> to curse <i>&times;41</i></span></div></div><div class="cluster"><div class="clabel">Tongue and clothing<u>2 roots · 48&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">لسن</b> tongue, language <i>&times;25</i></span><span class="chip"><b lang="ar" dir="rtl">لبس</b> clothing; to confuse <i>&times;23</i></span></div></div><div class="cluster"><div class="clabel">Play<u>1 roots · 20&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">لعب</b> to play, sport <i>&times;20</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L20" data-letter="ه" data-theme="guidance and destruction" data-name="hāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ه</div>
+    <div class="meta">
+      <h2>hāʾ <span class="ar-name" lang="ar" dir="rtl">هاء</span></h2>
+      <p class="theme">Guidance and destruction</p>
+      <div class="nums">
+        <span><b>41</b> roots</span>
+        <span><b>624</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">هَدَى</span>
+      <span class="kw-en">to guide; guidance</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">هدي</b>
+      · spoken <span lang="ar" dir="rtl">يَهْدِى</span>
+      · &times;316
+    </div>
+    <button type="button" class="speak" data-i="20">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Guidance<u>1 roots · 316&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">هدي</b> to guide; guidance <i>&times;316</i></span></div></div><div class="cluster"><div class="clabel">Destruction and humiliation<u>2 roots · 94&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">هلك</b> to perish, destroy <i>&times;68</i></span><span class="chip"><b lang="ar" dir="rtl">هون</b> humiliation; easy <i>&times;26</i></span></div></div><div class="cluster"><div class="clabel">Desire and mockery<u>2 roots · 72&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">هوي</b> desire; air <i>&times;38</i></span><span class="chip"><b lang="ar" dir="rtl">هزأ</b> to mock, ridicule <i>&times;34</i></span></div></div><div class="cluster"><div class="clabel">Migration and peoples<u>2 roots · 61&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">هجر</b> to emigrate, forsake <i>&times;31</i></span><span class="chip"><b lang="ar" dir="rtl">هود</b> Jews; the prophet Hud <i>&times;30</i></span></div></div><div class="cluster"><div class="clabel">Intent<u>1 roots · 9&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">همم</b> to intend, be concerned <i>&times;9</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L21" data-letter="ذ" data-theme="remembrance" data-name="dhāl">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ذ</div>
+    <div class="meta">
+      <h2>dhāl <span class="ar-name" lang="ar" dir="rtl">ذال</span></h2>
+      <p class="theme">Remembrance</p>
+      <div class="nums">
+        <span><b>22</b> roots</span>
+        <span><b>556</b> occurrences</span>
+        <span><b>5</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">ذَكَرَ</span>
+      <span class="kw-en">to remember, mention</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">ذكر</b>
+      · spoken <span lang="ar" dir="rtl">ٱذْكُرُ</span>
+      · &times;292
+    </div>
+    <button type="button" class="speak" data-i="21">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Remembrance<u>1 roots · 292&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ذكر</b> to remember, mention <i>&times;292</i></span></div></div><div class="cluster"><div class="clabel">Tasting and going<u>2 roots · 119&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ذوق</b> to taste <i>&times;63</i></span><span class="chip"><b lang="ar" dir="rtl">ذهب</b> to go; gold <i>&times;56</i></span></div></div><div class="cluster"><div class="clabel">Sin and lowliness<u>2 roots · 63&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ذنب</b> sin <i>&times;39</i></span><span class="chip"><b lang="ar" dir="rtl">ذلل</b> lowliness, humiliation <i>&times;24</i></span></div></div><div class="cluster"><div class="clabel">Offspring and creating<u>2 roots · 44&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ذرر</b> offspring; atom <i>&times;38</i></span><span class="chip"><b lang="ar" dir="rtl">ذرأ</b> to create <i>&times;6</i></span></div></div><div class="cluster"><div class="clabel">Slaughter<u>1 roots · 9&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ذبح</b> to slaughter <i>&times;9</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L22" data-letter="ط" data-theme="obedience and purity" data-name="ṭāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ط</div>
+    <div class="meta">
+      <h2>ṭāʾ <span class="ar-name" lang="ar" dir="rtl">طاء</span></h2>
+      <p class="theme">Obedience and purity</p>
+      <div class="nums">
+        <span><b>36</b> roots</span>
+        <span><b>550</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">طَوْع</span>
+      <span class="kw-en">to obey; to be able</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">طوع</b>
+      · spoken <span lang="ar" dir="rtl">أَطِيعُ</span>
+      · &times;129
+    </div>
+    <button type="button" class="speak" data-i="22">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Obedience and transgression<u>2 roots · 168&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">طوع</b> to obey; to be able <i>&times;129</i></span><span class="chip"><b lang="ar" dir="rtl">طغي</b> to transgress; tyranny <i>&times;39</i></span></div></div><div class="cluster"><div class="clabel">Purity and goodness<u>2 roots · 81&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">طيب</b> good, pure <i>&times;50</i></span><span class="chip"><b lang="ar" dir="rtl">طهر</b> to purify <i>&times;31</i></span></div></div><div class="cluster"><div class="clabel">Food and birds<u>2 roots · 77&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">طعم</b> food, to feed <i>&times;48</i></span><span class="chip"><b lang="ar" dir="rtl">طير</b> bird <i>&times;29</i></span></div></div><div class="cluster"><div class="clabel">Circling and release<u>2 roots · 64&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">طوف</b> to circle; group <i>&times;41</i></span><span class="chip"><b lang="ar" dir="rtl">طلق</b> to divorce; set forth <i>&times;23</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L23" data-letter="ت" data-theme="following and returning" data-name="tāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ت</div>
+    <div class="meta">
+      <h2>tāʾ <span class="ar-name" lang="ar" dir="rtl">تاء</span></h2>
+      <p class="theme">Following and returning</p>
+      <div class="nums">
+        <span><b>20</b> roots</span>
+        <span><b>503</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">تَبِعَ</span>
+      <span class="kw-en">to follow</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">تبع</b>
+      · spoken <span lang="ar" dir="rtl">ٱتَّبَعُ</span>
+      · &times;172
+    </div>
+    <button type="button" class="speak" data-i="23">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Following and reciting<u>2 roots · 235&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">تبع</b> to follow <i>&times;172</i></span><span class="chip"><b lang="ar" dir="rtl">تلو</b> to recite, follow <i>&times;63</i></span></div></div><div class="cluster"><div class="clabel">Turning and leaving<u>2 roots · 130&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">توب</b> to repent, turn <i>&times;87</i></span><span class="chip"><b lang="ar" dir="rtl">ترك</b> to leave, forsake <i>&times;43</i></span></div></div><div class="cluster"><div class="clabel">Completion and trade<u>2 roots · 31&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">تمم</b> to complete <i>&times;22</i></span><span class="chip"><b lang="ar" dir="rtl">تجر</b> trade, commerce <i>&times;9</i></span></div></div><div class="cluster"><div class="clabel">Beneath and dust<u>2 roots · 73&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">تحت</b> beneath, under <i>&times;51</i></span><span class="chip"><b lang="ar" dir="rtl">ترب</b> dust, earth <i>&times;22</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L24" data-letter="ظ" data-theme="wrongdoing and darkness" data-name="ẓāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ظ</div>
+    <div class="meta">
+      <h2>ẓāʾ <span class="ar-name" lang="ar" dir="rtl">ظاء</span></h2>
+      <p class="theme">Wrongdoing and darkness</p>
+      <div class="nums">
+        <span><b>7</b> roots</span>
+        <span><b>482</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">ظالِم</span>
+      <span class="kw-en">to wrong, oppress; darkness</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">ظلم</b>
+      · spoken <span lang="ar" dir="rtl">ظَّٰلِمِينَ</span>
+      · &times;315
+    </div>
+    <button type="button" class="speak" data-i="24">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Wrongdoing and darkness<u>1 roots · 315&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ظلم</b> to wrong, oppress; darkness <i>&times;315</i></span></div></div><div class="cluster"><div class="clabel">Supposing<u>1 roots · 69&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ظنن</b> to think, suppose <i>&times;69</i></span></div></div><div class="cluster"><div class="clabel">Appearing and shade<u>2 roots · 92&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ظهر</b> back; to appear <i>&times;59</i></span><span class="chip"><b lang="ar" dir="rtl">ظلل</b> shade, shadow <i>&times;33</i></span></div></div><div class="cluster"><div class="clabel">Thirst and travel<u>2 roots · 4&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ظمأ</b> thirst <i>&times;3</i></span><span class="chip"><b lang="ar" dir="rtl">ظعن</b> journey, travel <i>&times;1</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L25" data-letter="ض" data-theme="straying and harm" data-name="ḍād">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ض</div>
+    <div class="meta">
+      <h2>ḍād <span class="ar-name" lang="ar" dir="rtl">ضاد</span></h2>
+      <p class="theme">Straying and harm</p>
+      <div class="nums">
+        <span><b>25</b> roots</span>
+        <span><b>455</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">ضَلَّ</span>
+      <span class="kw-en">to go astray, mislead</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">ضلل</b>
+      · spoken <span lang="ar" dir="rtl">ضَلَّ</span>
+      · &times;191
+    </div>
+    <button type="button" class="speak" data-i="25">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Straying<u>1 roots · 191&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ضلل</b> to go astray, mislead <i>&times;191</i></span></div></div><div class="cluster"><div class="clabel">Harm and weakness<u>3 roots · 139&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ضرر</b> harm, adversity <i>&times;74</i></span><span class="chip"><b lang="ar" dir="rtl">ضعف</b> weak; to double <i>&times;52</i></span><span class="chip"><b lang="ar" dir="rtl">ضيق</b> to be straitened <i>&times;13</i></span></div></div><div class="cluster"><div class="clabel">Striking and loss<u>2 roots · 68&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ضرب</b> to strike; set forth <i>&times;58</i></span><span class="chip"><b lang="ar" dir="rtl">ضيع</b> to lose, waste <i>&times;10</i></span></div></div><div class="cluster"><div class="clabel">Laughter and supplication<u>2 roots · 18&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ضحك</b> to laugh <i>&times;10</i></span><span class="chip"><b lang="ar" dir="rtl">ضرع</b> to supplicate humbly <i>&times;8</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L26" data-letter="ز" data-theme="increase and adornment" data-name="zāy">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ز</div>
+    <div class="meta">
+      <h2>zāy <span class="ar-name" lang="ar" dir="rtl">زاي</span></h2>
+      <p class="theme">Increase and adornment</p>
+      <div class="nums">
+        <span><b>40</b> roots</span>
+        <span><b>404</b> occurrences</span>
+        <span><b>4</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">زَوْج</span>
+      <span class="kw-en">spouse, pair</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">زوج</b>
+      · spoken <span lang="ar" dir="rtl">أَزْوَٰجِ</span>
+      · &times;81
+    </div>
+    <button type="button" class="speak" data-i="26">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Increase and purity<u>2 roots · 120&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">زيد</b> to increase <i>&times;61</i></span><span class="chip"><b lang="ar" dir="rtl">زكو</b> purity; alms <i>&times;59</i></span></div></div><div class="cluster"><div class="clabel">Pairs and adornment<u>2 roots · 127&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">زوج</b> spouse, pair <i>&times;81</i></span><span class="chip"><b lang="ar" dir="rtl">زين</b> to adorn, beautify <i>&times;46</i></span></div></div><div class="cluster"><div class="clabel">Sowing and scripture<u>2 roots · 25&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">زرع</b> to sow; crops <i>&times;14</i></span><span class="chip"><b lang="ar" dir="rtl">زبر</b> scriptures; pieces <i>&times;11</i></span></div></div><div class="cluster"><div class="clabel">Claiming and parting<u>2 roots · 27&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">زعم</b> to claim, allege <i>&times;17</i></span><span class="chip"><b lang="ar" dir="rtl">زيل</b> to separate, remove <i>&times;10</i></span></div></div></div>
+</article>
+<article class="letter-card" id="L27" data-letter="ث" data-theme="number and measure" data-name="thāʾ">
+  <header class="letter-head">
+    <div class="glyph" lang="ar" dir="rtl">ث</div>
+    <div class="meta">
+      <h2>thāʾ <span class="ar-name" lang="ar" dir="rtl">ثاء</span></h2>
+      <p class="theme">Number and measure</p>
+      <div class="nums">
+        <span><b>21</b> roots</span>
+        <span><b>223</b> occurrences</span>
+        <span><b>3</b> sense clusters</span>
+      </div>
+    </div>
+  </header>
+  
+  <div class="keyword">
+    <div class="kw-label">Quranic keyword</div>
+    <div class="kw-main">
+      <span class="kw-ar" lang="ar" dir="rtl">ثَلاثَة</span>
+      <span class="kw-en">three</span>
+    </div>
+    <div class="kw-meta">
+      Root <b lang="ar" dir="rtl">ثلث</b>
+      · spoken <span lang="ar" dir="rtl">ثَلَٰثَةِ</span>
+      · &times;32
+    </div>
+    <button type="button" class="speak" data-i="27">Hear letter · name · keyword</button>
+  </div>
+  <h3>Sense clusters</h3>
+  <p class="cluster-lead">Roots that begin with this letter, grouped by meaning in the Book.</p>
+  <div class="clusters"><div class="cluster"><div class="clabel">Number and weight<u>4 roots · 108&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ثلث</b> three <i>&times;32</i></span><span class="chip"><b lang="ar" dir="rtl">ثني</b> two, twofold <i>&times;29</i></span><span class="chip"><b lang="ar" dir="rtl">ثقل</b> weight, heavy <i>&times;28</i></span><span class="chip"><b lang="ar" dir="rtl">ثمن</b> price; eight <i>&times;19</i></span></div></div><div class="cluster"><div class="clabel">Fruit and reward<u>2 roots · 52&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ثوب</b> reward; garments <i>&times;28</i></span><span class="chip"><b lang="ar" dir="rtl">ثمر</b> fruit <i>&times;24</i></span></div></div><div class="cluster"><div class="clabel">Firmness and dwelling<u>2 roots · 32&times;</u></div><div class="chips"><span class="chip"><b lang="ar" dir="rtl">ثبت</b> to make firm <i>&times;18</i></span><span class="chip"><b lang="ar" dir="rtl">ثوي</b> dwelling, abode <i>&times;14</i></span></div></div></div>
+</article>
+</div>
+
+<script>
+window.LETTER_KEYWORDS = [{"letter": "أ", "arName": "ألف", "enName": "ʾalif", "sound": "أَ", "theme": "God and humanity", "root": "أله", "keyword": "اللَّه", "spoken": "ٱللَّهُ", "keywordEn": "God, deity", "occ": 2851}, {"letter": "ق", "arName": "قاف", "enName": "qāf", "sound": "قَ", "theme": "Speech and standing", "root": "قول", "keyword": "قالَ", "spoken": "قَالَ", "keywordEn": "to say, speak; word", "occ": 1722}, {"letter": "ك", "arName": "كاف", "enName": "kāf", "sound": "كَ", "theme": "Being and disbelief", "root": "كون", "keyword": "كانَ", "spoken": "كَانَ", "keywordEn": "to be, become", "occ": 1390}, {"letter": "ع", "arName": "عين", "enName": "ʿayn", "sound": "عَ", "theme": "Knowledge and worship", "root": "علم", "keyword": "عَلِمَ", "spoken": "يَعْلَمُ", "keywordEn": "to know; knowledge", "occ": 854}, {"letter": "ر", "arName": "راء", "enName": "rāʾ", "sound": "رَ", "theme": "Lordship and mercy", "root": "ربب", "keyword": "رَبّ", "spoken": "رَبِّ", "keywordEn": "lord, master; to nurture", "occ": 980}, {"letter": "ن", "arName": "نون", "enName": "nūn", "sound": "نَ", "theme": "Revelation and favour", "root": "نفس", "keyword": "نَفْس", "spoken": "أَنفُسِ", "keywordEn": "soul, self", "occ": 298}, {"letter": "ب", "arName": "باء", "enName": "bāʾ", "sound": "بَ", "theme": "Clarity and distinction", "root": "بين", "keyword": "بَيْن", "spoken": "بَيْنَ", "keywordEn": "between; clear, manifest", "occ": 523}, {"letter": "س", "arName": "سين", "enName": "sīn", "sound": "سَ", "theme": "Heaven and worship", "root": "سمو", "keyword": "سَماء", "spoken": "سَّمَٰوَٰتِ", "keywordEn": "sky, heaven; name", "occ": 381}, {"letter": "ح", "arName": "حاء", "enName": "ḥāʾ", "sound": "حَ", "theme": "Truth and judgement", "root": "حقق", "keyword": "حَقّ", "spoken": "حَقِّ", "keywordEn": "truth, right; to be true", "occ": 287}, {"letter": "و", "arName": "واو", "enName": "wāw", "sound": "وَ", "theme": "Piety and protection", "root": "وقي", "keyword": "وَقَى", "spoken": "ٱتَّقُ", "keywordEn": "to guard, be mindful", "occ": 258}, {"letter": "ج", "arName": "جيم", "enName": "jīm", "sound": "جَ", "theme": "Making and gathering", "root": "جعل", "keyword": "جَعَلَ", "spoken": "جَعَلْ", "keywordEn": "to make, appoint", "occ": 346}, {"letter": "خ", "arName": "خاء", "enName": "khāʾ", "sound": "خَ", "theme": "Creation and outcome", "root": "خلق", "keyword": "خَلَقَ", "spoken": "خَلَقَ", "keywordEn": "to create; creation", "occ": 261}, {"letter": "ش", "arName": "شين", "enName": "shīn", "sound": "شَ", "theme": "Will and witness", "root": "شيأ", "keyword": "شَىْء", "spoken": "شَىْءٍ", "keywordEn": "thing; to will, wish", "occ": 519}, {"letter": "م", "arName": "ميم", "enName": "mīm", "sound": "مَ", "theme": "Kingdom and death", "root": "ملك", "keyword": "مَلَك", "spoken": "مَلَٰٓئِكَةُ", "keywordEn": "angel; kingdom, to own", "occ": 206}, {"letter": "ص", "arName": "صاد", "enName": "ṣād", "sound": "صَ", "theme": "Righteousness and patience", "root": "صلح", "keyword": "صالِح", "spoken": "صَّٰلِحَٰتِ", "keywordEn": "righteous; to reconcile", "occ": 180}, {"letter": "ف", "arName": "فاء", "enName": "fāʾ", "sound": "فَ", "theme": "Doing and corruption", "root": "فعل", "keyword": "فَعَلَ", "spoken": "يَفْعَلُ", "keywordEn": "to do, act", "occ": 108}, {"letter": "د", "arName": "دال", "enName": "dāl", "sound": "دَ", "theme": "Calling and nearness", "root": "دعو", "keyword": "دَعا", "spoken": "تَدْعُ", "keywordEn": "to call, pray", "occ": 212}, {"letter": "غ", "arName": "غين", "enName": "ghayn", "sound": "غَ", "theme": "Forgiveness and concealment", "root": "غفر", "keyword": "غَفُور", "spoken": "غَفُورٌ", "keywordEn": "to forgive", "occ": 234}, {"letter": "ي", "arName": "ياء", "enName": "yāʾ", "sound": "يَ", "theme": "Day and certainty", "root": "يوم", "keyword": "يَوْم", "spoken": "يَوْمَ", "keywordEn": "day", "occ": 475}, {"letter": "ل", "arName": "لام", "enName": "lām", "sound": "لَ", "theme": "Meeting and night", "root": "لقي", "keyword": "لِقاء", "spoken": "لِقَآءَ", "keywordEn": "to meet; to cast", "occ": 146}, {"letter": "ه", "arName": "هاء", "enName": "hāʾ", "sound": "هَ", "theme": "Guidance and destruction", "root": "هدي", "keyword": "هَدَى", "spoken": "يَهْدِى", "keywordEn": "to guide; guidance", "occ": 316}, {"letter": "ذ", "arName": "ذال", "enName": "dhāl", "sound": "ذَ", "theme": "Remembrance", "root": "ذكر", "keyword": "ذَكَرَ", "spoken": "ٱذْكُرُ", "keywordEn": "to remember, mention", "occ": 292}, {"letter": "ط", "arName": "طاء", "enName": "ṭāʾ", "sound": "طَ", "theme": "Obedience and purity", "root": "طوع", "keyword": "طَوْع", "spoken": "أَطِيعُ", "keywordEn": "to obey; to be able", "occ": 129}, {"letter": "ت", "arName": "تاء", "enName": "tāʾ", "sound": "تَ", "theme": "Following and returning", "root": "تبع", "keyword": "تَبِعَ", "spoken": "ٱتَّبَعُ", "keywordEn": "to follow", "occ": 172}, {"letter": "ظ", "arName": "ظاء", "enName": "ẓāʾ", "sound": "ظَ", "theme": "Wrongdoing and darkness", "root": "ظلم", "keyword": "ظالِم", "spoken": "ظَّٰلِمِينَ", "keywordEn": "to wrong, oppress; darkness", "occ": 315}, {"letter": "ض", "arName": "ضاد", "enName": "ḍād", "sound": "ضَ", "theme": "Straying and harm", "root": "ضلل", "keyword": "ضَلَّ", "spoken": "ضَلَّ", "keywordEn": "to go astray, mislead", "occ": 191}, {"letter": "ز", "arName": "زاي", "enName": "zāy", "sound": "زَ", "theme": "Increase and adornment", "root": "زوج", "keyword": "زَوْج", "spoken": "أَزْوَٰجِ", "keywordEn": "spouse, pair", "occ": 81}, {"letter": "ث", "arName": "ثاء", "enName": "thāʾ", "sound": "ثَ", "theme": "Number and measure", "root": "ثلث", "keyword": "ثَلاثَة", "spoken": "ثَلَٰثَةِ", "keywordEn": "three", "occ": 32}];
+</script>
+<script>
+(function () {
+  var filter = document.getElementById("filter");
+  var cards = Array.prototype.slice.call(document.querySelectorAll(".letter-card"));
+  var status = document.getElementById("voice-status");
+  var data = window.LETTER_KEYWORDS || [];
+  var synth = window.speechSynthesis;
+  var arabicVoice = null;
+  var englishVoice = null;
+  var run = 0;
+  var held = null;
+
+  function pickVoices() {
+    if (!synth) {
+      if (status) status.textContent = "This browser cannot speak audio.";
+      return;
+    }
+    var voices = synth.getVoices() || [];
+    var ar = voices.filter(function (v) { return /^ar(-|$)/i.test(v.lang); });
+    arabicVoice = ar.filter(function (v) { return /SA|EG|AE|MA|DZ/i.test(v.lang); })[0] || ar[0] || null;
+    englishVoice = voices.filter(function (v) { return /^en(-|$)/i.test(v.lang); })[0] || null;
+    if (!status) return;
+    status.textContent = arabicVoice
+      ? "Voice: " + arabicVoice.name
+      : "No Arabic voice found — playback may use another language.";
+  }
+  if (synth) {
+    pickVoices();
+    if (typeof synth.onvoiceschanged !== "undefined") synth.onvoiceschanged = pickVoices;
+  }
+
+  function applyFilter() {
+    var q = (filter.value || "").trim().toLowerCase();
+    cards.forEach(function (card) {
+      if (!q) { card.hidden = false; return; }
+      var hay = [
+        card.dataset.letter || "",
+        card.dataset.name || "",
+        card.dataset.theme || "",
+        card.textContent || ""
+      ].join(" ").toLowerCase();
+      card.hidden = hay.indexOf(q) === -1;
+    });
+  }
+  filter.addEventListener("input", applyFilter);
+
+  document.querySelector(".alpha").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-go]");
+    if (!btn) return;
+    var el = document.getElementById(btn.getAttribute("data-go"));
+    if (!el || el.hidden) return;
+    el.classList.remove("flash");
+    void el.offsetWidth;
+    el.classList.add("flash");
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  function stop() {
+    run += 1;
+    held = null;
+    if (synth) synth.cancel();
+    document.querySelectorAll(".speak.playing").forEach(function (b) {
+      b.classList.remove("playing");
+    });
+  }
+
+  function utter(text, lang, rate, voice) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = rate;
+    if (voice) u.voice = voice;
+    return u;
+  }
+
+  function speakItem(index, btn) {
+    if (!synth || !data[index]) return;
+    stop();
+    var my = run;
+    var item = data[index];
+    btn.classList.add("playing");
+    var steps = [
+      utter(item.sound || item.letter, "ar-SA", 0.85, arabicVoice),
+      utter(item.arName || "", "ar-SA", 0.9, arabicVoice),
+      utter(item.spoken || item.keyword || "", "ar-SA", 0.85, arabicVoice),
+      utter(item.keywordEn || item.theme || "", "en-US", 1, englishVoice)
+    ].filter(function (u) { return u.text && u.text.trim(); });
+
+    function next(i) {
+      if (my !== run || i >= steps.length) {
+        btn.classList.remove("playing");
+        return;
+      }
+      held = steps[i];
+      held.onend = function () { next(i + 1); };
+      held.onerror = function () { next(i + 1); };
+      synth.speak(held);
+    }
+    next(0);
+  }
+
+  document.getElementById("letters").addEventListener("click", function (e) {
+    var btn = e.target.closest(".speak");
+    if (!btn) return;
+    speakItem(+btn.getAttribute("data-i"), btn);
+  });
+})();
+</script>
+</body>
+</html>

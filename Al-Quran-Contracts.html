@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Contracts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2a2420;
+  --muted: #6a5f54;
+  --rule: rgba(90, 60, 30, 0.18);
+  --bg: #f3ebe1;
+  --paper: #fffdf8;
+  --arabic: #1a5c3a;
+  --accent: #6b3a2a;
+  --gold: #9a7a3a;
+  --field: #f7f2ea;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  background:
+    radial-gradient(ellipse 70% 40% at 10% 0%, rgba(154, 122, 58, 0.14), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 5%, rgba(26, 92, 58, 0.1), transparent 50%),
+    linear-gradient(180deg, #f7f0e6, var(--bg));
+  background-attachment: fixed;
+}
+a { color: var(--accent); }
+.shell { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+.toolbar, .tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+.toolbar a, .toolbar button, .tabs button {
+  font: inherit;
+  font-size: 0.8em;
+  font-weight: 600;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.75);
+  color: var(--ink);
+  padding: 7px 11px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.toolbar button:hover, .toolbar a:hover, .tabs button:hover { border-color: var(--accent); }
+.tabs button[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.page-intro {
+  text-align: center;
+  margin: 0 0 16px;
+}
+.page-intro h1 {
+  margin: 0 0 6px;
+  color: var(--accent);
+  font-size: clamp(1.55em, 3.5vw, 2em);
+}
+.page-intro p {
+  margin: 0;
+  color: var(--muted);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.8em;
+  line-height: 1.5;
+}
+.note {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.76em;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: rgba(107, 58, 42, 0.05);
+  border-radius: 8px;
+}
+.contract {
+  display: none;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 26px 26px 34px;
+  box-shadow: 0 12px 36px rgba(40, 30, 20, 0.08);
+}
+.contract.active { display: block; }
+.mast {
+  text-align: center;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.bismillah {
+  font-family: "Amiri", serif;
+  font-size: 1.45em;
+  color: var(--arabic);
+  direction: rtl;
+  margin: 0 0 6px;
+}
+.mast .ar-title {
+  font-family: "Amiri", serif;
+  font-size: 1.28em;
+  color: var(--arabic);
+  direction: rtl;
+  margin: 0 0 6px;
+}
+.mast h2 {
+  margin: 0 0 4px;
+  font-size: 1.55em;
+  color: var(--accent);
+  border: 0;
+  padding: 0;
+}
+.mast .sub {
+  margin: 0;
+  color: var(--muted);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.76em;
+  line-height: 1.45;
+}
+.epigraph {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--gold);
+  background: rgba(154, 122, 58, 0.08);
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--muted);
+  font-size: 0.98em;
+}
+.epigraph .ref {
+  font-style: normal;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.7em;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+h3 {
+  margin: 18px 0 8px;
+  font-size: 1.05em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 3px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+}
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+  .contract { padding: 16px 12px 24px; }
+}
+label.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+label.field.full { grid-column: 1 / -1; }
+input, textarea, select {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.02em;
+  color: var(--ink);
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  background: var(--field);
+  border-radius: 6px 6px 0 0;
+  padding: 7px 9px;
+  width: 100%;
+}
+textarea { min-height: 64px; resize: vertical; }
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 6px 0;
+  font-size: 0.95em;
+  line-height: 1.35;
+}
+.check input { width: auto; margin-top: 3px; }
+.covenants { list-style: none; margin: 0; padding: 0; }
+.covenants li {
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  line-height: 1.4;
+  font-size: 0.96em;
+}
+.covenants .ar {
+  font-family: "Amiri", serif;
+  direction: rtl;
+  text-align: right;
+  color: var(--arabic);
+  font-size: 1.1em;
+  margin-bottom: 3px;
+}
+.covenants .ref {
+  display: block;
+  margin-top: 3px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.66em;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.sign-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 8px;
+}
+.sign-box {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 100px;
+}
+.sign-box h4 {
+  margin: 0 0 8px;
+  font-size: 0.9em;
+  color: var(--accent);
+}
+.sign-line {
+  margin-top: 22px;
+  border-top: 1px solid var(--ink);
+  padding-top: 5px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  color: var(--muted);
+}
+.footer-note {
+  text-align: center;
+  margin-top: 16px;
+  color: var(--muted);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.74em;
+}
+@media print {
+  body { background: #fff; }
+  .toolbar, .tabs, .page-intro, .footer-note, .no-print { display: none !important; }
+  .shell { max-width: none; padding: 0; }
+  .contract {
+    display: none !important;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  .contract.active { display: block !important; }
+  input, textarea, select {
+    background: transparent !important;
+    border-bottom: 1px solid #999 !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="toolbar no-print">
+    <a href="Al-Quran-Study.html">Study</a>
+    <a href="Al-Quran-Marriage.html">Marriage</a>
+    <a href="Al-Quran-Calculators.html">Calculators</a>
+    <a href="Al-Quran.txt">Al-Quran.txt</a>
+    <button type="button" id="btn-print">Print / Save PDF</button>
+    <button type="button" id="btn-clear">Clear this form</button>
+  </div>
+
+  <div class="page-intro no-print">
+    <h1>Contracts from the Book</h1>
+    <p>
+      Written instruments drawn from Al-Quran.txt — debt, trust, freedom-writing,
+      divorce &amp; ʿiddah, bequest, and housing / dwelling. Marriage has its own full page.
+      Study aids only; not a substitute for local law or a qualified scholar.
+    </p>
+  </div>
+
+  <div class="tabs no-print" role="tablist" aria-label="Contract type">
+    <button type="button" data-tab="debt" aria-pressed="true">Debt</button>
+    <button type="button" data-tab="trust">Trust</button>
+    <button type="button" data-tab="mukataba">Mukātaba</button>
+    <button type="button" data-tab="divorce">Divorce &amp; ʿIddah</button>
+    <button type="button" data-tab="bequest">Bequest</button>
+    <button type="button" data-tab="housing">Housing</button>
+    <a href="Al-Quran-Marriage.html" style="align-self:center">Marriage →</a>
+  </div>
+
+  <!-- ===================== DEBT ===================== -->
+  <article class="contract active" id="tab-debt" data-key="debt">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">عَقْدُ الدَّيْنِ</p>
+      <h2>Debt / Deferred Obligation</h2>
+      <p class="sub">Written future liability with scribe and witnesses — 2:282–283</p>
+    </header>
+    <p class="epigraph">
+      “When ye deal with each other, in transactions involving future obligations in a fixed period of time, reduce them to writing… and get two witnesses…”
+      <span class="ref">2:282</span>
+    </p>
+    <p class="note no-print">Creditor and debtor record amount, due date, and witnesses. If traveling and no scribe, a pledge with possession may serve (2:283).</p>
+    <h3>1. Parties</h3>
+    <div class="grid">
+      <label class="field">Creditor (to whom owed)
+        <input data-f type="text" id="debt-creditor">
+      </label>
+      <label class="field">Debtor (who owes)
+        <input data-f type="text" id="debt-debtor">
+      </label>
+      <label class="field">Date written
+        <input data-f type="date" id="debt-date">
+      </label>
+      <label class="field">Place
+        <input data-f type="text" id="debt-place">
+      </label>
+    </div>
+    <h3>2. Obligation</h3>
+    <div class="grid">
+      <label class="field full">Description (loan, deferred sale, other)
+        <textarea data-f id="debt-desc" placeholder="What is owed and why"></textarea>
+      </label>
+      <label class="field">Amount / quantity
+        <input data-f type="text" id="debt-amount">
+      </label>
+      <label class="field">Due date / term
+        <input data-f type="text" id="debt-due" placeholder="Fixed period — 2:282">
+      </label>
+      <label class="field full">Repayment terms
+        <textarea data-f id="debt-terms" placeholder="Installments, place of payment, early payoff…"></textarea>
+      </label>
+      <label class="field">Pledge / security (if any)
+        <input data-f type="text" id="debt-pledge" placeholder="Optional rahn — 2:283">
+      </label>
+      <label class="field">Hardship clause
+        <input data-f type="text" id="debt-hardship" value="If debtor is in difficulty, grant time till it is easy (2:280)">
+      </label>
+    </div>
+    <h3>3. Writing &amp; witnesses</h3>
+    <div class="grid">
+      <label class="field">Scribe
+        <input data-f type="text" id="debt-scribe">
+      </label>
+      <label class="field">Dictated by
+        <input data-f type="text" id="debt-dictate" placeholder="Debtor dictates; fear Allah — 2:282">
+      </label>
+    </div>
+    <label class="check"><input data-f type="checkbox" id="debt-c1"><span>Neither scribe nor witness shall be harmed. <b>2:282</b></span></label>
+    <label class="check"><input data-f type="checkbox" id="debt-c2"><span>Amount not diminished; trust discharged if any deposit. <b>2:282–283</b></span></label>
+    <div class="sign-grid">
+      <div class="sign-box"><h4>Debtor</h4><label class="field">Name / signature<input data-f type="text" id="debt-sig-d"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Creditor</h4><label class="field">Name / signature<input data-f type="text" id="debt-sig-c"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Witness 1</h4><label class="field">Name<input data-f type="text" id="debt-w1"></label><div class="sign-line">Two witnesses — 2:282</div></div>
+      <div class="sign-box"><h4>Witness 2</h4><label class="field">Name<input data-f type="text" id="debt-w2"></label><div class="sign-line">Two witnesses — 2:282</div></div>
+    </div>
+  </article>
+
+  <!-- ===================== TRUST ===================== -->
+  <article class="contract" id="tab-trust" data-key="trust">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">وَثِيقَةُ الْأَمَانَةِ</p>
+      <h2>Trust / Deposit Receipt</h2>
+      <p class="sub">Amānah — render trusts to those to whom they are due — 2:283 · 4:58</p>
+    </header>
+    <p class="epigraph">
+      “Allah doth command you to render back your Trusts to those to whom they are due…”
+      <span class="ref">4:58</span>
+    </p>
+    <h3>1. Parties</h3>
+    <div class="grid">
+      <label class="field">Depositor (owner)
+        <input data-f type="text" id="trust-owner">
+      </label>
+      <label class="field">Trustee (keeper)
+        <input data-f type="text" id="trust-keeper">
+      </label>
+      <label class="field">Date received
+        <input data-f type="date" id="trust-date">
+      </label>
+      <label class="field">Place
+        <input data-f type="text" id="trust-place">
+      </label>
+    </div>
+    <h3>2. Property entrusted</h3>
+    <div class="grid">
+      <label class="field full">Description of item(s) / funds
+        <textarea data-f id="trust-item"></textarea>
+      </label>
+      <label class="field">Estimated value (optional)
+        <input data-f type="text" id="trust-value">
+      </label>
+      <label class="field">Return by (date / on demand)
+        <input data-f type="text" id="trust-return">
+      </label>
+      <label class="field full">Conditions of keeping
+        <textarea data-f id="trust-cond" placeholder="Storage, use forbidden/allowed, fees…"></textarea>
+      </label>
+    </div>
+    <ul class="covenants">
+      <li><div class="en">Trustee shall faithfully discharge the trust and fear his Lord.</div><span class="ref">2:283</span></li>
+      <li><div class="en">Conceal not evidence; rendering trusts is Allah’s command.</div><span class="ref">2:283 · 4:58</span></li>
+    </ul>
+    <div class="sign-grid">
+      <div class="sign-box"><h4>Depositor</h4><label class="field">Signature<input data-f type="text" id="trust-sig-o"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Trustee</h4><label class="field">Signature<input data-f type="text" id="trust-sig-k"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Witness 1</h4><label class="field">Name<input data-f type="text" id="trust-w1"></label><div class="sign-line">Optional</div></div>
+      <div class="sign-box"><h4>Witness 2</h4><label class="field">Name<input data-f type="text" id="trust-w2"></label><div class="sign-line">Optional</div></div>
+    </div>
+  </article>
+
+  <!-- ===================== MUKATABA ===================== -->
+  <article class="contract" id="tab-mukataba" data-key="mukataba">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">كِتَابُ الْمُكَاتَبَةِ</p>
+      <h2>Mukātaba — Freedom Writing</h2>
+      <p class="sub">Deed enabling freedom for an agreed sum — 24:33</p>
+    </header>
+    <p class="epigraph">
+      “And if any of your slaves ask for a deed in writing (to enable them to earn their freedom for a certain sum), give them such a deed if ye know any good in them: yea, give them something yourselves out of the means which Allah has given to you.”
+      <span class="ref">24:33</span>
+    </p>
+    <p class="note no-print">Historical institution of gradual manumission. Kept here as the Qur’an’s explicit “writing” for freedom; adapt only where still relevant under law.</p>
+    <h3>1. Parties</h3>
+    <div class="grid">
+      <label class="field">Owner / master
+        <input data-f type="text" id="muk-owner">
+      </label>
+      <label class="field">Seeker of the writing (mukātab)
+        <input data-f type="text" id="muk-person">
+      </label>
+      <label class="field">Date of deed
+        <input data-f type="date" id="muk-date">
+      </label>
+      <label class="field">Place
+        <input data-f type="text" id="muk-place">
+      </label>
+    </div>
+    <h3>2. Terms of freedom</h3>
+    <div class="grid">
+      <label class="field">Agreed sum / labour
+        <input data-f type="text" id="muk-sum">
+      </label>
+      <label class="field">Payment schedule
+        <input data-f type="text" id="muk-sched">
+      </label>
+      <label class="field full">Help given from owner’s wealth (24:33)
+        <textarea data-f id="muk-help" placeholder="Gift or assistance toward the sum"></textarea>
+      </label>
+      <label class="field full">Good known in them (basis for granting the deed)
+        <input data-f type="text" id="muk-good">
+      </label>
+    </div>
+    <label class="check"><input data-f type="checkbox" id="muk-c1"><span>Deed granted because good is known in them; help given from Allah’s means. <b>24:33</b></span></label>
+    <label class="check"><input data-f type="checkbox" id="muk-c2"><span>No compulsion to prostitution or illicit gain. <b>24:33</b></span></label>
+    <div class="sign-grid">
+      <div class="sign-box"><h4>Owner</h4><label class="field">Signature<input data-f type="text" id="muk-sig-o"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Mukātab</h4><label class="field">Signature<input data-f type="text" id="muk-sig-p"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Witness 1</h4><label class="field">Name<input data-f type="text" id="muk-w1"></label><div class="sign-line">Witness</div></div>
+      <div class="sign-box"><h4>Witness 2</h4><label class="field">Name<input data-f type="text" id="muk-w2"></label><div class="sign-line">Witness</div></div>
+    </div>
+  </article>
+
+  <!-- ===================== DIVORCE / IDDAH ===================== -->
+  <article class="contract" id="tab-divorce" data-key="divorce">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">وَثِيقَةُ الْفِرَاقِ وَالْعِدَّةِ</p>
+      <h2>Divorce &amp; ʿIddah Instrument</h2>
+      <p class="sub">Equitable hold or kind separation; waiting period &amp; lodging — 2:229–232 · 65:1–7</p>
+    </header>
+    <p class="epigraph">
+      “A divorce is only permissible twice: after that, the parties should either hold Together on equitable terms, or separate with kindness.”
+      <span class="ref">2:229</span>
+    </p>
+    <h3>1. Parties</h3>
+    <div class="grid">
+      <label class="field">Husband
+        <input data-f type="text" id="div-husband">
+      </label>
+      <label class="field">Wife
+        <input data-f type="text" id="div-wife">
+      </label>
+      <label class="field">Date of pronouncement / writing
+        <input data-f type="date" id="div-date">
+      </label>
+      <label class="field">Place
+        <input data-f type="text" id="div-place">
+      </label>
+      <label class="field">Which divorce (count)
+        <select data-f id="div-count">
+          <option value="1">First</option>
+          <option value="2">Second</option>
+          <option value="3">Third (irrevocable until new marriage — 2:230)</option>
+        </select>
+      </label>
+      <label class="field">Type
+        <select data-f id="div-type">
+          <option value="revocable">Revocable (within ʿiddah)</option>
+          <option value="khul">Khulʿ / release for consideration (2:229)</option>
+          <option value="irrevocable">Irrevocable</option>
+        </select>
+      </label>
+    </div>
+    <h3>2. ʿIddah &amp; lodging</h3>
+    <div class="grid">
+      <label class="field">ʿIddah kind
+        <select data-f id="div-iddah">
+          <option value="menses">Three monthly periods (2:228)</option>
+          <option value="months">Three months (65:4 if no menses)</option>
+          <option value="pregnant">Until delivery (65:4)</option>
+          <option value="widow">Four months and ten days if widowed (2:234)</option>
+        </select>
+      </label>
+      <label class="field">ʿIddah start date
+        <input data-f type="date" id="div-iddah-start">
+      </label>
+      <label class="field full">Lodging during ʿiddah (same style as you live, according to means — 65:6)
+        <textarea data-f id="div-lodge" placeholder="Address / arrangement; annoy them not so as to restrict them"></textarea>
+      </label>
+      <label class="field full">Maintenance / nursing recompense (if any)
+        <textarea data-f id="div-maint" placeholder="65:6–7 · 2:233 if nursing"></textarea>
+      </label>
+      <label class="field full">Dower already given / remitted
+        <input data-f type="text" id="div-mahr">
+      </label>
+    </div>
+    <ul class="covenants">
+      <li><div class="en">Either hold together on equitable terms, or separate with kindness — not to injure.</div><span class="ref">2:229 · 2:231</span></li>
+      <li><div class="en">Do not take them back to injure them or take undue advantage.</div><span class="ref">2:231</span></li>
+      <li><div class="ar" lang="ar" dir="rtl">أَسْكِنُوهُنَّ مِنْ حَيْثُ سَكَنْتُمْ مِنْ وُجْدِكُمْ</div><div class="en">Lodge them where you lodge, according to your means; do not harm them to constrain them.</div><span class="ref">65:6</span></li>
+    </ul>
+    <div class="sign-grid">
+      <div class="sign-box"><h4>Husband</h4><label class="field">Signature<input data-f type="text" id="div-sig-h"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Wife</h4><label class="field">Signature<input data-f type="text" id="div-sig-w"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Witness 1</h4><label class="field">Name<input data-f type="text" id="div-w1"></label><div class="sign-line">Recommended</div></div>
+      <div class="sign-box"><h4>Witness 2</h4><label class="field">Name<input data-f type="text" id="div-w2"></label><div class="sign-line">Recommended</div></div>
+    </div>
+  </article>
+
+  <!-- ===================== BEQUEST ===================== -->
+  <article class="contract" id="tab-bequest" data-key="bequest">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">الْوَصِيَّةُ</p>
+      <h2>Bequest / Will</h2>
+      <p class="sub">Waṣiyya to parents and next of kin according to reasonable usage — 2:180 · 5:106</p>
+    </header>
+    <p class="epigraph">
+      “It is prescribed, when death approaches any of you, if he leave any goods that he make a bequest to parents and next of kin, according to reasonable usage…”
+      <span class="ref">2:180</span>
+    </p>
+    <p class="note no-print">Bequests come before fixed inheritance shares (4:11–12). Changing a heard bequest wrongfully is sin (2:181). Take two just witnesses (5:106).</p>
+    <h3>1. Testator</h3>
+    <div class="grid">
+      <label class="field">Full name
+        <input data-f type="text" id="beq-name">
+      </label>
+      <label class="field">Date of this writing
+        <input data-f type="date" id="beq-date">
+      </label>
+      <label class="field full">Sound mind affirmation
+        <input data-f type="text" id="beq-mind" value="I make this bequest of my own will, in sound judgment">
+      </label>
+    </div>
+    <h3>2. Bequests (before inheritance shares)</h3>
+    <div class="grid">
+      <label class="field full">Bequest to parents / kin / others (reasonable usage)
+        <textarea data-f id="beq-gifts" placeholder="Name · relation · item or share of estate…"></textarea>
+      </label>
+      <label class="field full">Debts to pay first
+        <textarea data-f id="beq-debts"></textarea>
+      </label>
+      <label class="field full">Executor / who carries out
+        <input data-f type="text" id="beq-exec">
+      </label>
+      <label class="field full">Remainder
+        <input data-f type="text" id="beq-rest" value="Remainder after debts and bequests: by Allah’s shares in 4:11–12, 4:176">
+      </label>
+    </div>
+    <label class="check"><input data-f type="checkbox" id="beq-c1"><span>Whoever alters it after hearing it — the sin is on those who alter it. <b>2:181</b></span></label>
+    <label class="check"><input data-f type="checkbox" id="beq-c2"><span>Two just witnesses taken among us (or others if journeying). <b>5:106</b></span></label>
+    <div class="sign-grid">
+      <div class="sign-box"><h4>Testator</h4><label class="field">Signature<input data-f type="text" id="beq-sig"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Executor (accepts)</h4><label class="field">Signature<input data-f type="text" id="beq-sig-e"></label><div class="sign-line">Optional</div></div>
+      <div class="sign-box"><h4>Witness 1 (just)</h4><label class="field">Name &amp; oath readiness<input data-f type="text" id="beq-w1"></label><div class="sign-line">5:106</div></div>
+      <div class="sign-box"><h4>Witness 2 (just)</h4><label class="field">Name &amp; oath readiness<input data-f type="text" id="beq-w2"></label><div class="sign-line">5:106</div></div>
+    </div>
+  </article>
+
+  <!-- ===================== HOUSING ===================== -->
+  <article class="contract" id="tab-housing" data-key="housing">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">عَقْدُ السَّكَنِ / الْإِيوَاءِ</p>
+      <h2>Housing / Dwelling Agreement</h2>
+      <p class="sub">Homes as rest; permission to enter; lodging according to means — 16:80 · 24:27–29 · 65:6 · 4:29</p>
+    </header>
+    <p class="epigraph">
+      “It is Allah Who made your habitations homes of rest and quiet for you…”
+      <span class="ref">16:80</span>
+    </p>
+    <p class="note no-print">
+      The Qur’an does not name a modern “lease,” but it frames dwellings as sakana (rest),
+      forbids entering others’ houses without permission, allows fair lodging, and requires
+      mutual good-will in property dealings (4:29). This form records a dwelling arrangement
+      on those principles.
+    </p>
+    <h3>1. Parties</h3>
+    <div class="grid">
+      <label class="field">Host / owner / provider of dwelling
+        <input data-f type="text" id="house-host">
+      </label>
+      <label class="field">Resident / guest / lodger
+        <input data-f type="text" id="house-guest">
+      </label>
+      <label class="field">Date of agreement
+        <input data-f type="date" id="house-date">
+      </label>
+      <label class="field">Place of signing
+        <input data-f type="text" id="house-place">
+      </label>
+    </div>
+    <h3>2. The dwelling</h3>
+    <div class="grid">
+      <label class="field full">Address / description of the house or lodging
+        <textarea data-f id="house-addr"></textarea>
+      </label>
+      <label class="field">Purpose
+        <select data-f id="house-purpose">
+          <option value="live">Living / rest (sakana)</option>
+          <option value="iddah">ʿIddah lodging (65:6)</option>
+          <option value="guest">Guest / temporary stay</option>
+          <option value="store">Non-living use / goods (24:29)</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <label class="field">Term (from → to, or open)
+        <input data-f type="text" id="house-term">
+      </label>
+      <label class="field">Contribution / rent / gift (if any)
+        <input data-f type="text" id="house-pay" placeholder="Mutual good-will — 4:29; or none">
+      </label>
+      <label class="field">Payment timing
+        <input data-f type="text" id="house-pay-when">
+      </label>
+      <label class="field full">Rooms / facilities shared or reserved
+        <textarea data-f id="house-rooms"></textarea>
+      </label>
+      <label class="field full">House rules (quiet, guests, harm)
+        <textarea data-f id="house-rules" placeholder="Annoy not / do not restrict unjustly — cf. 65:6"></textarea>
+      </label>
+    </div>
+    <h3>3. Covenants of the dwelling</h3>
+    <ul class="covenants">
+      <li>
+        <div class="ar" lang="ar" dir="rtl">وَاللَّهُ جَعَلَ لَكُمْ مِنْ بُيُوتِكُمْ سَكَنًا</div>
+        <div class="en">The house is for rest and quiet; neither party shall turn it into harm or fear without right.</div>
+        <span class="ref">16:80</span>
+      </li>
+      <li>
+        <div class="en">Enter not houses other than your own until you have asked permission and saluted those in them; if asked to go back, go back.</div>
+        <span class="ref">24:27–28</span>
+      </li>
+      <li>
+        <div class="en">No fault to enter non-living spaces that serve a use for you, by agreement.</div>
+        <span class="ref">24:29</span>
+      </li>
+      <li>
+        <div class="en">If this lodging is for ʿiddah: live in the same style as the provider lives, according to means; annoy not so as to restrict.</div>
+        <span class="ref">65:6</span>
+      </li>
+      <li>
+        <div class="en">Any payment or exchange of benefit is by mutual good-will — not devouring wealth wrongfully.</div>
+        <span class="ref">4:29</span>
+      </li>
+      <li>
+        <div class="en">If written as a deferred obligation (rent over a term), reduce it to writing and take witnesses.</div>
+        <span class="ref">2:282</span>
+      </li>
+    </ul>
+    <label class="check"><input data-f type="checkbox" id="house-c1"><span>Permission and salute before entry of private rooms. <b>24:27</b></span></label>
+    <label class="check"><input data-f type="checkbox" id="house-c2"><span>No wrongful expulsion from homes; dealings in mutual good-will. <b>4:29 · 2:84</b></span></label>
+    <label class="check"><input data-f type="checkbox" id="house-c3"><span>Belongings of the resident remain their trust; return what is due. <b>4:58</b></span></label>
+    <div class="sign-grid">
+      <div class="sign-box"><h4>Host / owner</h4><label class="field">Signature<input data-f type="text" id="house-sig-h"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Resident</h4><label class="field">Signature<input data-f type="text" id="house-sig-g"></label><div class="sign-line">Signature</div></div>
+      <div class="sign-box"><h4>Witness 1</h4><label class="field">Name<input data-f type="text" id="house-w1"></label><div class="sign-line">If deferred pay — 2:282</div></div>
+      <div class="sign-box"><h4>Witness 2</h4><label class="field">Name<input data-f type="text" id="house-w2"></label><div class="sign-line">If deferred pay — 2:282</div></div>
+    </div>
+  </article>
+
+  <p class="footer-note">
+    Drawn from <code>Al-Quran.txt</code> ·
+    <a href="Al-Quran-Marriage.html">Marriage contract</a> ·
+    <a href="Al-Quran-Study.html">Study</a>
+  </p>
+</div>
+
+<script>
+(function () {
+  var PREFIX = "alquran-contract-";
+  var active = "debt";
+
+  function panel() {
+    return document.getElementById("tab-" + active);
+  }
+
+  function saveActive() {
+    var el = panel();
+    if (!el) return;
+    var data = {};
+    el.querySelectorAll("[data-f]").forEach(function (f) {
+      if (!f.id) return;
+      data[f.id] = f.type === "checkbox" ? f.checked : f.value;
+    });
+    try { localStorage.setItem(PREFIX + active, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function loadActive() {
+    var el = panel();
+    if (!el) return;
+    try {
+      var raw = localStorage.getItem(PREFIX + active);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      el.querySelectorAll("[data-f]").forEach(function (f) {
+        if (!f.id || !(f.id in data)) return;
+        if (f.type === "checkbox") f.checked = !!data[f.id];
+        else f.value = data[f.id];
+      });
+    } catch (e) {}
+  }
+
+  function show(tab) {
+    saveActive();
+    active = tab;
+    document.querySelectorAll(".contract").forEach(function (c) {
+      c.classList.toggle("active", c.id === "tab-" + tab);
+    });
+    document.querySelectorAll(".tabs [data-tab]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-tab") === tab ? "true" : "false");
+    });
+    loadActive();
+    try { localStorage.setItem(PREFIX + "active-tab", tab); } catch (e) {}
+  }
+
+  document.querySelector(".tabs").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-tab]");
+    if (!btn) return;
+    show(btn.getAttribute("data-tab"));
+  });
+
+  document.getElementById("btn-print").addEventListener("click", function () {
+    saveActive();
+    window.print();
+  });
+
+  document.getElementById("btn-clear").addEventListener("click", function () {
+    if (!confirm("Clear fields on the current contract?")) return;
+    var el = panel();
+    el.querySelectorAll("[data-f]").forEach(function (f) {
+      if (f.type === "checkbox") f.checked = false;
+      else if (f.tagName === "SELECT") f.selectedIndex = 0;
+      else f.value = "";
+    });
+    try { localStorage.removeItem(PREFIX + active); } catch (e) {}
+  });
+
+  document.querySelectorAll(".contract [data-f]").forEach(function (f) {
+    f.addEventListener("change", saveActive);
+    f.addEventListener("input", saveActive);
+  });
+
+  var start = "debt";
+  try {
+    start = localStorage.getItem(PREFIX + "active-tab") || "debt";
+  } catch (e) {}
+  if (!document.getElementById("tab-" + start)) start = "debt";
+  active = start;
+  document.querySelectorAll(".contract").forEach(function (c) {
+    c.classList.toggle("active", c.id === "tab-" + start);
+  });
+  document.querySelectorAll(".tabs [data-tab]").forEach(function (b) {
+    b.setAttribute("aria-pressed", b.getAttribute("data-tab") === start ? "true" : "false");
+  });
+  loadActive();
+})();
+</script>
+</body>
+</html>

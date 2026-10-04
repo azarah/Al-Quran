@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Al-Quran — Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --color-bg: #faf8e8;
@@ -464,201 +467,408 @@ h1 {
   padding: 8px 14px;
 }
 
-/* ---- As-Sirat game ---- */
-.sirat { max-width: 760px; }
+/* ---- As-Sirat game (soft Final Fantasy window UI) ---- */
+#view-game.active {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(120, 170, 200, 0.35), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 90% 10%, rgba(200, 170, 120, 0.22), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(90, 130, 160, 0.2), transparent 45%),
+    linear-gradient(165deg, #d8e4ef 0%, #e8eef4 42%, #d5dde8 100%);
+  padding: 16px 16px 48px;
+}
+
+.sirat {
+  --ff-ink: #1e2a38;
+  --ff-muted: #5a6a7a;
+  --ff-gold: #c4a35a;
+  --ff-gold-soft: #e8d5a3;
+  --ff-crystal: #6eb8d4;
+  --ff-crystal-deep: #3a7fa0;
+  --ff-window: linear-gradient(160deg, rgba(236, 244, 250, 0.92) 0%, rgba(210, 224, 238, 0.95) 48%, rgba(190, 208, 226, 0.96) 100%);
+  --ff-window-edge: linear-gradient(135deg, #f0e6c8, #c4a35a 40%, #8a7340 60%, #e8d5a3);
+  max-width: 820px;
+  margin: 0 auto;
+  color: var(--ff-ink);
+  font-family: "Nunito", Georgia, sans-serif;
+}
+
+.sirat-stage {
+  position: relative;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--ff-window-edge);
+  box-shadow: 0 12px 40px rgba(40, 60, 90, 0.12);
+}
+.sirat-stage-inner {
+  border-radius: 13px;
+  background: var(--ff-window);
+  padding: 18px 18px 16px;
+  backdrop-filter: blur(10px);
+}
+
 .sirat-head {
-  align-items: flex-start;
+  align-items: flex-end;
   display: flex;
   flex-wrap: wrap;
   gap: 10px 20px;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(196, 163, 90, 0.35);
 }
-.sirat-head h1 { margin-bottom: 2px; }
+.sirat-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sirat-crystal {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background:
+    linear-gradient(145deg, #f5fbff 10%, #8ec9e0 45%, #4a90b0 100%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  animation: sirat-shimmer 3.5s ease-in-out infinite;
+}
+@keyframes sirat-shimmer {
+  0%, 100% { filter: brightness(1); transform: scale(1); }
+  50% { filter: brightness(1.12); transform: scale(1.04); }
+}
+.sirat-head h1 {
+  margin: 0;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.65em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(120deg, #2a4a62 0%, #3d6b8a 40%, #8a7340 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sirat-head .lead {
+  margin: 2px 0 0;
+  color: var(--ff-muted);
+  font-size: 0.9em;
+}
 .sirat-status {
-  color: var(--color-surah-title);
-  font-size: .92em;
-  font-weight: bold;
-  margin: 8px 0 0;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #2a4a62;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(180, 210, 230, 0.55));
+  border: 1px solid rgba(196, 163, 90, 0.45);
 }
+
 .sirat-meters {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
   margin: 0 0 14px;
 }
 .sirat-meter {
-  background: var(--color-panel);
-  border: 1px solid var(--color-rule);
-  border-radius: 8px;
-  padding: 10px 12px;
+  position: relative;
+  padding: 12px 12px 10px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(200, 218, 232, 0.55));
+  border: 1px solid rgba(196, 163, 90, 0.4);
+  overflow: hidden;
+}
+.sirat-meter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ff-gold-soft), transparent);
 }
 .sirat-meter span {
-  color: var(--color-muted);
+  color: var(--ff-muted);
   display: block;
-  font-size: .75em;
-  letter-spacing: .04em;
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 .sirat-meter b {
-  color: var(--color-surah-title);
   display: block;
-  font-size: 1.15em;
-  margin-top: 2px;
+  margin-top: 3px;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.05em;
+  font-weight: 700;
+  color: #2a4a62;
 }
 .sirat-meter small {
-  color: var(--color-muted);
-  font-size: .78em;
+  color: var(--ff-muted);
+  font-size: 0.72em;
 }
 .sirat-bar {
-  background: rgba(107, 45, 138, .12);
-  border-radius: 2px;
-  height: 6px;
   margin-top: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #9aadb8, #c5d2db);
+  border: 1px solid rgba(42, 74, 98, 0.2);
   overflow: hidden;
 }
 .sirat-bar i {
-  background: var(--color-surah-title);
   display: block;
   height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3a7fa0, #6eb8d4 55%, #b8e4f2);
+  transition: width 0.35s ease;
 }
+
 .sirat-roots { margin-bottom: 12px; }
 .sirat-label {
-  color: var(--color-muted);
+  color: var(--ff-muted);
   display: block;
-  font-size: .75em;
-  letter-spacing: .04em;
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   margin-bottom: 6px;
   text-transform: uppercase;
 }
 .sirat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .sirat-chip {
-  background: transparent;
-  border: 1px solid var(--color-rule);
-  border-radius: 4px;
-  color: var(--color-muted);
-  font-size: .82em;
-  padding: 4px 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(200, 215, 228, 0.4));
+  border: 1px solid rgba(120, 150, 170, 0.35);
+  border-radius: 999px;
+  color: var(--ff-muted);
+  font-size: 0.8em;
+  padding: 4px 10px;
 }
 .sirat-chip.on {
-  border-color: var(--color-arabic);
-  color: var(--color-arabic);
+  border-color: rgba(196, 163, 90, 0.65);
+  color: #2a4a62;
+  background: linear-gradient(180deg, #fff8e8, #e8d5a3);
+  font-weight: 700;
 }
+.sirat-chip[disabled],
+.sirat-choice[disabled] {
+  cursor: default;
+  opacity: 0.75;
+}
+
 .sirat-map {
-  background: var(--color-panel);
-  border: 1px solid var(--color-rule);
-  border-radius: 8px;
-  margin-bottom: 10px;
-  overflow: hidden;
   position: relative;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(196, 163, 90, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+.sirat-map::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 40px rgba(42, 74, 98, 0.08);
 }
 .sirat-map-art {
   display: block;
   height: auto;
   width: 100%;
 }
+.sirat-world .sirat-pin { min-width: 88px; }
+
 .sirat-pin {
-  background: #fffdf0;
-  border: 2px solid var(--color-surah-title);
-  border-radius: 6px;
-  color: var(--color-ink);
+  position: absolute;
+  z-index: 2;
+  min-width: 78px;
+  padding: 7px 10px 7px 12px;
+  transform: translate(-50%, -50%);
+  text-align: left;
   cursor: pointer;
   font-family: inherit;
-  min-width: 76px;
-  padding: 6px 8px;
-  position: absolute;
-  text-align: left;
-  transform: translate(-50%, -50%);
-  z-index: 2;
+  color: var(--ff-ink);
+  border-radius: 8px;
+  border: 1px solid rgba(196, 163, 90, 0.55);
+  background: linear-gradient(165deg, rgba(255, 252, 245, 0.95), rgba(220, 232, 242, 0.92));
+  box-shadow: 0 4px 14px rgba(40, 60, 90, 0.12);
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
-.sirat-pin strong { display: block; font-size: .88em; color: var(--color-surah-title); }
-.sirat-pin em {
-  color: var(--color-muted);
+.sirat-pin::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--ff-gold-soft), var(--ff-crystal));
+}
+.sirat-pin strong {
   display: block;
-  font-size: .72em;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: #2a4a62;
+}
+.sirat-pin em {
+  color: var(--ff-muted);
+  display: block;
+  font-size: 0.68em;
   font-style: normal;
 }
-.sirat-pin:hover:not(:disabled) { background: #fff; }
-.sirat-pin.done { border-color: var(--color-arabic); }
-.sirat-pin.done strong { color: var(--color-arabic); }
+.sirat-pin:hover:not(:disabled) {
+  transform: translate(-50%, -52%) scale(1.03);
+  border-color: var(--ff-gold);
+}
+.sirat-pin.done {
+  border-color: rgba(90, 160, 140, 0.7);
+  background: linear-gradient(165deg, rgba(235, 250, 245, 0.95), rgba(190, 220, 210, 0.9));
+}
+.sirat-pin.done strong { color: #2d6b5a; }
+.sirat-pin.done::before {
+  background: linear-gradient(180deg, #a8e0c8, #3d8a70);
+}
 .sirat-pin.locked {
-  border-color: var(--color-rule);
-  color: var(--color-muted);
+  opacity: 0.5;
   cursor: not-allowed;
-  opacity: .55;
+  filter: grayscale(0.35);
 }
-.sirat-pin.locked strong { color: var(--color-muted); }
+.sirat-pin.locked strong { color: var(--ff-muted); }
+
 .sirat-hint {
-  color: var(--color-muted);
-  font-size: .86em;
   margin: 0;
+  color: var(--ff-muted);
+  font-size: 0.82em;
+  text-align: center;
 }
+
 .sirat-overlay {
-  align-items: flex-start;
-  background: rgba(50, 40, 20, .35);
+  align-items: center;
+  background:
+    radial-gradient(ellipse at center, rgba(50, 80, 110, 0.25), rgba(20, 35, 50, 0.55));
   bottom: 0;
   display: flex;
   justify-content: center;
   left: 0;
   overflow: auto;
-  padding: 24px 12px 40px;
+  padding: 28px 14px 48px;
   position: fixed;
   right: 0;
   top: var(--top-h);
   z-index: 40;
+  animation: sirat-fade 0.25s ease;
 }
+@keyframes sirat-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .sirat-panel {
-  background: var(--color-panel);
-  border: 2px solid var(--color-rule);
-  border-radius: 10px;
-  max-width: 520px;
-  padding: 18px 18px 14px;
+  position: relative;
   width: 100%;
+  max-width: 540px;
+  padding: 4px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f2e6c4, #c4a35a 35%, #7a6540 70%, #e6d7a8);
+  box-shadow: 0 20px 50px rgba(20, 35, 50, 0.35);
+  animation: sirat-panel-in 0.3s ease;
+}
+@keyframes sirat-panel-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.sirat-panel-frame {
+  position: relative;
+  border-radius: 11px;
+  background: linear-gradient(165deg, #f4f8fc 0%, #dce8f2 55%, #c8d8e8 100%);
+  padding: 18px 18px 14px;
+  overflow: hidden;
+}
+.sirat-panel-frame::before,
+.sirat-panel-frame::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(196, 163, 90, 0.7);
+}
+.sirat-panel-frame::before {
+  top: 8px;
+  left: 8px;
+  border-right: none;
+  border-bottom: none;
+}
+.sirat-panel-frame::after {
+  bottom: 8px;
+  right: 8px;
+  border-left: none;
+  border-top: none;
 }
 .sirat-panel h2 {
-  border-bottom: 2px solid var(--color-rule);
-  color: var(--color-surah-title);
+  position: relative;
+  margin: 0 0 14px;
+  padding: 6px 12px 8px;
+  font-family: "Cinzel", Georgia, serif;
   font-size: 1.15em;
-  margin: 0 0 12px;
-  padding-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #f7fafc;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #5a8aaa 0%, #3a6788 55%, #2a4a62 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
-.sirat-panel-body { font-size: .95em; line-height: 1.55; }
+.sirat-panel-body {
+  font-size: 0.95em;
+  line-height: 1.55;
+  color: var(--ff-ink);
+}
 .sirat-panel-body p { margin: 0 0 10px; }
 .sirat-ar {
-  color: var(--color-arabic);
+  color: #2d6b5a;
   font-size: 1.2em;
   line-height: 1.8;
   text-align: right;
 }
 .sirat-role {
-  color: var(--color-translation);
-  font-size: .88em;
+  color: #3a7fa0;
+  font-size: 0.88em;
+  font-weight: 700;
 }
-.sirat-muted { color: var(--color-muted); font-size: .9em; }
+.sirat-muted { color: var(--ff-muted); font-size: 0.9em; }
 .sirat-gain {
-  background: rgba(27, 94, 32, .08);
-  border-left: 3px solid var(--color-arabic);
-  padding: 8px 10px;
+  background: linear-gradient(90deg, rgba(90, 160, 140, 0.15), rgba(255, 255, 255, 0.4));
+  border-left: 3px solid #3d8a70;
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px;
 }
 .sirat-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 16px;
+  justify-content: flex-end;
 }
 .sirat-btn {
-  background: transparent;
-  border: 2px solid var(--color-surah-title);
-  border-radius: 4px;
-  color: var(--color-surah-title);
+  position: relative;
+  background: linear-gradient(180deg, #f8fcff, #c5d6e4);
+  border: 1px solid rgba(196, 163, 90, 0.55);
+  border-radius: 8px;
+  color: #2a4a62;
   cursor: pointer;
-  font-family: inherit;
-  font-size: .9em;
-  padding: 7px 12px;
+  font-family: "Nunito", inherit;
+  font-size: 0.9em;
+  font-weight: 700;
+  padding: 8px 16px;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.sirat-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
 }
 .sirat-btn.primary {
-  background: var(--color-surah-title);
-  color: #fff;
+  background: linear-gradient(180deg, #7ab0c8, #3a7fa0 60%, #2a5a78);
+  border-color: rgba(232, 213, 163, 0.5);
+  color: #f4f9fc;
 }
 .sirat-options {
   display: flex;
@@ -667,28 +877,55 @@ h1 {
   margin: 10px 0;
 }
 .sirat-choice {
-  background: #fff;
-  border: 1px solid var(--color-rule);
-  border-radius: 6px;
+  position: relative;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.75), rgba(220, 232, 242, 0.65));
+  border: 1px solid rgba(120, 150, 170, 0.35);
+  border-radius: 8px;
   color: inherit;
   cursor: pointer;
   font-family: inherit;
-  font-size: .92em;
-  padding: 10px 12px;
+  font-size: 0.92em;
+  padding: 11px 12px 11px 28px;
   text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
-.sirat-choice:hover { border-color: var(--color-surah-title); }
+.sirat-choice::before {
+  content: "▸";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ff-crystal-deep);
+  opacity: 0.35;
+  font-size: 0.85em;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.sirat-choice:hover {
+  border-color: var(--ff-gold);
+  background: linear-gradient(90deg, rgba(255, 248, 230, 0.9), rgba(210, 230, 242, 0.75));
+}
+.sirat-choice:hover::before {
+  opacity: 1;
+  transform: translateY(-50%) translateX(2px);
+  color: var(--ff-gold);
+}
 .sirat-choice.done {
-  border-color: var(--color-arabic);
-  color: var(--color-arabic);
+  border-color: rgba(90, 160, 140, 0.65);
+  color: #2d6b5a;
+}
+.sirat-choice.done::before {
+  content: "◆";
+  opacity: 0.8;
+  color: #3d8a70;
 }
 .sirat-link {
   background: none;
   border: none;
-  color: var(--color-translation);
+  color: #3a7fa0;
   cursor: pointer;
   font-family: inherit;
   font-size: inherit;
+  font-weight: 700;
   padding: 0;
   text-decoration: underline;
   text-align: left;
@@ -699,18 +936,19 @@ h1 {
   padding: 0;
 }
 .sirat-book-list li {
-  border-bottom: 1px solid var(--color-rule);
+  border-bottom: 1px solid rgba(120, 150, 170, 0.25);
   padding: 8px 0;
 }
 .sirat-book-list span {
-  color: var(--color-muted);
+  color: var(--ff-muted);
   display: block;
-  font-size: .85em;
+  font-size: 0.85em;
   margin-top: 2px;
 }
 .sirat-complete {
-  background: rgba(107, 45, 138, .08);
-  border-left: 4px solid var(--color-surah-title);
+  background: linear-gradient(90deg, rgba(90, 140, 180, 0.15), rgba(255, 255, 255, 0.35));
+  border-left: 4px solid #3a7fa0;
+  border-radius: 0 8px 8px 0;
   margin: 12px 0;
   padding: 10px 12px;
 }
@@ -731,6 +969,7 @@ h1 {
   .global-search { max-width: none; }
   .app-bar .brand span { display: none; }
   .bar-actions .tool-btn.ghost { display: none; }
+  .sirat-head h1 { font-size: 1.35em; }
 }
 </style>
 </head>
@@ -753,16 +992,21 @@ h1 {
     <div class="nav-label">Study</div>
     <button type="button" data-route="home">Home</button>
     <button type="button" data-route="read">Read</button>
+    <button type="button" data-route="voices">Voices</button>
     <button type="button" data-route="search">Search</button>
     <button type="button" data-route="bookmarks">Bookmarks</button>
     <div class="nav-label">Play</div>
     <button type="button" data-route="game">As-Sirat</button>
     <div class="nav-label">Knowledge</div>
     <button type="button" data-route="roots">Roots &amp; letters</button>
+    <button type="button" data-route="letters">Letter context</button>
     <button type="button" data-route="genealogy">Genealogy &amp; places</button>
     <button type="button" data-route="angels">Angels</button>
     <button type="button" data-route="people">Believers</button>
+    <button type="button" data-route="names">Names of Allah</button>
     <button type="button" data-route="calculators">Calculators</button>
+    <button type="button" data-route="marriage">Marriage contract</button>
+    <button type="button" data-route="contracts">All contracts</button>
     <div class="nav-label">Source</div>
     <button type="button" data-route="fulltext">Full text page</button>
   </nav>
@@ -780,14 +1024,19 @@ h1 {
       </div>
       <div class="module-grid" id="module-grid">
         <button type="button" class="module-card" data-go="read"><b>Read</b><span>Arabic with English, surah by surah</span></button>
+        <button type="button" class="module-card" data-go="voices"><b>Voices</b><span>Talk frames &amp; story voice — literary styling</span></button>
         <button type="button" class="module-card" data-go="search"><b>Search</b><span>Find words and phrases in both languages</span></button>
         <button type="button" class="module-card" data-go="roots"><b>Roots &amp; letters</b><span>1,651 roots, diagrams, letter keywords</span></button>
+        <button type="button" class="module-card" data-go="letters"><b>Letter context</b><span>Themes, keywords, and sense clusters for each letter</span></button>
         <button type="button" class="module-card" data-go="genealogy"><b>Genealogy &amp; places</b><span>Prophets, map, destroyed peoples</span></button>
         <button type="button" class="module-card" data-go="angels"><b>Angels</b><span>Named angels and offices in the text</span></button>
         <button type="button" class="module-card" data-go="people"><b>Believers</b><span>Types of faith and rejection</span></button>
+        <button type="button" class="module-card" data-go="names"><b>Names of Allah</b><span>99 Beautiful Names linked to the text</span></button>
         <button type="button" class="module-card" data-go="calculators"><b>Calculators</b><span>Inheritance, iddah, Ramadan, oaths, booty</span></button>
+        <button type="button" class="module-card" data-go="marriage"><b>Marriage contract</b><span>Nikah form from Quranic covenants</span></button>
+        <button type="button" class="module-card" data-go="contracts"><b>All contracts</b><span>Debt, trust, divorce, bequest, housing…</span></button>
         <button type="button" class="module-card" data-go="bookmarks"><b>Bookmarks</b><span>Saved verses on this device</span></button>
-        <button type="button" class="module-card" data-go="game"><b>As-Sirat</b><span>Midian slice — well, mentor, measure, signs</span></button>
+        <button type="button" class="module-card" data-go="game"><b>As-Sirat</b><span>World map — Midian, Egypt, Sinai, Makkah, Ruins</span></button>
       </div>
       <div class="home-row">
         <div class="panel" id="continue-panel">
@@ -799,8 +1048,9 @@ h1 {
           <h2>How this fits together</h2>
           <div class="note" style="margin:0">
             <p><b>Read &amp; Search</b> use the bilingual text in <code>Al-Quran.txt</code>.</p>
-            <p><b>Roots, Genealogy, Angels, People, Calculators</b> open your existing study pages inside this shell — same data, one navigation.</p>
-            <p><b>As-Sirat</b> is a playable Midian chapter: Stance choices, root unlocks, and verse hunts that open the reader.</p>
+            <p><b>Voices</b> is the same text with literary talk frames vs story voice (styling only).</p>
+            <p><b>Roots, Letter context, Genealogy, Angels, People, Names of Allah, Calculators</b> open your existing study pages inside this shell — same data, one navigation.</p>
+            <p><b>As-Sirat</b> is a multi-hub RPG: Map of Signs, debates, village law, Asma seals, and New Game+.</p>
             <p>Verse references in search open the reader at that ayah.</p>
           </div>
         </div>
@@ -826,6 +1076,11 @@ h1 {
       <h2 class="surah-head" id="surah-title"></h2>
       <p class="surah-sub" id="surah-sub"></p>
       <div id="verse-list"></div>
+    </section>
+
+    <!-- VOICES (literary dialogue styling) -->
+    <section class="view iframe-view" id="view-voices" data-view="voices">
+      <iframe title="Voices literary reader" src="Al-Quran-Voices.html" loading="lazy"></iframe>
     </section>
 
     <!-- SEARCH -->
@@ -854,6 +1109,9 @@ h1 {
     <section class="view iframe-view" id="view-roots" data-view="roots">
       <iframe title="Root words" src="Al-Quran-Roots.html" loading="lazy"></iframe>
     </section>
+    <section class="view iframe-view" id="view-letters" data-view="letters">
+      <iframe title="Letter context" src="Al-Quran-Letters.html" loading="lazy"></iframe>
+    </section>
     <section class="view iframe-view" id="view-genealogy" data-view="genealogy">
       <iframe title="Genealogy and places" src="Al-Quran-Genealogy.html" loading="lazy"></iframe>
     </section>
@@ -863,13 +1121,22 @@ h1 {
     <section class="view iframe-view" id="view-people" data-view="people">
       <iframe title="Believers and non-believers" src="Al-Quran-People.html" loading="lazy"></iframe>
     </section>
+    <section class="view iframe-view" id="view-names" data-view="names">
+      <iframe title="Names of Allah" src="Al-Quran-Names.html" loading="lazy"></iframe>
+    </section>
     <section class="view iframe-view" id="view-calculators" data-view="calculators">
       <iframe title="Rule calculators" src="Al-Quran-Calculators.html" loading="lazy"></iframe>
+    </section>
+    <section class="view iframe-view" id="view-marriage" data-view="marriage">
+      <iframe title="Marriage contract" src="Al-Quran-Marriage.html" loading="lazy"></iframe>
+    </section>
+    <section class="view iframe-view" id="view-contracts" data-view="contracts">
+      <iframe title="Quranic contracts" src="Al-Quran-Contracts.html" loading="lazy"></iframe>
     </section>
   </main>
 </div>
 
-<script src="quran_game.js?v=2"></script>
+<script src="quran_game.js?v=4"></script>
 <script src="quran_study.js?v=5"></script>
 </body>
 </html>

@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Voices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2a2620;
+  --muted: #6a6358;
+  --rule: rgba(90, 70, 40, 0.16);
+  --bg: #f3ebe0;
+  --panel: rgba(255, 250, 242, 0.88);
+  --story: #3a342c;
+  --arabic: #1f4d3a;
+  --divine: #4a3d7a;
+  --divine-bg: linear-gradient(135deg, rgba(90, 70, 150, 0.1), rgba(255, 250, 242, 0.95));
+  --messenger: #1f5a6e;
+  --messenger-bg: linear-gradient(135deg, rgba(40, 120, 140, 0.1), rgba(255, 250, 242, 0.95));
+  --angel: #3d6b5a;
+  --angel-bg: linear-gradient(135deg, rgba(60, 120, 95, 0.1), rgba(255, 250, 242, 0.95));
+  --people: #7a4a2a;
+  --people-bg: linear-gradient(135deg, rgba(140, 90, 50, 0.1), rgba(255, 250, 242, 0.95));
+  --woman: #6b3d5a;
+  --woman-bg: linear-gradient(135deg, rgba(130, 70, 110, 0.1), rgba(255, 250, 242, 0.95));
+  --adversary: #6b2d2d;
+  --adversary-bg: linear-gradient(135deg, rgba(130, 50, 50, 0.1), rgba(255, 250, 242, 0.95));
+  --rejecter: #8b1a1a;
+  --rejecter-bg: linear-gradient(135deg, rgba(160, 40, 40, 0.12), rgba(255, 248, 242, 0.95));
+  --named: #2d4a6b;
+  --named-bg: linear-gradient(135deg, rgba(50, 90, 130, 0.1), rgba(255, 250, 242, 0.95));
+  --top-h: 58px;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(180, 150, 100, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 40% at 100% 20%, rgba(120, 140, 160, 0.12), transparent 50%),
+    linear-gradient(180deg, #f6efe6 0%, #ebe2d4 100%);
+  background-attachment: fixed;
+}
+
+a { color: var(--messenger); }
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  min-height: var(--top-h);
+  padding: 10px 16px;
+  background: linear-gradient(180deg, rgba(255, 250, 242, 0.96), rgba(243, 235, 224, 0.92));
+  border-bottom: 1px solid var(--rule);
+  backdrop-filter: blur(8px);
+}
+.brand {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 650;
+  font-size: 1.15em;
+  text-decoration: none;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.brand span {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.78em;
+  margin-left: 6px;
+}
+.top select,
+.top button {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.88em;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--ink);
+  padding: 7px 10px;
+}
+.top button {
+  cursor: pointer;
+  font-weight: 600;
+}
+.top button:hover { border-color: var(--messenger); }
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+.legend button {
+  font-style: normal;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  line-height: 1.2;
+}
+.legend button:hover {
+  border-color: currentColor;
+  background: rgba(255, 255, 255, 0.9);
+}
+.legend button.active {
+  box-shadow: inset 0 0 0 1px currentColor;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.channel-panel {
+  display: none;
+  position: sticky;
+  top: var(--top-h);
+  z-index: 15;
+  max-height: min(48vh, 420px);
+  overflow: auto;
+  margin: 0;
+  padding: 12px 16px 16px;
+  background: linear-gradient(180deg, rgba(255, 250, 242, 0.98), rgba(246, 239, 230, 0.96));
+  border-bottom: 1px solid var(--rule);
+  box-shadow: 0 8px 24px rgba(40, 30, 20, 0.08);
+}
+.channel-panel.open { display: block; }
+.channel-panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 250, 242, 0.96);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.channel-panel-head h3 {
+  margin: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.05em;
+  font-weight: 650;
+}
+.channel-panel-head .count {
+  color: var(--muted);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.78em;
+  font-weight: 600;
+}
+.channel-panel-head .close-panel {
+  margin-left: auto;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.78em;
+  font-weight: 600;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.channel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.channel-list li {
+  margin: 0 0 8px;
+  padding: 0;
+}
+.channel-list a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.65);
+  transition: border-color 0.15s, background 0.15s;
+}
+.channel-list a:hover {
+  border-color: var(--messenger);
+  background: #fff;
+}
+.channel-list .ref {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #9a3a3a;
+  margin-bottom: 4px;
+}
+.channel-list .who {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.channel-list .said {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 0.95em;
+  line-height: 1.45;
+  color: var(--story);
+}
+.channel-empty {
+  color: var(--muted);
+  font-size: 0.92em;
+  padding: 8px 0;
+}
+
+.shell {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 22px 18px 72px;
+}
+
+.intro {
+  margin-bottom: 22px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+}
+.intro h1 {
+  margin: 0 0 8px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.8em;
+  font-weight: 650;
+}
+.intro p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 0.98em;
+}
+.intro p:last-child { margin: 0; }
+
+.status {
+  display: none;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-left: 4px solid #a33;
+  background: rgba(160, 50, 50, 0.08);
+  font-size: 0.92em;
+}
+.status.show { display: block; }
+
+.surah-head {
+  margin: 8px 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.surah-head h2 {
+  margin: 0 0 4px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.55em;
+  font-weight: 650;
+}
+.surah-head .sub {
+  color: var(--muted);
+  font-size: 0.92em;
+}
+
+.verse {
+  margin: 0 0 22px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--rule);
+}
+.verse-ref {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #9a3a3a;
+  margin-bottom: 8px;
+}
+
+/* Story voice — narrative body */
+.arabic {
+  display: block;
+  direction: rtl;
+  text-align: right;
+  color: var(--arabic);
+  font-size: 1.45em;
+  line-height: 1.9;
+  margin: 0 0 12px;
+  font-family: "Traditional Arabic", "Scheherazade New", "Amiri", "Source Serif 4", serif;
+}
+
+.story {
+  color: var(--story);
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.05em;
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+.story .narr {
+  display: inline;
+}
+
+/* Talk frames — dialogue channels */
+.talk {
+  display: block;
+  margin: 10px 0;
+  padding: 12px 14px 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--rule);
+  position: relative;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 1.02em;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.talk .speaker {
+  display: inline-block;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  opacity: 0.9;
+}
+.talk .quote {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  quotes: none;
+}
+.talk .quote::before,
+.talk .quote::after { content: none; }
+
+.talk.divine {
+  background: var(--divine-bg);
+  border-color: rgba(74, 61, 122, 0.28);
+  color: var(--divine);
+  box-shadow: inset 3px 0 0 var(--divine);
+}
+.talk.messenger {
+  background: var(--messenger-bg);
+  border-color: rgba(31, 90, 110, 0.28);
+  color: var(--messenger);
+  box-shadow: inset 3px 0 0 var(--messenger);
+}
+.talk.angel {
+  background: var(--angel-bg);
+  border-color: rgba(61, 107, 90, 0.28);
+  color: var(--angel);
+  box-shadow: inset 3px 0 0 var(--angel);
+}
+.talk.people {
+  background: var(--people-bg);
+  border-color: rgba(122, 74, 42, 0.28);
+  color: var(--people);
+  box-shadow: inset 3px 0 0 var(--people);
+}
+.talk.woman {
+  background: var(--woman-bg);
+  border-color: rgba(107, 61, 90, 0.28);
+  color: var(--woman);
+  box-shadow: inset 3px 0 0 var(--woman);
+}
+.talk.adversary {
+  background: var(--adversary-bg);
+  border-color: rgba(107, 45, 45, 0.28);
+  color: var(--adversary);
+  box-shadow: inset 3px 0 0 var(--adversary);
+}
+.talk.rejecter {
+  background: var(--rejecter-bg);
+  border-color: rgba(139, 26, 26, 0.32);
+  color: var(--rejecter);
+  box-shadow: inset 3px 0 0 var(--rejecter);
+}
+.talk.named {
+  background: var(--named-bg);
+  border-color: rgba(45, 74, 107, 0.28);
+  color: var(--named);
+  box-shadow: inset 3px 0 0 var(--named);
+}
+.talk.voice {
+  background: linear-gradient(135deg, rgba(100, 100, 90, 0.08), rgba(255, 250, 242, 0.95));
+  border-color: rgba(90, 90, 70, 0.22);
+  color: #4a4638;
+  box-shadow: inset 3px 0 0 #6a6558;
+}
+
+.footer-note {
+  margin-top: 28px;
+  color: var(--muted);
+  font-size: 0.85em;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .legend { margin-left: 0; width: 100%; }
+  .intro h1 { font-size: 1.45em; }
+  .arabic { font-size: 1.28em; }
+  .channel-panel { max-height: 40vh; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="Al-Quran-Study.html">Al-Quran <span>Voices</span></a>
+  <label>
+    <select id="surah-select" aria-label="Surah"></select>
+  </label>
+  <button type="button" id="btn-prev">← Prev</button>
+  <button type="button" id="btn-next">Next →</button>
+  <div class="legend" aria-label="Speaker channels — click to list sayings">
+    <button type="button" data-channel="divine" style="color:var(--divine)" title="List Allah / We sayings">Allah / We</button>
+    <button type="button" data-channel="messenger" style="color:var(--messenger)" title="List Messenger sayings">Messenger</button>
+    <button type="button" data-channel="angel" style="color:var(--angel)" title="List Angel sayings">Angel</button>
+    <button type="button" data-channel="named" style="color:var(--named)" title="List named speakers">Named</button>
+    <button type="button" data-channel="woman" style="color:var(--woman)" title="List Woman sayings">Woman</button>
+    <button type="button" data-channel="people" style="color:var(--people)" title="List People sayings">People</button>
+    <button type="button" data-channel="rejecter" style="color:var(--rejecter)" title="List Rejecter sayings">Rejecters</button>
+    <button type="button" data-channel="adversary" style="color:var(--adversary)" title="List Adversary sayings">Adversary</button>
+  </div>
+</header>
+
+<aside id="channel-panel" class="channel-panel" hidden aria-live="polite">
+  <div class="channel-panel-head">
+    <h3 id="channel-panel-title">Sayings</h3>
+    <span class="count" id="channel-panel-count"></span>
+    <button type="button" class="close-panel" id="channel-panel-close" aria-label="Close sayings list">Close</button>
+  </div>
+  <ul class="channel-list" id="channel-list"></ul>
+</aside>
+
+<main class="shell">
+  <div class="intro">
+    <h1>Voices of the Book</h1>
+    <p>
+      A literary reading of the same Arabic and English text: <b>story voice</b> for
+      narrative body, and <b>talk frames</b> for quoted speech — labeled by speaker
+      channel from the surrounding wording. No words are changed; only presentation.
+    </p>
+    <p>
+      Channels are inferred from speech tags in the English translation (He said,
+      They said, Say:, angels said…). Click a channel tag above to list that
+      speaker’s sayings in the current surah. Treat labels as a study aid, not tafsīr.
+    </p>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="surah-head">
+    <h2 id="surah-title">Loading…</h2>
+    <div class="sub" id="surah-sub"></div>
+  </div>
+  <div id="verses"></div>
+  <p class="footer-note">
+    Source: <code>Al-Quran.txt</code> · Serve over HTTP if the corpus does not load ·
+    <a href="Al-Quran-Study.html">Study</a> ·
+    <a href="Al-Quran-Names.html">Names</a> ·
+    <a href="Al-Quran.html">Full text</a>
+  </p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var EN = [
+    "Al-Fatihah", "Al-Baqarah", "Aal-Imran", "An-Nisa", "Al-Ma'idah",
+    "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus",
+    "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr",
+    "An-Nahl", "Al-Isra", "Al-Kahf", "Maryam", "Ta-Ha",
+    "Al-Anbiya", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan",
+    "Ash-Shu'ara", "An-Naml", "Al-Qasas", "Al-Ankabut", "Ar-Rum",
+    "Luqman", "As-Sajdah", "Al-Ahzab", "Saba", "Fatir",
+    "Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir",
+    "Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah",
+    "Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf",
+    "Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman",
+    "Al-Waqi'ah", "Al-Hadid", "Al-Mujadila", "Al-Hashr", "Al-Mumtahanah",
+    "As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq",
+    "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij",
+    "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah",
+    "Al-Insan", "Al-Mursalat", "An-Naba", "An-Nazi'at", "Abasa",
+    "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj",
+    "At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad",
+    "Ash-Shams", "Al-Layl", "Ad-Duha", "Ash-Sharh", "At-Tin",
+    "Al-Alaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-Adiyat",
+    "Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil",
+    "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr",
+    "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"
+  ];
+
+  var state = { surahs: [], current: 1 };
+
+  function $(id) { return document.getElementById(id); }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function parseCorpus(text) {
+    var surahs = [];
+    var cur = null;
+    var lines = text.split(/\r?\n/);
+    var i, line, sm, m;
+    for (i = 0; i < lines.length; i++) {
+      line = lines[i];
+      sm = /^SURAH\s+(\d+)\s+-\s+(.+)$/.exec(line);
+      if (sm) {
+        cur = {
+          n: +sm[1],
+          ar: sm[2].trim(),
+          en: EN[+sm[1] - 1] || sm[2].trim(),
+          verses: []
+        };
+        surahs.push(cur);
+        continue;
+      }
+      m = /^\[(\d+):(\d+)\]$/.exec(line);
+      if (m && cur) {
+        cur.verses.push({
+          s: +m[1],
+          a: +m[2],
+          ar: (lines[i + 1] || "").trim(),
+          en: (lines[i + 2] || "").trim()
+        });
+        i += 2;
+      }
+    }
+    return surahs;
+  }
+
+  var NAMED_FIGURES =
+    "Abraham|Ibrahim|Moses|Musa|Jesus|Isa|Mary|Maryam|Noah|Nuh|Joseph|Yusuf|Adam|" +
+    "Solomon|Sulayman|David|Dawud|Shuayb|Shu´aib|Hud|Salih|Lot|Lut|Jonah|Yunus|" +
+    "Zachariah|Zakariya|Talut|Jacob|Yaqub|Imran|Aaron|Harun";
+
+  var SPEECH_VERB = "said|say|saying|answered|replied|whispered|suggested|cried|pleaded|prayed|ordained";
+
+  function vocativeName(text) {
+    var m = new RegExp("\\bO\\s+(" + NAMED_FIGURES + ")\\b", "i").exec(text || "");
+    return m ? m[1].replace(/´/g, "'") : null;
+  }
+
+  /**
+   * Last attribution before the quote — only this clause names the speaker.
+   * Returns { subject, verb, toAngels, passive } or null.
+   */
+  function nearestAttribution(bridge) {
+    var t = (bridge || "").replace(/\s+/g, " ").trim();
+    if (!t) return null;
+
+    /* Parenthetical speaker tags: "(Allah) said:", "(Iblis) said:" */
+    var paren = /\(\s*(Allah|Iblis|Satan|the\s+Evil\s+One|Moses|Abraham|Noah|Jesus|Pharaoh|[A-Z][a-z´']+)\s*\)\s*(said|say|answered|replied)\b\s*[,:]?\s*$/i.exec(t);
+    if (paren) {
+      return {
+        subject: paren[1].replace(/\s+/g, " ").trim(),
+        verb: paren[2].toLowerCase(),
+        toAngels: false,
+        passive: false
+      };
+    }
+
+    /* Imperative messenger: capital Say: */
+    if (/(?:^|[.!?]\s+|:\s*)Say(?:\s+thou)?\s*:?\s*$/.test(t) || /\bSay(?:\s+thou)?\s*:\s*$/.test(t)) {
+      return { subject: "Say", verb: "say", toAngels: false, passive: false };
+    }
+
+    /* "... said the latter/former/X" (verb before subject) */
+    var post = new RegExp(
+      "\\b(" + SPEECH_VERB + ")\\s+(the\\s+)?(latter|former|other|first|second|people|angels?|" +
+        NAMED_FIGURES + "|Pharaoh|Satan|Iblis)\\b\\s*[,:]?\\s*$",
+      "i"
+    ).exec(t);
+    if (post) {
+      return {
+        subject: ((post[2] || "") + post[3]).replace(/\s+/g, " ").trim(),
+        verb: post[1].toLowerCase(),
+        toAngels: false,
+        passive: false
+      };
+    }
+
+    /* Passive: "it is said to them:" — speaker unknown / admonition voice */
+    if (/\b(?:it\s+is\s+)?said\s+to\s+them\s*:?\s*$/i.test(t) ||
+        /\bwhen\s+it\s+is\s+said\s+to\s+them\s*:?\s*$/i.test(t)) {
+      return { subject: "said-to-them", verb: "said", toAngels: false, passive: true };
+    }
+
+    /* Subject + verb at end: "We said:", "thy Lord said to the angels:", "Moses said to his people:" */
+    var pre = new RegExp(
+      "\\b((?:thy|his|our)\\s+Lord|Allah|We|He|She|They|ye|you|the\\s+angels?|angels?|" +
+        "Satan|Iblis|the\\s+Evil\\s+One|the\\s+Rejected|Pharaoh|the\\s+people|people|" +
+        "the\\s+Chiefs|Chiefs|the\\s+Believers|Believers|disciples|" +
+        "those\\s+who\\s+(?:reject(?:\\s+Faith)?|disbelieve|believe)|" +
+        "some\\s+who|(?:Both\\s+)?the\\s+Jews(?:\\s+and\\s+the\\s+Christians)?|" +
+        "the\\s+Christians|" + NAMED_FIGURES +
+        ")\\b(?:\\s+(?:then|also|again|further))?\\s+" +
+        "(?:to\\s+(?:the\\s+)?(?:angels?|him|them|his\\s+people|her)(?:\\s+\\w+){0,6}\\s+)?" +
+        "(" + SPEECH_VERB + ")\\b" +
+        "(?:\\s+to\\s+(?:the\\s+)?angels?)?" +
+        "\\s*[,:]?\\s*$",
+      "i"
+    ).exec(t);
+    if (pre) {
+      var subj = pre[1].replace(/\s+/g, " ").trim();
+      var toAngels = /\bto\s+the\s+angels\b/i.test(t.slice(-80));
+      return { subject: subj, verb: pre[2].toLowerCase(), toAngels: toAngels, passive: false };
+    }
+
+    /* Looser: last "X said" / "X say" anywhere in short tail */
+    var loose = new RegExp(
+      "\\b((?:thy|his|our)\\s+Lord|Allah|We|He|She|They|ye|the\\s+angels?|angels?|" +
+        "Satan|Iblis|Pharaoh|" + NAMED_FIGURES +
+        ")\\s+(" + SPEECH_VERB + ")\\b",
+      "ig"
+    );
+    var last = null;
+    var m;
+    while ((m = loose.exec(t)) !== null) last = m;
+    if (last) {
+      return {
+        subject: last[1].replace(/\s+/g, " ").trim(),
+        verb: last[2].toLowerCase(),
+        toAngels: /\bto\s+the\s+angels\b/i.test(t.slice(Math.max(0, last.index - 5), last.index + last[0].length + 40)),
+        passive: false
+      };
+    }
+
+    /* "and said:" with no subject in bridge — pronoun continuation */
+    if (/\band\s+said\s*:?\s*$/i.test(t) || /\bsaid\s*:?\s*$/i.test(t) || /\bsaying\s*:?\s*$/i.test(t)) {
+      return { subject: "and-said", verb: "said", toAngels: false, passive: false };
+    }
+
+    return null;
+  }
+
+  function mapSubject(subject, ctx) {
+    var s = (subject || "").toLowerCase();
+    var prev = (ctx && ctx.prev) || null;
+    var addressee = (ctx && ctx.addressee) || null;
+    var replyAs = (ctx && ctx.replyAs) || null;
+    var lastSpeaker = (ctx && ctx.lastSpeaker) || null;
+    var q = (ctx && ctx.quote) || "";
+
+    function out(cls, label, nextAddressee, nextReplyAs) {
+      return {
+        cls: cls,
+        label: label,
+        addressee: nextAddressee !== undefined ? nextAddressee : addressee,
+        replyAs: nextReplyAs !== undefined ? nextReplyAs : null,
+        lastSpeaker: label
+      };
+    }
+
+    if (s === "say") return out("messenger", "Messenger", null, null);
+
+    if (s === "said-to-them") return out("voice", "Voice", null, replyAs);
+
+    if (s === "we" || /^remember\s+we$/.test(s)) {
+      return out("divine", "We", addressee, null);
+    }
+    if (/lord$/.test(s) || s === "allah") {
+      return out("divine", "Allah", addressee, null);
+    }
+
+    if (/^(satan|iblis|the evil one|the rejected)$/.test(s)) {
+      var advLabel = s === "iblis" ? "Iblis" : s === "satan" ? "Satan" : "Adversary";
+      return out("adversary", advLabel, null, null);
+    }
+
+    if (/angels?$/.test(s)) return out("angel", "Angels", "angels", null);
+
+    if (s === "pharaoh") return out("rejecter", "Pharaoh", null, null);
+
+    if (/jews|christians|unbelievers|disbelieve|reject|hypocrite|some who/.test(s)) {
+      return out("rejecter", "Rejecters", null, replyAs);
+    }
+
+    if (/believers|disciples|faithful|those who believe/.test(s)) {
+      return out("people", "Believers", null, replyAs);
+    }
+
+    if (/people|chiefs|latter|former|other|first|second/.test(s)) {
+      return out("people", "People", null, replyAs);
+    }
+
+    /* Named figure */
+    var named = new RegExp("^(" + NAMED_FIGURES + ")$", "i").exec(subject);
+    if (named) return out("named", named[1].replace(/´/g, "'"), null, null);
+
+    /* Pronouns / and-said — resolve from dialogue state */
+    if (s === "he" || s === "and-said") {
+      if (replyAs) return out("named", replyAs, null, null);
+      if (addressee === "angels" || prev === "angel") {
+        return out("divine", "Allah", "angels", null);
+      }
+      if (prev === "divine") return out("divine", lastSpeaker === "We" ? "We" : "Allah", addressee, null);
+      if (lastSpeaker && prev === "named") return out("named", lastSpeaker, null, null);
+      /* "and said" after He taught / before angels → Divine */
+      if (s === "and-said" && /\b(He|Allah|Lord)\b/i.test((ctx && ctx.fullBefore) || "")) {
+        return out("divine", "Allah", addressee, null);
+      }
+      return out("voice", "Voice", addressee, replyAs);
+    }
+
+    if (s === "she") {
+      if (replyAs && /^(Mary|Maryam)$/i.test(replyAs)) return out("named", replyAs, null, null);
+      return out("woman", "Woman", null, null);
+    }
+
+    if (s === "they" || s === "ye" || s === "you") {
+      if (addressee === "angels" || (prev === "divine" && addressee === "angels")) {
+        return out("angel", "Angels", "angels", null);
+      }
+      if (prev === "divine" && /angel/i.test(((ctx && ctx.fullBefore) || "").slice(-280))) {
+        return out("angel", "Angels", "angels", null);
+      }
+      /* Hypocrite / rejecter content */
+      if (/\b(we shall never believe|we disbelieve|we reject|fools believe|only jesting|only Want to make peace|we hear,?\s*and we disobey)\b/i.test(q) ||
+          /\b(said to them|meet those who believe|their evil ones|who reject|Unbelievers)\b/i.test((ctx && ctx.fullBefore) || "")) {
+        return out("rejecter", "Rejecters", null, replyAs);
+      }
+      if (/\b(believers|who believe|disciples)\s+(?:said|say)\b/i.test((ctx && ctx.bridge) || "")) {
+        return out("people", "Believers", null, replyAs);
+      }
+      return out("people", "People", null, replyAs);
+    }
+
+    return out("voice", "Speech", addressee, replyAs);
+  }
+
+  function classifySpeaker(bridge, ctx) {
+    var attr = nearestAttribution(bridge);
+    var full = ((ctx && ctx.fullBefore) || "").replace(/\s+/g, " ");
+    var q = (ctx && ctx.quote) || "";
+
+    /* Empty bridge = same speaker continuing across verses / split quotes */
+    if (!attr && !(bridge || "").trim()) {
+      if (ctx && ctx.lastSpeaker && ctx.prev) {
+        return {
+          cls: ctx.prev,
+          label: ctx.lastSpeaker,
+          addressee: ctx.addressee,
+          replyAs: ctx.replyAs,
+          lastSpeaker: ctx.lastSpeaker
+        };
+      }
+    }
+
+    if (attr) {
+      /* Preserve toAngels on We/Lord/Allah said */
+      var mapped = mapSubject(attr.subject, {
+        prev: ctx && ctx.prev,
+        addressee: attr.toAngels ? "angels" : (ctx && ctx.addressee),
+        replyAs: ctx && ctx.replyAs,
+        lastSpeaker: ctx && ctx.lastSpeaker,
+        quote: q,
+        fullBefore: full,
+        bridge: bridge
+      });
+      if (attr.toAngels) mapped.addressee = "angels";
+      return mapped;
+    }
+
+    /* Fallback: passive / thin bridges */
+    if (/\bwhen\s+it\s+is\s+said\s+to\s+them\b/i.test(bridge || "")) {
+      return { cls: "voice", label: "Voice", addressee: null, replyAs: ctx && ctx.replyAs, lastSpeaker: "Voice" };
+    }
+
+    return {
+      cls: "voice",
+      label: "Speech",
+      addressee: ctx && ctx.addressee,
+      replyAs: ctx && ctx.replyAs,
+      lastSpeaker: ctx && ctx.lastSpeaker
+    };
+  }
+
+  function emitTalk(before, quote, fullBefore, prev, addressee, replyAs, lastSpeaker) {
+    var sp = classifySpeaker(before, {
+      fullBefore: fullBefore,
+      prev: prev,
+      addressee: addressee,
+      replyAs: replyAs,
+      lastSpeaker: lastSpeaker,
+      quote: quote
+    });
+    var nextReply = vocativeName(quote);
+    if (!nextReply && sp.replyAs) nextReply = sp.replyAs;
+    if (sp.cls === "named" && replyAs && sp.label === replyAs) nextReply = null;
+    return {
+      html:
+        (before ? '<span class="narr">' + escapeHtml(before) + "</span>" : "") +
+        '<span class="talk ' + sp.cls + '">' +
+          '<span class="speaker">' + escapeHtml(sp.label) + "</span>" +
+          '<q class="quote">' + escapeHtml(quote) + "</q>" +
+        "</span>",
+      cls: sp.cls,
+      addressee: sp.addressee,
+      replyAs: nextReply,
+      lastSpeaker: sp.lastSpeaker || sp.label
+    };
+  }
+
+  /**
+   * Split English into narrative spans and talk frames.
+   * Words are preserved exactly; only markup wrappers are added.
+   * Corpus often omits a closing " at verse end — treat that as speech too.
+   */
+  function styleEnglish(en, dialogue) {
+    var empty = { prev: null, addressee: null, replyAs: null, lastSpeaker: null };
+    if (!en) return { html: "", dialogue: dialogue || empty };
+
+    var out = "";
+    var re = /"([^"]*)"/g;
+    var last = 0;
+    var m;
+    var found = false;
+    var prev = (dialogue && dialogue.prev) || null;
+    var addressee = (dialogue && dialogue.addressee) || null;
+    var replyAs = (dialogue && dialogue.replyAs) || null;
+    var lastSpeaker = (dialogue && dialogue.lastSpeaker) || null;
+
+    while ((m = re.exec(en)) !== null) {
+      found = true;
+      var before = en.slice(last, m.index);
+      var emitted = emitTalk(before, m[1], en.slice(0, m.index), prev, addressee, replyAs, lastSpeaker);
+      out += emitted.html;
+      prev = emitted.cls;
+      addressee = emitted.addressee;
+      replyAs = emitted.replyAs;
+      lastSpeaker = emitted.lastSpeaker;
+      last = m.index + m[0].length;
+    }
+
+    if (last < en.length) {
+      var rest = en.slice(last);
+      var openIdx = rest.indexOf('"');
+      if (openIdx >= 0 && rest.indexOf('"', openIdx + 1) < 0) {
+        var emittedOpen = emitTalk(
+          rest.slice(0, openIdx),
+          rest.slice(openIdx + 1),
+          en.slice(0, last + openIdx),
+          prev,
+          addressee,
+          replyAs,
+          lastSpeaker
+        );
+        out += emittedOpen.html;
+        return {
+          html: out,
+          dialogue: {
+            prev: emittedOpen.cls,
+            addressee: emittedOpen.addressee,
+            replyAs: emittedOpen.replyAs,
+            lastSpeaker: emittedOpen.lastSpeaker
+          }
+        };
+      }
+      out += '<span class="narr">' + escapeHtml(rest) + "</span>";
+    }
+
+    if (!found) {
+      var say = /^(.*?\bSay(?:\s+thou)?\s*:\s*)(.+)$/.exec(en);
+      if (say && say[2].length > 8) {
+        return {
+          html:
+            '<span class="narr">' + escapeHtml(say[1]) + "</span>" +
+            '<span class="talk messenger">' +
+              '<span class="speaker">Messenger</span>' +
+              '<span class="quote">' + escapeHtml(say[2]) + "</span>" +
+            "</span>",
+          dialogue: { prev: "messenger", addressee: null, replyAs: null, lastSpeaker: "Messenger" }
+        };
+      }
+      return {
+        html: '<span class="narr">' + escapeHtml(en) + "</span>",
+        dialogue: { prev: prev, addressee: addressee, replyAs: replyAs, lastSpeaker: lastSpeaker }
+      };
+    }
+
+    return {
+      html: out,
+      dialogue: { prev: prev, addressee: addressee, replyAs: replyAs, lastSpeaker: lastSpeaker }
+    };
+  }
+
+  var CHANNEL_TITLES = {
+    divine: "Allah / We",
+    messenger: "Messenger",
+    angel: "Angels",
+    named: "Named",
+    woman: "Woman",
+    people: "People",
+    rejecter: "Rejecters",
+    adversary: "Adversary"
+  };
+
+  state.activeChannel = null;
+
+  function collectChannelSayings(channel) {
+    var nodes = document.querySelectorAll("#verses .talk." + channel);
+    var items = [];
+    Array.prototype.forEach.call(nodes, function (talk) {
+      var verse = talk.closest(".verse");
+      var quote = talk.querySelector(".quote");
+      var speaker = talk.querySelector(".speaker");
+      if (!verse || !quote) return;
+      items.push({
+        id: verse.id,
+        ref: (verse.querySelector(".verse-ref") || {}).textContent || verse.id.replace(/^v-/, "").replace("-", ":"),
+        who: speaker ? speaker.textContent : CHANNEL_TITLES[channel],
+        text: quote.textContent
+      });
+    });
+    return items;
+  }
+
+  function closeChannelPanel() {
+    state.activeChannel = null;
+    var panel = $("channel-panel");
+    panel.classList.remove("open");
+    panel.hidden = true;
+    Array.prototype.forEach.call(document.querySelectorAll(".legend button"), function (btn) {
+      btn.classList.remove("active");
+      btn.setAttribute("aria-pressed", "false");
+    });
+  }
+
+  function openChannelPanel(channel) {
+    var items = collectChannelSayings(channel);
+    var panel = $("channel-panel");
+    var list = $("channel-list");
+    var title = CHANNEL_TITLES[channel] || channel;
+    var surah = state.surahs[state.current - 1];
+    var surahName = surah ? surah.en : "";
+
+    state.activeChannel = channel;
+    $("channel-panel-title").textContent = title + " — " + surahName;
+    $("channel-panel-count").textContent = items.length
+      ? items.length + (items.length === 1 ? " saying" : " sayings")
+      : "none in this surah";
+
+    Array.prototype.forEach.call(document.querySelectorAll(".legend button"), function (btn) {
+      var on = btn.getAttribute("data-channel") === channel;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+
+    if (!items.length) {
+      list.innerHTML = '<li class="channel-empty">No tagged sayings for this channel in the current surah.</li>';
+    } else {
+      list.innerHTML = items.map(function (it, idx) {
+        var whoLine = channel === "named" || channel === "divine" || channel === "rejecter"
+          ? '<div class="who">' + escapeHtml(it.who) + "</div>"
+          : "";
+        return (
+          '<li>' +
+            '<a href="#' + escapeHtml(it.id) + '" data-verse="' + escapeHtml(it.id) + '" data-idx="' + idx + '">' +
+              '<div class="ref">' + escapeHtml(it.ref) + "</div>" +
+              whoLine +
+              '<div class="said">' + escapeHtml(it.text) + "</div>" +
+            "</a>" +
+          "</li>"
+        );
+      }).join("");
+    }
+
+    panel.hidden = false;
+    panel.classList.add("open");
+    panel.scrollTop = 0;
+  }
+
+  function toggleChannel(channel) {
+    if (state.activeChannel === channel) {
+      closeChannelPanel();
+      return;
+    }
+    openChannelPanel(channel);
+  }
+
+  function renderSurah(n) {
+    var surah = state.surahs[n - 1];
+    if (!surah) return;
+    state.current = n;
+    $("surah-select").value = String(n);
+    $("surah-title").textContent = surah.n + ". " + surah.en;
+    $("surah-sub").textContent = surah.ar + " · " + surah.verses.length + " verses";
+
+    var dialogue = { prev: null, addressee: null, replyAs: null, lastSpeaker: null };
+    var html = surah.verses.map(function (v) {
+      var styled = styleEnglish(v.en, dialogue);
+      dialogue = styled.dialogue;
+      return (
+        '<article class="verse" id="v-' + v.s + "-" + v.a + '">' +
+          '<div class="verse-ref">' + v.s + ":" + v.a + "</div>" +
+          '<span class="arabic" lang="ar" dir="rtl">' + escapeHtml(v.ar) + "</span>" +
+          '<div class="story">' + styled.html + "</div>" +
+        "</article>"
+      );
+    }).join("");
+    $("verses").innerHTML = html;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      localStorage.setItem("alquran-voices-surah", String(n));
+    } catch (e) { /* ignore */ }
+
+    if (state.activeChannel) openChannelPanel(state.activeChannel);
+  }
+
+  function fillSelect() {
+    $("surah-select").innerHTML = state.surahs.map(function (s) {
+      return '<option value="' + s.n + '">' + s.n + ". " + escapeHtml(s.en) +
+        " — " + escapeHtml(s.ar) + "</option>";
+    }).join("");
+  }
+
+  function showError(msg) {
+    var el = $("status");
+    el.classList.add("show");
+    el.innerHTML = msg;
+  }
+
+  document.querySelector(".legend").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-channel]");
+    if (!btn) return;
+    toggleChannel(btn.getAttribute("data-channel"));
+  });
+
+  $("channel-panel-close").addEventListener("click", closeChannelPanel);
+
+  $("channel-list").addEventListener("click", function (e) {
+    var a = e.target.closest("a[data-verse]");
+    if (!a) return;
+    e.preventDefault();
+    var el = document.getElementById(a.getAttribute("data-verse"));
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    el.style.outline = "2px solid rgba(31, 90, 110, 0.45)";
+    el.style.outlineOffset = "4px";
+    setTimeout(function () {
+      el.style.outline = "";
+      el.style.outlineOffset = "";
+    }, 1600);
+  });
+
+  $("surah-select").addEventListener("change", function () {
+    renderSurah(+$("surah-select").value);
+  });
+  $("btn-prev").addEventListener("click", function () {
+    if (state.current > 1) renderSurah(state.current - 1);
+  });
+  $("btn-next").addEventListener("click", function () {
+    if (state.current < state.surahs.length) renderSurah(state.current + 1);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && state.activeChannel) closeChannelPanel();
+  });
+
+  fetch("Al-Quran.txt")
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    })
+    .then(function (text) {
+      state.surahs = parseCorpus(text);
+      if (!state.surahs.length) throw new Error("No surahs parsed");
+      fillSelect();
+      var start = 1;
+      try {
+        start = parseInt(localStorage.getItem("alquran-voices-surah") || "1", 10) || 1;
+      } catch (e) { /* ignore */ }
+      if (start < 1 || start > state.surahs.length) start = 1;
+      renderSurah(start);
+    })
+    .catch(function (err) {
+      showError(
+        "<b>Could not load Al-Quran.txt.</b> Open this folder over HTTP " +
+        "(for example <code>python -m http.server</code>), then reload. " +
+        "<br><small>" + escapeHtml(String(err.message || err)) + "</small>"
+      );
+      $("surah-title").textContent = "Corpus unavailable";
+    });
+})();
+</script>
+</body>
+</html>

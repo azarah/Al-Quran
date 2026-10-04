@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Marriage Contract</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #2a2420;
+  --muted: #6a5f54;
+  --rule: rgba(90, 60, 30, 0.18);
+  --bg: #f3ebe1;
+  --paper: #fffdf8;
+  --arabic: #1a5c3a;
+  --accent: #6b3a2a;
+  --gold: #9a7a3a;
+  --field: #f7f2ea;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  background:
+    radial-gradient(ellipse 70% 40% at 10% 0%, rgba(154, 122, 58, 0.14), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 5%, rgba(26, 92, 58, 0.1), transparent 50%),
+    linear-gradient(180deg, #f7f0e6, var(--bg));
+  background-attachment: fixed;
+}
+a { color: var(--accent); }
+.shell { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+.toolbar a, .toolbar button {
+  font: inherit;
+  font-size: 0.82em;
+  font-weight: 600;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.75);
+  color: var(--ink);
+  padding: 7px 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.toolbar button:hover, .toolbar a:hover { border-color: var(--accent); }
+
+.contract {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 28px 28px 36px;
+  box-shadow: 0 12px 36px rgba(40, 30, 20, 0.08);
+}
+.mast {
+  text-align: center;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+}
+.bismillah {
+  font-family: "Amiri", serif;
+  font-size: 1.55em;
+  color: var(--arabic);
+  direction: rtl;
+  margin: 0 0 8px;
+}
+.mast h1 {
+  margin: 0 0 4px;
+  font-size: clamp(1.6em, 3.5vw, 2.1em);
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+.mast .ar-title {
+  font-family: "Amiri", serif;
+  font-size: 1.35em;
+  color: var(--arabic);
+  direction: rtl;
+  margin: 0 0 8px;
+}
+.mast .sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98em;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.8em;
+  line-height: 1.5;
+}
+.epigraph {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--gold);
+  background: rgba(154, 122, 58, 0.08);
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.epigraph .ref {
+  font-style: normal;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.note {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.78em;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: rgba(107, 58, 42, 0.05);
+  border-radius: 8px;
+}
+h2 {
+  margin: 22px 0 10px;
+  font-size: 1.15em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 4px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+  .contract { padding: 18px 14px 28px; }
+}
+label.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+label.field.full { grid-column: 1 / -1; }
+input, textarea, select {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.05em;
+  color: var(--ink);
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  background: var(--field);
+  border-radius: 6px 6px 0 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+textarea { min-height: 72px; resize: vertical; }
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid rgba(154, 122, 58, 0.35);
+  outline-offset: 1px;
+}
+.covenants {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.covenants li {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.6);
+  line-height: 1.45;
+}
+.covenants .ar {
+  font-family: "Amiri", serif;
+  direction: rtl;
+  text-align: right;
+  color: var(--arabic);
+  font-size: 1.15em;
+  margin-bottom: 4px;
+}
+.covenants .en { color: var(--ink); }
+.covenants .ref {
+  display: block;
+  margin-top: 4px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 8px 0;
+  font-size: 0.98em;
+  line-height: 1.4;
+}
+.check input { width: auto; margin-top: 4px; }
+.sign-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 8px;
+}
+.sign-box {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 120px;
+}
+.sign-box h3 {
+  margin: 0 0 10px;
+  font-size: 0.95em;
+  color: var(--accent);
+}
+.sign-line {
+  margin-top: 28px;
+  border-top: 1px solid var(--ink);
+  padding-top: 6px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.72em;
+  color: var(--muted);
+}
+.appendix details {
+  margin-top: 18px;
+  border-top: 1px solid var(--rule);
+  padding-top: 12px;
+}
+.appendix summary {
+  cursor: pointer;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+.ayah {
+  margin: 12px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--rule);
+}
+.ayah .ref {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.ayah .ar {
+  font-family: "Amiri", serif;
+  direction: rtl;
+  text-align: right;
+  color: var(--arabic);
+  font-size: 1.2em;
+  line-height: 1.8;
+  margin-bottom: 4px;
+}
+.ayah .en { color: var(--muted); font-size: 0.98em; line-height: 1.45; }
+.footer-note {
+  text-align: center;
+  margin-top: 18px;
+  color: var(--muted);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.75em;
+}
+@media print {
+  body { background: #fff; }
+  .toolbar, .footer-note, .no-print { display: none !important; }
+  .shell { max-width: none; padding: 0; }
+  .contract {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  input, textarea, select {
+    background: transparent !important;
+    border-bottom: 1px solid #999 !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="toolbar no-print">
+    <a href="Al-Quran-Study.html">Study</a>
+    <a href="Al-Quran-Contracts.html">All contracts</a>
+    <a href="Al-Quran-Calculators.html">Calculators</a>
+    <a href="Al-Quran-People.html">Believers</a>
+    <a href="Al-Quran-Names.html">Names</a>
+    <a href="Al-Quran.txt">Al-Quran.txt</a>
+    <button type="button" id="btn-print">Print / Save PDF</button>
+    <button type="button" id="btn-clear">Clear fields</button>
+  </div>
+
+  <article class="contract" id="contract">
+    <header class="mast">
+      <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <p class="ar-title" lang="ar" dir="rtl">عَقْدُ النِّكَاحِ</p>
+      <h1>Marriage Contract</h1>
+      <p class="sub">A written solemn covenant (mīthāq) drawn from Al-Quran.txt — fill, witness, and keep.</p>
+    </header>
+
+    <p class="epigraph">
+      “And among His Signs is this, that He created for you mates from among yourselves,
+      that ye may dwell in tranquillity with them, and He has put love and mercy between your (hearts).”
+      <span class="ref">30:21</span>
+    </p>
+
+    <p class="note no-print">
+      This is a study template grounded in the Book’s wording on dower, kindness, mutual rights,
+      and witnessing written obligations. It is <b>not</b> a substitute for local law, a qualified
+      imam, or your school’s fiqh. Adapt fields as needed; print when complete.
+    </p>
+
+    <h2>1. Occasion</h2>
+    <div class="grid">
+      <label class="field">Date of contract
+        <input type="date" id="f-date" name="date">
+      </label>
+      <label class="field">Place / city
+        <input type="text" id="f-place" name="place" placeholder="City, country">
+      </label>
+      <label class="field full">Gathering / venue
+        <input type="text" id="f-venue" name="venue" placeholder="Mosque, home, hall…">
+      </label>
+    </div>
+
+    <h2>2. The parties</h2>
+    <div class="grid">
+      <label class="field">Bridegroom (full name)
+        <input type="text" id="f-groom" name="groom">
+      </label>
+      <label class="field">Bride (full name)
+        <input type="text" id="f-bride" name="bride">
+      </label>
+      <label class="field">Bridegroom’s father / guardian
+        <input type="text" id="f-groom-guard" name="groom_guard">
+      </label>
+      <label class="field">Bride’s walī / guardian
+        <input type="text" id="f-bride-wali" name="bride_wali" placeholder="As applicable (cf. 4:25 leave of family)">
+      </label>
+      <label class="field">Bridegroom’s faith affirmation
+        <input type="text" id="f-groom-faith" name="groom_faith" value="Believing Muslim" placeholder="e.g. Believing Muslim">
+      </label>
+      <label class="field">Bride’s faith affirmation
+        <input type="text" id="f-bride-faith" name="bride_faith" value="Believing Muslim" placeholder="e.g. Believing Muslim">
+      </label>
+    </div>
+
+    <h2>3. The dower (ṣadāq / mahr)</h2>
+    <p class="note" style="margin-top:0">
+      “And give the women (on marriage) their dower as a free gift…” <b>4:4</b> —
+      “…give them their dowers (at least) as prescribed; but if, after a dower is prescribed,
+      agree Mutually (to vary it), there is no blame on you…” <b>4:24</b>
+    </p>
+    <div class="grid">
+      <label class="field full">Dower described (amount, goods, or deferred terms)
+        <textarea id="f-mahr" name="mahr" placeholder="e.g. Immediate: … · Deferred: … · Or a named gift…"></textarea>
+      </label>
+      <label class="field">Paid / delivered at contract
+        <select id="f-mahr-status" name="mahr_status">
+          <option value="prompt">Prompt (muʿajjal) — paid now</option>
+          <option value="deferred">Deferred (muʾajjal) — due later</option>
+          <option value="split">Part prompt, part deferred</option>
+          <option value="other">Other (describe above)</option>
+        </select>
+      </label>
+      <label class="field">Received by bride (or her agent)
+        <input type="text" id="f-mahr-recv" name="mahr_recv" placeholder="Yes / amount received / pending">
+      </label>
+    </div>
+
+    <h2>4. Solemn covenant from the Book</h2>
+    <p class="note" style="margin-top:0">
+      The Qur’an calls marriage a <b>solemn covenant</b> taken from the husband
+      (<span lang="ar" dir="rtl">مِيثَاقًا غَلِيظًا</span>) — <b>4:21</b>. The parties affirm:
+    </p>
+    <ul class="covenants">
+      <li>
+        <div class="ar" lang="ar" dir="rtl">وَعَاشِرُوهُنَّ بِالْمَعْرُوفِ</div>
+        <div class="en">To live together on a footing of kindness and equity.</div>
+        <span class="ref">4:19</span>
+      </li>
+      <li>
+        <div class="ar" lang="ar" dir="rtl">وَلَهُنَّ مِثْلُ الَّذِي عَلَيْهِنَّ بِالْمَعْرُوفِ</div>
+        <div class="en">Women shall have rights similar to the rights against them, according to what is equitable.</div>
+        <span class="ref">2:228</span>
+      </li>
+      <li>
+        <div class="ar" lang="ar" dir="rtl">هُنَّ لِبَاسٌ لَكُمْ وَأَنْتُمْ لِبَاسٌ لَهُنَّ</div>
+        <div class="en">They are your garments and ye are their garments — mutual cover, warmth, and honour.</div>
+        <span class="ref">2:187</span>
+      </li>
+      <li>
+        <div class="ar" lang="ar" dir="rtl">وَجَعَلَ بَيْنَكُمْ مَوَدَّةً وَرَحْمَةً</div>
+        <div class="en">To seek the love and mercy Allah places between spouses; to dwell in tranquillity.</div>
+        <span class="ref">30:21</span>
+      </li>
+      <li>
+        <div class="en">Not to take back the dower by harshness or slander; the covenant stands after intimacy.</div>
+        <span class="ref">4:20–21</span>
+      </li>
+      <li>
+        <div class="en">If separation becomes necessary, to hold together on equitable terms or separate with kindness — without injury.</div>
+        <span class="ref">2:229 · 2:231</span>
+      </li>
+    </ul>
+
+    <h2>5. Declarations</h2>
+    <label class="check">
+      <input type="checkbox" id="c-free">
+      <span>We affirm this marriage is by mutual consent, not coercion; inheriting women against their will is forbidden. <b>4:19</b></span>
+    </label>
+    <label class="check">
+      <input type="checkbox" id="c-lawful">
+      <span>We affirm the parties are not within the prohibited degrees of marriage named in the Book. <b>4:22–24</b></span>
+    </label>
+    <label class="check">
+      <input type="checkbox" id="c-faith">
+      <span>We seek a bond of chastity, not lust; believing partners are preferred. <b>2:221 · 4:24 · 24:32</b></span>
+    </label>
+    <label class="check">
+      <input type="checkbox" id="c-write">
+      <span>We reduce this future obligation to writing and take witnesses, that it be juster and clearer. <b>2:282</b></span>
+    </label>
+
+    <label class="field full" style="margin-top:12px">Optional conditions (mutually agreed after the prescribed dower — 4:24)
+      <textarea id="f-conditions" name="conditions" placeholder="e.g. residence, study support, deferred rights… (keep within Allah’s limits)"></textarea>
+    </label>
+
+    <h2>6. Offer, acceptance &amp; witnesses</h2>
+    <div class="grid">
+      <label class="field full">Offer (ījāb) — words spoken
+        <input type="text" id="f-ijab" name="ijab" placeholder="e.g. I marry you / I offer marriage upon the stated dower">
+      </label>
+      <label class="field full">Acceptance (qabūl) — words spoken
+        <input type="text" id="f-qabul" name="qabul" placeholder="e.g. I accept this marriage">
+      </label>
+      <label class="field">Officiant / imam (if any)
+        <input type="text" id="f-imam" name="imam">
+      </label>
+      <label class="field">Scribe
+        <input type="text" id="f-scribe" name="scribe" placeholder="Who writes — 2:282">
+      </label>
+    </div>
+
+    <div class="sign-grid">
+      <div class="sign-box">
+        <h3>Bridegroom</h3>
+        <label class="field">Signature / name
+          <input type="text" id="s-groom" name="sig_groom">
+        </label>
+        <div class="sign-line">Signature · Date</div>
+      </div>
+      <div class="sign-box">
+        <h3>Bride</h3>
+        <label class="field">Signature / name
+          <input type="text" id="s-bride" name="sig_bride">
+        </label>
+        <div class="sign-line">Signature · Date</div>
+      </div>
+      <div class="sign-box">
+        <h3>Witness 1</h3>
+        <label class="field">Full name
+          <input type="text" id="w1-name" name="w1_name">
+        </label>
+        <label class="field">Signature
+          <input type="text" id="w1-sig" name="w1_sig">
+        </label>
+        <div class="sign-line">Two witnesses — 2:282</div>
+      </div>
+      <div class="sign-box">
+        <h3>Witness 2</h3>
+        <label class="field">Full name
+          <input type="text" id="w2-name" name="w2_name">
+        </label>
+        <label class="field">Signature
+          <input type="text" id="w2-sig" name="w2_sig">
+        </label>
+        <div class="sign-line">Two witnesses — 2:282</div>
+      </div>
+      <div class="sign-box">
+        <h3>Walī / guardian (if signing)</h3>
+        <label class="field">Name &amp; signature
+          <input type="text" id="s-wali" name="sig_wali">
+        </label>
+        <div class="sign-line">Leave of family — 4:25</div>
+      </div>
+      <div class="sign-box">
+        <h3>Officiant (if signing)</h3>
+        <label class="field">Name &amp; signature
+          <input type="text" id="s-imam" name="sig_imam">
+        </label>
+        <div class="sign-line">Optional attestation</div>
+      </div>
+    </div>
+
+    <section class="appendix">
+      <details>
+        <summary>Source verses from Al-Quran.txt (appendix)</summary>
+        <article class="ayah">
+          <div class="ref">4:21</div>
+          <div class="ar" lang="ar" dir="rtl">وَكَيْفَ تَأْخُذُونَهُ وَقَدْ أَفْضَىٰ بَعْضُكُمْ إِلَىٰ بَعْضٍ وَأَخَذْنَ مِنْكُمْ مِيثَاقًا غَلِيظًا</div>
+          <div class="en">And how could ye take it when ye have gone in unto each other, and they have Taken from you a solemn covenant?</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">4:4</div>
+          <div class="ar" lang="ar" dir="rtl">وَآتُوا النِّسَاءَ صَدُقَاتِهِنَّ نِحْلَةً…</div>
+          <div class="en">And give the women (on marriage) their dower as a free gift; but if they, of their own good pleasure, remit any part of it to you, Take it and enjoy it with right good cheer.</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">4:19</div>
+          <div class="en">…live with them on a footing of kindness and equity. If ye take a dislike to them it may be that ye dislike a thing, and Allah brings about through it a great deal of good.</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">2:228</div>
+          <div class="en">…And women shall have rights similar to the rights against them, according to what is equitable; but men have a degree (of advantage) over them…</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">2:229</div>
+          <div class="en">A divorce is only permissible twice: after that, the parties should either hold Together on equitable terms, or separate with kindness…</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">2:282</div>
+          <div class="en">O ye who believe! When ye deal with each other, in transactions involving future obligations in a fixed period of time, reduce them to writing… and get two witnesses…</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">24:32</div>
+          <div class="en">Marry those among you who are single, or the virtuous ones among yourselves, male or female: if they are in poverty, Allah will give them means out of His grace…</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">30:21</div>
+          <div class="ar" lang="ar" dir="rtl">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُمْ مِنْ أَنْفُسِكُمْ أَزْوَاجًا لِتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَوَدَّةً وَرَحْمَةً…</div>
+          <div class="en">And among His Signs is this, that He created for you mates from among yourselves, that ye may dwell in tranquillity with them, and He has put love and mercy between your (hearts)…</div>
+        </article>
+        <article class="ayah">
+          <div class="ref">4:22–24</div>
+          <div class="en">Prohibited degrees; seek marriage with gifts from your property, desiring chastity, not lust; give the prescribed dower; mutual variation after prescription is allowed.</div>
+        </article>
+      </details>
+    </section>
+  </article>
+
+  <p class="footer-note">
+    Drawn from <code>Al-Quran.txt</code> · Study aid only ·
+    <a href="Al-Quran-Calculators.html">Calculators</a> ·
+    <a href="Al-Quran-Study.html">Study app</a>
+  </p>
+</div>
+
+<script>
+(function () {
+  var KEY = "alquran-marriage-contract-v1";
+  var fields = document.querySelectorAll("#contract input, #contract textarea, #contract select");
+
+  function save() {
+    var data = {};
+    fields.forEach(function (el) {
+      if (!el.id) return;
+      data[el.id] = el.type === "checkbox" ? el.checked : el.value;
+    });
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
+  }
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      fields.forEach(function (el) {
+        if (!el.id || !(el.id in data)) return;
+        if (el.type === "checkbox") el.checked = !!data[el.id];
+        else el.value = data[el.id];
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  fields.forEach(function (el) {
+    el.addEventListener("change", save);
+    el.addEventListener("input", save);
+  });
+
+  document.getElementById("btn-print").addEventListener("click", function () {
+    save();
+    window.print();
+  });
+
+  document.getElementById("btn-clear").addEventListener("click", function () {
+    if (!confirm("Clear all filled fields on this contract?")) return;
+    fields.forEach(function (el) {
+      if (el.type === "checkbox") el.checked = false;
+      else if (el.tagName === "SELECT") el.selectedIndex = 0;
+      else if (el.id === "f-groom-faith" || el.id === "f-bride-faith") el.value = "Believing Muslim";
+      else el.value = "";
+    });
+    try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

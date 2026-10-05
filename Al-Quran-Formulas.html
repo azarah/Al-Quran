@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Al-Quran — Mercy &amp; Forgiveness Formulas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Sans:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1f2a28;
+  --muted: #5a6864;
+  --rule: rgba(40, 80, 70, 0.16);
+  --bg: #e9f2ef;
+  --panel: rgba(255, 252, 248, 0.94);
+  --mercy: #0d5c4d;
+  --mercy-soft: #1a7a66;
+  --sin: #8b3a2a;
+  --gold: #a67c2d;
+  --arabic: #0d4a38;
+  --en: #2a3d4a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  background:
+    radial-gradient(ellipse 65% 40% at 8% 0%, rgba(13, 92, 77, 0.14), transparent 55%),
+    radial-gradient(ellipse 55% 35% at 100% 8%, rgba(166, 124, 45, 0.12), transparent 50%),
+    linear-gradient(180deg, #f2f7f5, var(--bg));
+  background-attachment: fixed;
+}
+a { color: var(--mercy-soft); }
+.shell { max-width: 980px; margin: 0 auto; padding: 28px 16px 72px; }
+h1 {
+  margin: 0 0 6px;
+  text-align: center;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 650;
+  font-size: clamp(1.7em, 4vw, 2.3em);
+  color: var(--mercy);
+}
+.subtitle {
+  text-align: center;
+  color: var(--muted);
+  margin: 0 0 18px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.8em;
+  line-height: 1.55;
+}
+.subtitle a { color: var(--en); }
+.note {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--gold);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+.note p { margin: 0 0 6px; }
+.note p:last-child { margin: 0; }
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 18px;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+.filters button {
+  font: inherit;
+  font-size: 0.78em;
+  font-weight: 600;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  color: var(--ink);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.filters button[aria-pressed="true"] {
+  background: var(--mercy);
+  border-color: var(--mercy);
+  color: #fff;
+}
+.grid {
+  display: grid;
+  gap: 14px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 16px 16px 18px;
+  box-shadow: 0 8px 24px rgba(20, 40, 35, 0.05);
+}
+.card[hidden] { display: none !important; }
+.card-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.tag {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.tag.mercy { color: var(--mercy); }
+.tag.sin { color: var(--sin); }
+.tag.reward { color: var(--gold); }
+.tag.path { color: #3d5a80; }
+.formula {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.25em;
+  font-weight: 650;
+  color: var(--mercy);
+  margin: 0 0 8px;
+  letter-spacing: 0.01em;
+}
+.ar {
+  font-family: "Amiri", serif;
+  direction: rtl;
+  text-align: right;
+  color: var(--arabic);
+  font-size: 1.2em;
+  line-height: 1.75;
+  margin: 0 0 6px;
+}
+.en {
+  color: var(--en);
+  font-size: 0.98em;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+.ref {
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--sin);
+  letter-spacing: 0.04em;
+}
+.work {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  align-items: end;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+}
+.work label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.work input, .work select {
+  font: inherit;
+  font-size: 0.95em;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+}
+.out {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(13, 92, 77, 0.08), rgba(166, 124, 45, 0.08));
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.92em;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.out b { color: var(--mercy); }
+.checklist {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.85em;
+}
+.checklist li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+.checklist input { margin-top: 2px; }
+.footer-note {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--muted);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 0.75em;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>Mercy &amp; Forgiveness Formulas</h1>
+  <p class="subtitle">
+    Scales and paths from Al-Quran.txt — reward, sin, repentance, mercy<br>
+    <a href="Al-Quran-Study.html">study app</a> ·
+    <a href="Al-Quran-Calculators.html">calculators</a> ·
+    <a href="Al-Quran-Names.html">names of Allah</a> ·
+    <a href="Al-Quran-Contracts.html">contracts</a> ·
+    <a href="Al-Quran.html">full text</a>
+  </p>
+
+  <div class="note">
+    <p>These are <b>study formulas</b> taken from explicit wording in the Book — not a ledger of your soul.
+    Numbers (tenfold, seven hundred) are lower bounds or parables of increase; Allah multiplies further for whom He wills.
+    Use them to remember proportion: good is amplified, evil is not amplified beyond itself, and the door of mercy stays open for the repentant.</p>
+  </div>
+
+  <div class="filters" role="tablist" aria-label="Filter formulas">
+    <button type="button" data-filter="all" aria-pressed="true">All</button>
+    <button type="button" data-filter="reward">Reward</button>
+    <button type="button" data-filter="mercy">Mercy</button>
+    <button type="button" data-filter="sin">Sin &amp; limit</button>
+    <button type="button" data-filter="path">Repentance path</button>
+  </div>
+
+  <div class="grid" id="cards">
+
+    <!-- 6:160 -->
+    <article class="card" data-kind="reward sin" id="f-recompense">
+      <div class="card-top">
+        <span class="tag reward">Reward</span>
+        <span class="tag sin">Sin</span>
+        <span class="ref">6:160</span>
+      </div>
+      <p class="formula">good → ≥ 10× &nbsp;·&nbsp; evil → 1× (like itself)</p>
+      <p class="ar" lang="ar" dir="rtl">مَنْ جَاءَ بِالْحَسَنَةِ فَلَهُ عَشْرُ أَمْثَالِهَا ۖ وَمَنْ جَاءَ بِالسَّيِّئَةِ فَلَا يُجْزَىٰ إِلَّا مِثْلَهَا</p>
+      <p class="en">He that doeth good shall have ten times as much to his credit: He that doeth evil shall only be recompensed according to his evil: no wrong shall be done unto (any of) them.</p>
+      <div class="work">
+        <label>Units of good
+          <input type="number" id="r-good" min="0" step="1" value="1">
+        </label>
+        <label>Units of evil
+          <input type="number" id="r-evil" min="0" step="1" value="1">
+        </label>
+        <div class="out" id="r-out"></div>
+      </div>
+    </article>
+
+    <!-- 2:261 -->
+    <article class="card" data-kind="reward" id="f-charity">
+      <div class="card-top">
+        <span class="tag reward">Reward</span>
+        <span class="ref">2:261</span>
+      </div>
+      <p class="formula">1 grain → 7 ears × 100 = 700 &nbsp;·&nbsp; then Allah multiplies further</p>
+      <p class="ar" lang="ar" dir="rtl">مَثَلُ الَّذِينَ يُنْفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنْبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنْبُلَةٍ مِائَةُ حَبَّةٍ</p>
+      <p class="en">The parable of those who spend their substance in the way of Allah is that of a grain of corn: it groweth seven ears, and each ear Hath a hundred grains. Allah giveth manifold increase to whom He pleaseth…</p>
+      <div class="work">
+        <label>Grains spent
+          <input type="number" id="c-n" min="0" step="1" value="1">
+        </label>
+        <label>Extra multiplier (Allah’s further increase)
+          <input type="number" id="c-extra" min="1" step="0.1" value="1">
+        </label>
+        <div class="out" id="c-out"></div>
+      </div>
+    </article>
+
+    <!-- 2:245 -->
+    <article class="card" data-kind="reward mercy" id="f-loan">
+      <div class="card-top">
+        <span class="tag reward">Reward</span>
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">2:245</span>
+      </div>
+      <p class="formula">beautiful loan → doubled, then multiplied many times</p>
+      <p class="en">Who is he that will loan to Allah a beautiful loan, which Allah will double unto his credit and multiply many times? It is Allah that giveth (you) Want or plenty…</p>
+      <div class="work">
+        <label>Amount offered
+          <input type="number" id="l-n" min="0" step="any" value="100">
+        </label>
+        <label>Illustrated further ×
+          <input type="number" id="l-m" min="2" step="1" value="2">
+        </label>
+        <div class="out" id="l-out"></div>
+      </div>
+    </article>
+
+    <!-- 4:40 -->
+    <article class="card" data-kind="reward mercy" id="f-atom">
+      <div class="card-top">
+        <span class="tag reward">Reward</span>
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">4:40</span>
+      </div>
+      <p class="formula">even an atom’s weight of good is not wronged · Allah doubles it and gives from His presence a great reward</p>
+      <p class="en">Allah is never unjust in the least degree: If there is any good (done), He doubleth it, and giveth from His own presence a great reward.</p>
+      <div class="work">
+        <label>Good (units)
+          <input type="number" id="a-n" min="0" step="any" value="1">
+        </label>
+        <div class="out" id="a-out"></div>
+      </div>
+    </article>
+
+    <!-- 25:70 -->
+    <article class="card" data-kind="path mercy" id="f-transform">
+      <div class="card-top">
+        <span class="tag path">Repentance</span>
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">25:70</span>
+      </div>
+      <p class="formula">repent + believe + righteous work → evil deeds exchanged for good</p>
+      <p class="ar" lang="ar" dir="rtl">إِلَّا مَنْ تَابَ وَآمَنَ وَعَمِلَ عَمَلًا صَالِحًا فَأُولَٰئِكَ يُبَدِّلُ اللَّهُ سَيِّئَاتِهِمْ حَسَنَاتٍ</p>
+      <p class="en">Unless he repents, believes, and works righteous deeds, for Allah will change the evil of such persons into good, and Allah is Oft-Forgiving, Most Merciful.</p>
+      <div class="work">
+        <label>Past evils (count for study)
+          <input type="number" id="t-evil" min="0" step="1" value="5">
+        </label>
+        <div class="out" id="t-out"></div>
+      </div>
+    </article>
+
+    <!-- 39:53 -->
+    <article class="card" data-kind="mercy path" id="f-despair">
+      <div class="card-top">
+        <span class="tag mercy">Mercy</span>
+        <span class="tag path">Repentance</span>
+        <span class="ref">39:53</span>
+      </div>
+      <p class="formula">transgression against self ≠ despair &nbsp;·&nbsp; Allah forgives all sins (for the turning servant)</p>
+      <p class="ar" lang="ar" dir="rtl">قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنْفُسِهِمْ لَا تَقْنَطُوا مِنْ رَحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا</p>
+      <p class="en">Say: “O my Servants who have transgressed against their souls! Despair not of the Mercy of Allah: for Allah forgives all sins: for He is Oft-Forgiving, Most Merciful.”</p>
+      <div class="out" style="margin-top:10px">Turn toward your Lord before the punishment comes (39:54). Despair is refused; return is commanded.</div>
+    </article>
+
+    <!-- 3:135 path -->
+    <article class="card" data-kind="path" id="f-path">
+      <div class="card-top">
+        <span class="tag path">Repentance</span>
+        <span class="ref">3:135–136 · 4:17–18 · 4:110</span>
+      </div>
+      <p class="formula">shameful deed / self-wrong → remember Allah → ask forgiveness → do not persist knowingly</p>
+      <p class="en">And those who, having done something to be ashamed of, or wronged their own souls, earnestly bring Allah to mind, and ask for forgiveness for their sins… and are never obstinate in persisting knowingly in (the wrong) they have done. (3:135)</p>
+      <ul class="checklist" id="path-checks">
+        <li><input type="checkbox" data-p> Remembered Allah after the fault</li>
+        <li><input type="checkbox" data-p> Asked forgiveness (who forgives sins except Allah?)</li>
+        <li><input type="checkbox" data-p> Not persisting knowingly</li>
+        <li><input type="checkbox" data-p> Repenting soon after ignorance — not delaying until death’s face (4:17–18)</li>
+        <li><input type="checkbox" data-p> If evil or self-wrong done: sought Allah’s forgiveness (4:110)</li>
+      </ul>
+      <div class="out" id="path-out"></div>
+    </article>
+
+    <!-- 4:48 shirk -->
+    <article class="card" data-kind="sin mercy" id="f-shirk">
+      <div class="card-top">
+        <span class="tag sin">Sin &amp; limit</span>
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">4:48 · 4:116</span>
+      </div>
+      <p class="formula">shirk (associating partners) → not forgiven if one dies thereon &nbsp;·&nbsp; lesser than that → forgiven for whom He wills</p>
+      <p class="en">Allah forgiveth not that partners should be set up with Him; but He forgiveth anything else, to whom He pleaseth… (4:48)</p>
+      <div class="out">This is the Book’s hard boundary: tawḥīd first. Other sins remain under hope and His will — never a license to sin, always a call to return.</div>
+    </article>
+
+    <!-- 42:30 -->
+    <article class="card" data-kind="sin" id="f-hands">
+      <div class="card-top">
+        <span class="tag sin">Sin &amp; limit</span>
+        <span class="ref">42:30</span>
+      </div>
+      <p class="formula">affliction that befalls you ↔ what your hands have earned &nbsp;·&nbsp; yet He forgives much</p>
+      <p class="en">Whatever misfortune happens to you, is because from the things your hands have wrought, and for many (of them) He grants forgiveness.</p>
+      <div class="out">Formula of accountability with a mercy clause: consequence is real; forgiveness is larger than many of the faults.</div>
+    </article>
+
+    <!-- 2:286 burden -->
+    <article class="card" data-kind="mercy" id="f-burden">
+      <div class="card-top">
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">2:286</span>
+      </div>
+      <p class="formula">burden ≤ capacity &nbsp;·&nbsp; soul keeps what it earns of good and ill</p>
+      <p class="ar" lang="ar" dir="rtl">لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ</p>
+      <p class="en">On no soul doth Allah Place a burden greater than it can bear. It gets every good that it earns, and it suffers every ill that it earns… “Blot out our sins, and grant us forgiveness. Have mercy on us…”</p>
+      <div class="out">Mercy as design: duty scaled to strength; then the prayer for wiping sins, forgiveness, and mercy.</div>
+    </article>
+
+    <!-- 7:156 -->
+    <article class="card" data-kind="mercy" id="f-encompass">
+      <div class="card-top">
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">7:156</span>
+      </div>
+      <p class="formula">My mercy extendeth to all things &nbsp;·&nbsp; written especially for those who fear, give, and believe</p>
+      <p class="en">…and My Mercy extendeth to all things. That (mercy) I shall ordain for those who do right, and practise regular charity, and those who believe in Our signs.</p>
+      <div class="out">Universal reach, then special writing for the God-fearing — mercy is both ocean and appointment.</div>
+    </article>
+
+    <!-- 15:49 -->
+    <article class="card" data-kind="mercy" id="f-tell">
+      <div class="card-top">
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">15:49 · 15:56</span>
+      </div>
+      <p class="formula">tell My servants: I am Oft-forgiving, Most Merciful &nbsp;·&nbsp; despair of His mercy = lost</p>
+      <p class="en">Tell My servants that I am indeed the Oft-forgiving, Most Merciful… And who despaireth of the mercy of his Lord, but such as go astray? (15:49, 15:56)</p>
+      <div class="out">Identity of the Lord toward servants: forgiveness and mercy named first. Despair is itself a straying.</div>
+    </article>
+
+    <!-- 5:89 oath - link -->
+    <article class="card" data-kind="path sin" id="f-oath">
+      <div class="card-top">
+        <span class="tag path">Repentance</span>
+        <span class="tag sin">Sin &amp; limit</span>
+        <span class="ref">5:89</span>
+      </div>
+      <p class="formula">broken deliberate oath → expiation: feed 10 · or clothe 10 · or free a slave · else 3 fasts</p>
+      <p class="en">Allah will not call you to account for what is futile in your oaths, but He will call you to account for your deliberate oaths…</p>
+      <div class="out">Numeric expiation lives in the <a href="Al-Quran-Calculators.html">Calculators → Oath expiation</a> tool. Formula: intention matters; careless speech is not billed the same as a deliberate oath.</div>
+    </article>
+
+    <!-- 9:104 -->
+    <article class="card" data-kind="mercy path" id="f-accepts">
+      <div class="card-top">
+        <span class="tag mercy">Mercy</span>
+        <span class="tag path">Repentance</span>
+        <span class="ref">9:104 · 42:25</span>
+      </div>
+      <p class="formula">Allah accepts repentance · takes charity · He answers His servants and remits their evil</p>
+      <p class="en">Know they not that Allah doth accept repentance from His votaries and receives their gifts of charity, and that Allah is verily He, the Oft-Returning, Most Merciful? (9:104)</p>
+      <div class="out">And He is the One that accepts repentance from His servants and forgives sins (42:25). Acceptance is His attribute; offering is yours.</div>
+    </article>
+
+  </div>
+
+  <p class="footer-note">
+    Formulas from <code>Al-Quran.txt</code> · study aid, not a fatwa ·
+    <a href="Al-Quran-Calculators.html">Calculators</a> ·
+    <a href="Al-Quran-Study.html">Study</a>
+  </p>
+</div>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  function fmt(n) {
+    if (!isFinite(n)) return "—";
+    if (Math.abs(n - Math.round(n)) < 1e-9) return String(Math.round(n));
+    return String(Math.round(n * 100) / 100);
+  }
+
+  function syncRecompense() {
+    var g = Math.max(0, +$("r-good").value || 0);
+    var e = Math.max(0, +$("r-evil").value || 0);
+    $("r-out").innerHTML =
+      "Minimum credit for good: <b>" + fmt(g) + " × 10 = " + fmt(g * 10) + "</b>. " +
+      "Recompense for evil: <b>" + fmt(e) + " × 1 = " + fmt(e) + "</b> (like itself — not multiplied). " +
+      "Net illustration (study only): <b>" + fmt(g * 10 - e) + "</b>.";
+  }
+
+  function syncCharity() {
+    var n = Math.max(0, +$("c-n").value || 0);
+    var x = Math.max(1, +$("c-extra").value || 1);
+    var base = n * 7 * 100;
+    $("c-out").innerHTML =
+      "Parable yield: <b>" + fmt(n) + " × 7 × 100 = " + fmt(base) + "</b>. " +
+      "With further increase ×" + fmt(x) + ": <b>" + fmt(base * x) + "</b>. " +
+      "“Allah giveth manifold increase to whom He pleaseth.”";
+  }
+
+  function syncLoan() {
+    var n = Math.max(0, +$("l-n").value || 0);
+    var m = Math.max(2, +$("l-m").value || 2);
+    $("l-out").innerHTML =
+      "Doubled: <b>" + fmt(n * 2) + "</b>. " +
+      "Illustrated many-times (×" + fmt(m) + "): <b>" + fmt(n * m) + "</b>. " +
+      "The verse leaves the upper bound with Allah.";
+  }
+
+  function syncAtom() {
+    var n = Math.max(0, +$("a-n").value || 0);
+    $("a-out").innerHTML =
+      "Not wronged in the least. Doubled at minimum: <b>" + fmt(n * 2) + "</b>, " +
+      "plus “a great reward” from His presence beyond the double.";
+  }
+
+  function syncTransform() {
+    var e = Math.max(0, +$("t-evil").value || 0);
+    $("t-out").innerHTML =
+      "If the path is complete (tawba, īmān, ṣāliḥ work): those <b>" + fmt(e) + "</b> evils " +
+      "are not merely erased — they are <b>replaced with goods</b>. Count becomes hope, not a scoreboard.";
+  }
+
+  function syncPath() {
+    var boxes = document.querySelectorAll("#path-checks input[data-p]");
+    var on = 0;
+    boxes.forEach(function (b) { if (b.checked) on++; });
+    var total = boxes.length;
+    var msg;
+    if (on === total) msg = "Checklist complete as a reminder of the path in 3:135 and 4:17 — reward named in 3:136: forgiveness and gardens.";
+    else if (on === 0) msg = "Walk the steps: remember → ask forgiveness → do not persist. Allah loves the oft-returning.";
+    else msg = on + " of " + total + " reminders marked. The verse’s weight is sincerity, not a checkbox score.";
+    $("path-out").textContent = msg;
+  }
+
+  ["r-good", "r-evil"].forEach(function (id) {
+    $(id).addEventListener("input", syncRecompense);
+  });
+  ["c-n", "c-extra"].forEach(function (id) {
+    $(id).addEventListener("input", syncCharity);
+  });
+  ["l-n", "l-m"].forEach(function (id) {
+    $(id).addEventListener("input", syncLoan);
+  });
+  $("a-n").addEventListener("input", syncAtom);
+  $("t-evil").addEventListener("input", syncTransform);
+  document.querySelectorAll("#path-checks input").forEach(function (b) {
+    b.addEventListener("change", syncPath);
+  });
+
+  document.querySelector(".filters").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+    var f = btn.getAttribute("data-filter");
+    document.querySelectorAll(".filters [data-filter]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+    });
+    document.querySelectorAll(".card").forEach(function (card) {
+      var kinds = (card.getAttribute("data-kind") || "").split(/\s+/);
+      card.hidden = f !== "all" && kinds.indexOf(f) === -1;
+    });
+  });
+
+  syncRecompense();
+  syncCharity();
+  syncLoan();
+  syncAtom();
+  syncTransform();
+  syncPath();
+})();
+</script>
+</body>
+</html>

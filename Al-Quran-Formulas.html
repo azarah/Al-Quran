@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Al-Quran — Mercy &amp; Forgiveness Formulas</title>
+<title>Al-Quran — Mercy, Forgiveness &amp; Laws</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Sans:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
@@ -20,6 +20,7 @@
   --gold: #a67c2d;
   --arabic: #0d4a38;
   --en: #2a3d4a;
+  --law: #2a4a6b;
 }
 * { box-sizing: border-box; }
 body {
@@ -121,6 +122,7 @@ h1 {
 .tag.sin { color: var(--sin); }
 .tag.reward { color: var(--gold); }
 .tag.path { color: #3d5a80; }
+.tag.law { color: var(--law); }
 .formula {
   font-family: "Fraunces", Georgia, serif;
   font-size: 1.25em;
@@ -219,13 +221,13 @@ h1 {
 </head>
 <body>
 <div class="shell">
-  <h1>Mercy &amp; Forgiveness Formulas</h1>
+  <h1>Mercy, Forgiveness &amp; Laws</h1>
   <p class="subtitle">
-    Scales and paths from Al-Quran.txt — reward, sin, repentance, mercy<br>
+    Scales, paths, and prescribed limits from Al-Quran.txt<br>
     <a href="Al-Quran-Study.html">study app</a> ·
     <a href="Al-Quran-Calculators.html">calculators</a> ·
-    <a href="Al-Quran-Names.html">names of Allah</a> ·
     <a href="Al-Quran-Contracts.html">contracts</a> ·
+    <a href="Al-Quran-Names.html">names of Allah</a> ·
     <a href="Al-Quran.html">full text</a>
   </p>
 
@@ -233,6 +235,7 @@ h1 {
     <p>These are <b>study formulas</b> taken from explicit wording in the Book — not a ledger of your soul.
     Numbers (tenfold, seven hundred) are lower bounds or parables of increase; Allah multiplies further for whom He wills.
     Use them to remember proportion: good is amplified, evil is not amplified beyond itself, and the door of mercy stays open for the repentant.</p>
+    <p><b>Laws</b> are the Book’s explicit prescriptions and fixed shares — qisāṣ, inheritance, ḥudūd numbers, booty fifth, written debt, and “limits ordained by Allah.” Full inheritance and ʿiddah math live in <a href="Al-Quran-Calculators.html">Calculators</a>; written forms in <a href="Al-Quran-Contracts.html">Contracts</a>.</p>
   </div>
 
   <div class="filters" role="tablist" aria-label="Filter formulas">
@@ -241,6 +244,7 @@ h1 {
     <button type="button" data-filter="mercy">Mercy</button>
     <button type="button" data-filter="sin">Sin &amp; limit</button>
     <button type="button" data-filter="path">Repentance path</button>
+    <button type="button" data-filter="law">Laws</button>
   </div>
 
   <div class="grid" id="cards">
@@ -430,10 +434,10 @@ h1 {
     </article>
 
     <!-- 5:89 oath - link -->
-    <article class="card" data-kind="path sin" id="f-oath">
+    <article class="card" data-kind="path sin law" id="f-oath">
       <div class="card-top">
         <span class="tag path">Repentance</span>
-        <span class="tag sin">Sin &amp; limit</span>
+        <span class="tag law">Law</span>
         <span class="ref">5:89</span>
       </div>
       <p class="formula">broken deliberate oath → expiation: feed 10 · or clothe 10 · or free a slave · else 3 fasts</p>
@@ -453,11 +457,141 @@ h1 {
       <div class="out">And He is the One that accepts repentance from His servants and forgives sins (42:25). Acceptance is His attribute; offering is yours.</div>
     </article>
 
+    <!-- Laws -->
+    <article class="card" data-kind="law mercy" id="f-law-qisas">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="tag mercy">Mercy</span>
+        <span class="ref">2:178</span>
+      </div>
+      <p class="formula">qisāṣ in murder: free for free · slave for slave · woman for woman · remission → fair settlement + gratitude</p>
+      <p class="ar" lang="ar" dir="rtl">كُتِبَ عَلَيْكُمُ الْقِصَاصُ فِي الْقَتْلَى … فَمَنْ عُفِيَ لَهُ مِنْ أَخِيهِ شَيْءٌ فَاتِّبَاعٌ بِالْمَعْرُوفِ</p>
+      <p class="en">The law of equality is prescribed to you in cases of murder… If any remission is made by the brother of the slain, then grant any reasonable demand, and compensate him with handsome gratitude — a concession and a Mercy from your Lord.</p>
+      <div class="out">Equality is the baseline; remission is permitted and counted as mercy. Whoever transgresses after that faces a grave penalty.</div>
+    </article>
+
+    <article class="card" data-kind="law mercy" id="f-law-retaliation">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">5:45</span>
+      </div>
+      <p class="formula">life↔life · eye↔eye · nose · ear · tooth · wounds equal for equal · remit retaliation → charity = expiation</p>
+      <p class="en">We ordained therein for them: “Life for life, eye for eye… and wounds equal for equal.” But if any one remits the retaliation by way of charity, it is an act of atonement for himself.</p>
+      <div class="out">The Book pairs strict proportion with a lawful exit: charity instead of taking the exact retaliation.</div>
+    </article>
+
+    <article class="card" data-kind="law" id="f-law-inherit">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">4:11</span>
+      </div>
+      <p class="formula">among children: male share = 2× female · daughters-only cases → ½ or ⅔ · parents sixths · after debts &amp; bequest</p>
+      <p class="ar" lang="ar" dir="rtl">لِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ</p>
+      <p class="en">To the male, a portion equal to that of two females… (distribution) after the payment of legacies and debts. These are settled portions ordained by Allah.</p>
+      <div class="work">
+        <label>Sons (study slice)
+          <input type="number" id="i-sons" min="0" step="1" value="1">
+        </label>
+        <label>Daughters (study slice)
+          <input type="number" id="i-dau" min="0" step="1" value="1">
+        </label>
+        <label>Estate left for children (units)
+          <input type="number" id="i-estate" min="0" step="1" value="100">
+        </label>
+        <div class="out" id="i-out"></div>
+      </div>
+      <div class="out">Full farāʾiḍ with spouses and parents: <a href="Al-Quran-Calculators.html">Calculators → Inheritance</a>.</div>
+    </article>
+
+    <article class="card" data-kind="law reward" id="f-law-booty">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="tag reward">Reward</span>
+        <span class="ref">8:41</span>
+      </div>
+      <p class="formula">booty acquired → ⅕ (khums) to Allah, Messenger, kin, orphans, needy, wayfarer</p>
+      <p class="en">Out of all the booty that ye may acquire, a fifth share is assigned to Allah, and to the Messenger, and to near relatives, orphans, the needy, and the wayfarer.</p>
+      <div class="work">
+        <label>Total booty (units)
+          <input type="number" id="b-total" min="0" step="1" value="1000">
+        </label>
+        <div class="out" id="b-out"></div>
+      </div>
+    </article>
+
+    <article class="card" data-kind="law sin" id="f-law-theft">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="tag sin">Sin &amp; limit</span>
+        <span class="ref">5:38</span>
+      </div>
+      <p class="formula">thief (male or female) → cut off hands · exemplary punishment from Allah</p>
+      <p class="en">As to the thief, Male or female, cut off his or her hands: a punishment by way of example, from Allah, for their crime.</p>
+      <div class="out">5:39 opens repentance after wrongdoing — study the pair for warning and door together.</div>
+    </article>
+
+    <article class="card" data-kind="law sin" id="f-law-zina">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">24:2</span>
+      </div>
+      <p class="formula">adultery/fornication (both) → 100 lashes each · believers witness · no pity overriding Allah’s limit</p>
+      <p class="en">The woman and the man guilty of adultery or fornication — flog each of them with a hundred stripes… let a party of the Believers witness their punishment.</p>
+      <div class="out">Fixed count in the text; surrounding sūra treats evidence and social order — not a courtroom guide here.</div>
+    </article>
+
+    <article class="card" data-kind="law sin" id="f-law-riba">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">2:275</span>
+      </div>
+      <p class="formula">trade permitted · usury forbidden · cease after admonition → past pardoned · return → Fire</p>
+      <p class="en">Allah hath permitted trade and forbidden usury. Those who after receiving direction from their Lord, desist, shall be pardoned for the past… those who repeat are companions of the Fire.</p>
+      <div class="out">Written debt without riba: <a href="Al-Quran-Contracts.html">Contracts → Debt (2:282)</a>.</div>
+    </article>
+
+    <article class="card" data-kind="law" id="f-law-divorce">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">2:229–230</span>
+      </div>
+      <p class="formula">ṭalāq permissible twice → then hold fairly or release kindly · third path needs new nikāḥ (2:230)</p>
+      <p class="en">A divorce is only permissible twice: after that, the parties should either hold Together on equitable terms, or separate with kindness… These are the limits ordained by Allah.</p>
+      <div class="work">
+        <label>Revocable divorces already pronounced (0–2)
+          <input type="number" id="d-count" min="0" max="2" step="1" value="0">
+        </label>
+        <div class="out" id="d-out"></div>
+      </div>
+      <div class="out">ʿIddah and housing: <a href="Al-Quran-Contracts.html">Contracts → Divorce &amp; ʿIddah</a> · <a href="Al-Quran-Marriage.html">Marriage form</a>.</div>
+    </article>
+
+    <article class="card" data-kind="law" id="f-law-debt">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">2:282</span>
+      </div>
+      <p class="formula">deferred debt → write it · scribe just · witnesses · no harm to scribe or witness</p>
+      <p class="en">When ye deal with each other, in transactions involving future obligations in a fixed period of time, reduce them to writing… and get two witnesses, out of your own men.</p>
+      <div class="out">Printable clauses: <a href="Al-Quran-Contracts.html">Contracts → Debt</a>.</div>
+    </article>
+
+    <article class="card" data-kind="law" id="f-law-food">
+      <div class="card-top">
+        <span class="tag law">Law</span>
+        <span class="ref">5:3</span>
+      </div>
+      <p class="formula">forbidden: carrion · blood · swine flesh · what is invoked besides Allah · strangled · beaten · fallen · gored · devoured by beasts (except what ye slaughter) · what is sacrificed on stones</p>
+      <p class="en">Forbidden to you (for food) are: dead meat, blood, the flesh of swine, and that on which hath been invoked the name of other than Allah… (full list in 5:3).</p>
+      <div class="out">Law of permission follows: “This day are (all) things good and pure made lawful unto you” — read the whole verse for exceptions (game, sea, necessity).</div>
+    </article>
+
   </div>
 
   <p class="footer-note">
-    Formulas from <code>Al-Quran.txt</code> · study aid, not a fatwa ·
+    Formulas &amp; laws from <code>Al-Quran.txt</code> · study aid, not a fatwa ·
     <a href="Al-Quran-Calculators.html">Calculators</a> ·
+    <a href="Al-Quran-Contracts.html">Contracts</a> ·
     <a href="Al-Quran-Study.html">Study</a>
   </p>
 </div>
@@ -526,6 +660,39 @@ h1 {
     $("path-out").textContent = msg;
   }
 
+  function syncInherit() {
+    var s = Math.max(0, Math.floor(+$("i-sons").value || 0));
+    var d = Math.max(0, Math.floor(+$("i-dau").value || 0));
+    var est = Math.max(0, +$("i-estate").value || 0);
+    if (s + d === 0) {
+      $("i-out").innerHTML = "Add at least one child to illustrate the <b>2 : 1</b> male-to-female ratio among siblings.";
+      return;
+    }
+    var units = s * 2 + d;
+    var perSon = est * 2 / units;
+    var perDau = est / units;
+    $("i-out").innerHTML =
+      "Among these children only: each son <b>" + fmt(perSon) + "</b>, each daughter <b>" + fmt(perDau) + "</b> " +
+      "(ratio <b>2 : 1</b>). Total checked: <b>" + fmt(perSon * s + perDau * d) + "</b> of " + fmt(est) + ".";
+  }
+
+  function syncBooty() {
+    var t = Math.max(0, +$("b-total").value || 0);
+    var fifth = t / 5;
+    $("b-out").innerHTML =
+      "Khums (⅕): <b>" + fmt(fifth) + "</b> · remainder for distribution: <b>" + fmt(t - fifth) + "</b>.";
+  }
+
+  function syncDivorce() {
+    var n = Math.min(2, Math.max(0, Math.floor(+$("d-count").value || 0)));
+    $("d-count").value = String(n);
+    var msg;
+    if (n === 0) msg = "No revocable divorces yet — ṭalāq remains available twice before the limits tighten (2:229).";
+    else if (n === 1) msg = "One revocable divorce used — one more permissible on equitable terms, or reconciliation in ʿiddah.";
+    else msg = "Two revocable divorces used — next step is fair retention or kind release; a third round requires a new marriage (2:230).";
+    $("d-out").textContent = msg;
+  }
+
   ["r-good", "r-evil"].forEach(function (id) {
     $(id).addEventListener("input", syncRecompense);
   });
@@ -540,6 +707,11 @@ h1 {
   document.querySelectorAll("#path-checks input").forEach(function (b) {
     b.addEventListener("change", syncPath);
   });
+  ["i-sons", "i-dau", "i-estate"].forEach(function (id) {
+    $(id).addEventListener("input", syncInherit);
+  });
+  $("b-total").addEventListener("input", syncBooty);
+  $("d-count").addEventListener("input", syncDivorce);
 
   document.querySelector(".filters").addEventListener("click", function (e) {
     var btn = e.target.closest("[data-filter]");
@@ -560,6 +732,9 @@ h1 {
   syncAtom();
   syncTransform();
   syncPath();
+  syncInherit();
+  syncBooty();
+  syncDivorce();
 })();
 </script>
 </body>

@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#07080a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>What matters · Priority field</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #07080a;
+      --ink: #e7e2d6;
+      --ink-soft: rgba(231, 226, 214, 0.62);
+      --ink-faint: rgba(231, 226, 214, 0.34);
+      --sage: #8ec5d1;
+      --gold: #d4a574;
+      --line: rgba(231, 226, 214, 0.1);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --safe: max(4.5vh, env(safe-area-inset-top));
+      --pad: clamp(1.5rem, 5.5vw, 12vh);
+      --list-size: clamp(1.45rem, 3.7vh, 6.2vh);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Outfit, system-ui, sans-serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      cursor: none;
+      user-select: none;
+    }
+
+    body.is-active { cursor: default; }
+    body.is-active:not(.is-locked) .item-text,
+    body.is-active:not(.is-locked) .title { user-select: text; }
+
+    body.is-locked .item-tools { display: none !important; }
+    body.is-locked .composer { display: none; }
+    body.is-locked .title,
+    body.is-locked .item-text {
+      pointer-events: none;
+      cursor: default;
+    }
+    body.is-locked .num { cursor: default; pointer-events: none; }
+
+    #field,
+    #particles {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: block;
+    }
+
+    #field { z-index: 0; }
+
+    #particles {
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1.4s var(--ease);
+    }
+
+    body.is-idle #particles { opacity: 1; }
+
+    body.is-idle {
+      transition: background-color 2.4s var(--ease);
+    }
+
+    .grain {
+      position: fixed;
+      inset: -20%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.045;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+      animation: grain-drift 48s linear infinite;
+    }
+
+    @keyframes grain-drift {
+      0% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(-3%, 2%, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    #orbit {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: var(--safe) var(--pad) clamp(1.2rem, 3.2vh, 3rem);
+      will-change: transform, filter, opacity;
+      transition: opacity 1.1s var(--ease);
+    }
+
+    body.is-idle #orbit {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .marquee {
+      position: fixed;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.3s var(--ease);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    }
+
+    body.is-idle .marquee { opacity: 1; }
+
+    .marquee--time {
+      top: 7vh;
+      color: var(--ink);
+    }
+
+    .marquee--date {
+      bottom: max(4.8rem, 9vh);
+      color: var(--ink-soft);
+    }
+
+    .marquee__track {
+      display: flex;
+      width: max-content;
+      will-change: transform;
+      animation: marquee-glide var(--marquee-s, 48s) linear infinite;
+    }
+
+    .marquee--date .marquee__track {
+      animation-name: marquee-glide-rev;
+      animation-duration: var(--marquee-date-s, 64s);
+    }
+
+    .marquee__copy {
+      display: flex;
+      flex-shrink: 0;
+      align-items: baseline;
+    }
+
+    .marquee__unit {
+      display: flex;
+      align-items: baseline;
+      gap: 0.55em;
+      padding: 0 0.9em;
+      white-space: nowrap;
+    }
+
+    .marquee--time .marquee__unit strong {
+      font-weight: 300;
+      font-size: clamp(2.8rem, 9.5vh, 14vh);
+      letter-spacing: -0.045em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .marquee--time .marquee__unit em {
+      font-family: Fraunces, Georgia, serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.1rem, 3.2vh, 4.4vh);
+      color: var(--gold);
+      padding-bottom: 0.12em;
+    }
+
+    .marquee--date .marquee__unit {
+      font-size: clamp(0.72rem, 1.7vh, 2.1vh);
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+    }
+
+    .marquee__dot {
+      color: var(--sage);
+      padding: 0 0.35em;
+      opacity: 0.7;
+    }
+
+    @keyframes marquee-glide {
+      from { transform: translate3d(0, 0, 0); }
+      to { transform: translate3d(-50%, 0, 0); }
+    }
+
+    @keyframes marquee-glide-rev {
+      from { transform: translate3d(-50%, 0, 0); }
+      to { transform: translate3d(0, 0, 0); }
+    }
+
+    header.mast {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-bottom: clamp(1rem, 2.4vh, 2.4rem);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .clock {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15em;
+    }
+
+    .clock__main {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: clamp(0.4rem, 1.1vw, 0.9rem);
+    }
+
+    .clock-prayer {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      color: var(--gold);
+      font-size: clamp(0.58rem, 1.05vw, 0.92rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 400;
+      line-height: 1;
+      padding: 0.35em 0.65em;
+      border: 1px solid rgba(212, 165, 116, 0.32);
+      border-radius: 999px;
+      background: rgba(212, 165, 116, 0.07);
+    }
+
+    .clock-prayer[hidden] { display: none !important; }
+
+    .clock-prayer__icon {
+      width: 0.95em;
+      height: 0.95em;
+      fill: currentColor;
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+
+    .marquee__prayer {
+      display: none;
+      align-items: center;
+      gap: 0.35em;
+      margin-left: 0.15em;
+      padding: 0.12em 0.45em;
+      border-radius: 999px;
+      border: 1px solid rgba(212, 165, 116, 0.28);
+      background: rgba(212, 165, 116, 0.08);
+      color: var(--gold);
+      font-size: clamp(0.55rem, 1.5vh, 1.35rem);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 400;
+      vertical-align: middle;
+    }
+
+    body.is-prayer-time .marquee__prayer {
+      display: inline-flex;
+    }
+
+    .marquee__prayer svg {
+      width: 0.95em;
+      height: 0.95em;
+      fill: currentColor;
+    }
+
+    .clock time {
+      font-size: clamp(2.6rem, 10vh, 15vh);
+      font-weight: 300;
+      letter-spacing: -0.045em;
+      line-height: 0.9;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+
+    .clock .date {
+      font-size: clamp(0.72rem, 1.05vw, 1.35rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      font-weight: 400;
+    }
+
+    .mast-mark {
+      text-align: right;
+      color: var(--ink-faint);
+      font-size: clamp(0.68rem, 0.92vw, 1.15rem);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+
+    .mast-mark em {
+      display: block;
+      margin-top: 0.45em;
+      font-family: Fraunces, Georgia, serif;
+      font-style: italic;
+      font-weight: 300;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--gold);
+      font-size: 1.35em;
+    }
+
+    .stage {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      padding: clamp(1.5rem, 4.5vh, 5rem) 0 clamp(1rem, 2vh, 2rem);
+    }
+
+    .kicker-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1.08fr) minmax(0, 0.92fr);
+      column-gap: clamp(0.7rem, 1.6vw, 2rem);
+      align-items: baseline;
+      margin-bottom: 0.85em;
+    }
+
+    .kicker-spacer {
+      visibility: hidden;
+      font-size: calc(var(--list-size) * 0.52);
+      letter-spacing: 0.08em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kicker {
+      font-size: clamp(0.68rem, 0.9vw, 1.1rem);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0;
+    }
+
+    .kicker-verse {
+      color: var(--gold);
+      padding-left: clamp(0.75rem, 1.4vw, 1.6rem);
+      margin-left: 0.15rem;
+    }
+
+    .title {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 300;
+      font-style: italic;
+      font-optical-sizing: auto;
+      font-size: clamp(1.85rem, 5.6vh, 8.5vh);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      outline: none;
+      margin-bottom: clamp(1.4rem, 3.6vh, 3.2rem);
+      caret-color: var(--gold);
+      max-width: 18ch;
+    }
+
+    .title:empty::before {
+      content: attr(data-placeholder);
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    .list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1.08fr) minmax(0, 0.92fr);
+      align-items: start;
+      gap: clamp(0.7rem, 1.6vw, 2rem);
+      padding: clamp(0.55rem, 1.25vh, 1.15rem) 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item-body {
+      display: flex;
+      align-items: baseline;
+      gap: 0.65rem;
+      min-width: 0;
+      padding-top: 0.08em;
+    }
+
+    .num {
+      padding-top: 0.34em;
+      font-size: calc(var(--list-size) * 0.52);
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      min-width: 2.2ch;
+      background: none;
+      border: 0;
+      color: var(--gold);
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .num:hover { color: var(--sage); }
+
+    .item-text {
+      flex: 1;
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 300;
+      font-optical-sizing: auto;
+      font-size: var(--list-size);
+      line-height: 1.22;
+      letter-spacing: -0.02em;
+      outline: none;
+      caret-color: var(--gold);
+      min-width: 0;
+    }
+
+    .item-text:empty::before {
+      content: "Name this priority";
+      color: var(--ink-faint);
+    }
+
+    .ayah {
+      justify-self: start;
+      width: max-content;
+      max-width: min(100%, 36rem);
+      min-width: 0;
+      margin-left: 0.15rem;
+      padding: 0.1rem 0 0.1rem clamp(0.75rem, 1.4vw, 1.6rem);
+      border-left: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.28em;
+    }
+
+    .ayah-ar {
+      font-family: Amiri, "Noto Naskh Arabic", serif;
+      font-size: calc(var(--list-size) * 0.7);
+      line-height: 1.75;
+      color: var(--ink);
+      direction: rtl;
+      text-align: right;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ayah-en {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: calc(var(--list-size) * 0.44);
+      line-height: 1.35;
+      color: var(--ink-soft);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .ayah-ar,
+    .ayah-en,
+    .ayah-ref {
+      transition: opacity 1s var(--ease);
+    }
+
+    .ayah.is-dim .ayah-ar,
+    .ayah.is-dim .ayah-en,
+    .ayah.is-dim .ayah-ref { opacity: 0; }
+
+    .ayah-ref {
+      font-size: calc(var(--list-size) * 0.28);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .ayah.is-wait .ayah-en,
+    .ayah.is-error .ayah-en { color: var(--ink-faint); }
+
+    .ayah.is-empty { border-left-color: transparent; }
+
+    .item.is-done .ayah { opacity: 0.42; }
+
+    .item.is-done .item-text {
+      color: var(--ink-faint);
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+    }
+
+    .item.is-done .num { color: var(--ink-faint); }
+
+    .item-tools {
+      display: none;
+      gap: 0.35rem;
+      align-items: center;
+    }
+
+    body.is-active .item-tools { display: flex; }
+
+    .ghost {
+      background: none;
+      border: 0;
+      color: var(--ink-faint);
+      font-family: inherit;
+      font-size: clamp(0.7rem, 0.85vw, 1rem);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 0.2rem 0.35rem;
+    }
+
+    .ghost:hover { color: var(--ink); }
+
+    .empty {
+      color: var(--ink-faint);
+      font-family: Fraunces, Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.3rem, 2.2vw, 2.8rem);
+      display: none;
+    }
+
+    .list:empty + .empty { display: block; }
+
+    footer.chrome {
+      display: flex;
+      align-items: center;
+      gap: clamp(0.6rem, 1.2vw, 1.4rem);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+
+    body.is-active footer.chrome {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .composer {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      border-bottom: 1px solid var(--line);
+      padding: 0.35rem 0 0.55rem;
+    }
+
+    .composer label {
+      font-size: clamp(0.62rem, 0.78vw, 0.92rem);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--sage);
+      white-space: nowrap;
+    }
+
+    .composer input {
+      flex: 1;
+      background: none;
+      border: 0;
+      color: var(--ink);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(1rem, 1.45vw, 1.85rem);
+      font-weight: 300;
+      outline: none;
+      caret-color: var(--gold);
+    }
+
+    .composer input::placeholder { color: var(--ink-faint); }
+
+    .actions {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      appearance: none;
+      background: rgba(231, 226, 214, 0.04);
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-family: inherit;
+      font-size: clamp(0.64rem, 0.78vw, 0.88rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 0.7em 1.05em;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+
+    .btn:hover {
+      color: var(--ink);
+      border-color: rgba(231, 226, 214, 0.28);
+      background: rgba(231, 226, 214, 0.08);
+    }
+
+    .hint {
+      position: fixed;
+      z-index: 4;
+      left: 50%;
+      bottom: max(1.2rem, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      font-size: clamp(0.62rem, 0.9vh, 1.1vh);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: opacity 1.2s var(--ease);
+    }
+
+    body.is-idle .hint { opacity: 1; }
+
+    .idle-ayah {
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(0.8rem, 2.2vh, 1.6rem);
+      padding: clamp(2rem, 8vh, 5rem) clamp(1.5rem, 7vw, 4rem);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.4s var(--ease);
+    }
+
+    body.is-idle.is-ayat-show .idle-ayah { opacity: 1; }
+
+    body.is-idle.is-ayat-show #particles,
+    body.is-idle.is-ayat-dissolve #particles {
+      opacity: 0 !important;
+      transition: opacity 1.4s var(--ease);
+    }
+
+    body.is-idle.is-ayat-show .marquee,
+    body.is-idle.is-ayat-dissolve .marquee {
+      opacity: 0.22;
+    }
+
+    .idle-ayah__ar {
+      font-family: Amiri, "Noto Naskh Arabic", serif;
+      font-size: clamp(1.6rem, 4.8vh, 3.4rem);
+      line-height: 1.85;
+      color: var(--ink);
+      direction: rtl;
+      max-width: min(92vw, 46rem);
+    }
+
+    .idle-ayah__en {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: clamp(1rem, 2.4vh, 1.75rem);
+      line-height: 1.45;
+      color: var(--ink-soft);
+      max-width: min(88vw, 38rem);
+    }
+
+    .idle-ayah__ref {
+      font-size: clamp(0.62rem, 1.1vh, 0.95rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.35em;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 5;
+      top: max(1.2rem, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%) translateY(-120%);
+      background: rgba(12, 14, 16, 0.88);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.7em 1.1em;
+      border-radius: 999px;
+      pointer-events: none;
+      transition: transform 0.45s var(--ease);
+    }
+
+    .toast.is-on { transform: translateX(-50%) translateY(0); }
+
+    .dock {
+      position: fixed;
+      z-index: 6;
+      right: max(1rem, env(safe-area-inset-right));
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.4rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.55s var(--ease);
+    }
+
+    body.is-active .dock,
+    body.is-idle .dock {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    body.is-idle .dock { opacity: 0.42; }
+
+    .theme-panel {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(8, 9, 11, 0.72);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transform: translateY(6px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+    }
+
+    body.is-theme-open:not(.is-locked) .theme-panel {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .theme-panel__title {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    .theme-swatches {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .theme-swatch {
+      display: block;
+      line-height: 0;
+    }
+
+    .theme-swatch input[type="color"] {
+      width: 1.35rem;
+      height: 1.35rem;
+      padding: 0;
+      border: 1px solid rgba(231, 226, 214, 0.14);
+      border-radius: 999px;
+      background: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .theme-swatch input[type="color"]::-webkit-color-swatch-wrapper { padding: 0.1rem; }
+    .theme-swatch input[type="color"]::-webkit-color-swatch {
+      border: 0;
+      border-radius: 999px;
+    }
+
+    .dock-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .dock-palette {
+      appearance: none;
+      width: 2.15rem;
+      height: 2.15rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(8, 9, 11, 0.55);
+      color: var(--ink-faint);
+      cursor: pointer;
+      display: none;
+      place-items: center;
+      transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+    }
+
+    body.is-active:not(.is-locked) .dock-palette { display: grid; }
+
+    .dock-palette svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      fill: currentColor;
+    }
+
+    .dock-palette:hover,
+    body.is-theme-open .dock-palette {
+      color: var(--sage);
+      border-color: rgba(142, 197, 209, 0.35);
+    }
+
+    .dock-lock-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.28rem;
+    }
+
+    .dock-lock {
+      appearance: none;
+      position: relative;
+      width: 2.85rem;
+      height: 2.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(142, 197, 209, 0.45);
+      background: rgba(142, 197, 209, 0.2);
+      color: var(--sage);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: none;
+      transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease), opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+
+    body:not(.is-locked) .dock-lock:hover {
+      transform: translateY(-1px);
+      background: rgba(142, 197, 209, 0.28);
+      border-color: rgba(142, 197, 209, 0.55);
+    }
+
+    body.is-locked .dock-lock {
+      color: var(--gold);
+      background: rgba(8, 9, 11, 0.35);
+      border: 1px solid rgba(212, 165, 116, 0.22);
+      box-shadow: none;
+    }
+
+    body.is-locked .dock-lock:hover {
+      transform: none;
+      border-color: rgba(212, 165, 116, 0.3);
+      background: rgba(8, 9, 11, 0.42);
+    }
+
+    .dock-lock svg {
+      width: 1.2rem;
+      height: 1.2rem;
+      fill: currentColor;
+      transition: opacity 0.2s var(--ease);
+    }
+
+    body:not(.is-locked) .dock-lock svg {
+      opacity: 0.92;
+    }
+
+    body.is-locked .dock-lock svg {
+      opacity: 0.38;
+    }
+
+    .dock-lock .icon-unlock { display: block; }
+    .dock-lock .icon-lock { display: none; }
+    body.is-locked .dock-lock .icon-unlock { display: none; }
+    body.is-locked .dock-lock .icon-lock { display: block; }
+
+    .dock-lock-label {
+      font-size: 0.52rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: 1;
+      transition: color 0.2s var(--ease), opacity 0.2s var(--ease);
+    }
+
+    body:not(.is-locked) .dock-lock-label {
+      color: var(--sage);
+      opacity: 0.88;
+    }
+
+    body.is-locked .dock-lock-label {
+      color: var(--ink-faint);
+      opacity: 0.55;
+      font-weight: 400;
+    }
+
+    @media (max-width: 820px) {
+      header.mast { flex-direction: column; align-items: flex-start; }
+      .mast-mark { text-align: left; }
+      footer.chrome { flex-direction: column; align-items: stretch; }
+      .actions { justify-content: flex-start; }
+      .kicker-row { display: flex; flex-wrap: wrap; }
+      .kicker-spacer { display: none; }
+      .kicker-verse { padding-left: 0; margin-left: 0; }
+      .item { grid-template-columns: auto minmax(0, 1fr); }
+      .ayah {
+        grid-column: 2;
+        border-left: 0;
+        margin-left: 0;
+        padding-left: 0;
+        padding-top: 0.4rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .marquee__track { animation: none !important; }
+      .grain { animation: none; }
+      .ayah-ar, .ayah-en, .ayah-ref,
+      .idle-ayah, #particles, .theme-panel, .dock-lock { transition: none; }
+    }
+
+    @media print {
+      @page { size: landscape; margin: 0; }
+      html, body {
+        background: #07080a !important;
+        overflow: visible;
+        height: auto;
+      }
+      #field, #particles, .grain, .marquee, .idle-ayah, .dock, footer.chrome, .hint, .toast, .item-tools { display: none !important; }
+      body.is-idle #orbit { opacity: 1 !important; pointer-events: auto !important; }
+      #orbit {
+        transform: none !important;
+        filter: none !important;
+        height: 100vh;
+        padding: 8vh 8vw;
+      }
+      body { cursor: default; }
+    }
+  </style>
+</head>
+<body class="is-idle">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <canvas id="particles" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="marquee marquee--time" id="marquee-time" aria-hidden="true">
+    <div class="marquee__track"></div>
+  </div>
+  <div class="marquee marquee--date" id="marquee-date" aria-hidden="true">
+    <div class="marquee__track"></div>
+  </div>
+
+  <div class="idle-ayah" id="idle-ayah" aria-live="polite" aria-atomic="true" hidden>
+    <p class="idle-ayah__ar" dir="rtl" lang="ar"></p>
+    <p class="idle-ayah__en"></p>
+    <p class="idle-ayah__ref"></p>
+  </div>
+
+  <div id="orbit">
+    <header class="mast">
+      <div class="clock">
+        <div class="clock__main">
+          <time id="clock-time" datetime="">00:00</time>
+          <span class="clock-prayer" id="clock-prayer" hidden>
+            <svg class="clock-prayer__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 2.6c-4.1 0-7.4 3.3-7.4 7.4 0 2.2 1 4.2 2.5 5.5-2.4 1.4-4 4-4 7.2 0 4.4 3.6 8 8 8 3.5 0 6.5-2.3 7.5-5.4-1.4 1.6-3.5 2.6-5.8 2.6-4.2 0-7.6-3.4-7.6-7.6 0-3.2 2-5.9 4.8-7-2.3-1.4-3.9-3.9-3.9-6.8 0-4.3 3.5-7.8 7.9-7.5z"/></svg>
+            <span class="clock-prayer__name"></span>
+          </span>
+        </div>
+        <p class="date" id="clock-date"></p>
+      </div>
+      <p class="mast-mark">Priority field<em>On a mission</em></p>
+    </header>
+
+    <section class="stage" aria-label="Motivational priorities">
+      <div class="kicker-row">
+        <span class="kicker-spacer" aria-hidden="true">00</span>
+        <p class="kicker">Protect these first</p>
+        <p class="kicker kicker-verse">From the Quran</p>
+      </div>
+      <h1 class="title" id="title" contenteditable="true" spellcheck="false" data-placeholder="What matters"></h1>
+      <ol class="list" id="list"></ol>
+      <p class="empty">Move, then type the one thing you will protect.</p>
+    </section>
+
+    <footer class="chrome">
+      <form class="composer" id="composer">
+        <label for="add">Add</label>
+        <input id="add" name="add" type="text" maxlength="140" autocomplete="off" spellcheck="false" placeholder="A priority worth keeping on the wall" />
+      </form>
+      <div class="actions">
+        <button class="btn" type="button" id="btn-png" title="Download a 4K poster">Save PNG</button>
+        <button class="btn" type="button" id="btn-pdf" title="Open a print-ready poster">Save PDF</button>
+        <button class="btn" type="button" id="btn-full" title="Fill the television">Fullscreen</button>
+      </div>
+    </footer>
+  </div>
+
+  <p class="hint">Move to edit · F fullscreen · Esc rest</p>
+  <div class="toast" id="toast" role="status"></div>
+
+  <div class="dock" id="dock">
+    <div class="theme-panel" id="theme-panel" aria-label="Colour scheme">
+      <p class="theme-panel__title">Colour scheme</p>
+      <div class="theme-swatches">
+        <label class="theme-swatch"><span class="theme-panel__title">Paper</span><input type="color" id="theme-paper" value="#07080a" title="Paper" /></label>
+        <label class="theme-swatch"><span class="theme-panel__title">Text</span><input type="color" id="theme-ink" value="#e7e2d6" title="Text" /></label>
+        <label class="theme-swatch"><span class="theme-panel__title">Cool accent</span><input type="color" id="theme-sage" value="#8ec5d1" title="Cool accent" /></label>
+        <label class="theme-swatch"><span class="theme-panel__title">Warm accent</span><input type="color" id="theme-gold" value="#d4a574" title="Warm accent" /></label>
+      </div>
+    </div>
+    <div class="dock-bar">
+      <button class="dock-palette" type="button" id="btn-theme" aria-expanded="false" aria-controls="theme-panel" title="Colours">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-9 9c0 2.1.7 4.1 2 5.7.5.6 1.1 1.1 1.8 1.4.7.3 1.5.4 2.2.4h.5c.6 0 1.1-.5 1.1-1.1 0-.3-.1-.6-.3-.8-.2-.2-.3-.5-.3-.8 0-.6.5-1.1 1.1-1.1H16c2.8 0 5-2.2 5-5 0-4.4-3.6-8.1-9-8.1zm-2.5 7a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zm5 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5zM9 14.5a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z"/></svg>
+      </button>
+      <div class="dock-lock-wrap">
+        <button class="dock-lock" type="button" id="btn-lock" aria-pressed="false" aria-label="Lock list" title="Lock list">
+          <svg class="icon-unlock" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zm-3 0H10V6a2 2 0 1 1 4 0v2z"/></svg>
+          <svg class="icon-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2zm-3 0H10V7a2 2 0 1 1 4 0v3z"/></svg>
+        </button>
+        <span class="dock-lock-label" id="lock-label">Open</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+  <script src="prayer_times.js"></script>
+  <script src="star_catalog_data.js"></script>
+  <script src="star_field.js"></script>
+  <script src="verse_match.js"></script>
+  <script>
+    (function () {
+      const STORE = "zs-priority-field-v1";
+      const MAX = 7;
+      const IDLE_MS = 7000;
+      const DEFAULT_THEME = {
+        paper: "#07080a",
+        ink: "#e7e2d6",
+        sage: "#8ec5d1",
+        gold: "#d4a574"
+      };
+
+      const body = document.body;
+      const orbit = document.getElementById("orbit");
+      const field = document.getElementById("field");
+      const particleCanvas = document.getElementById("particles");
+      const listEl = document.getElementById("list");
+      const titleEl = document.getElementById("title");
+      const addEl = document.getElementById("add");
+      const toastEl = document.getElementById("toast");
+      const timeEl = document.getElementById("clock-time");
+      const dateEl = document.getElementById("clock-date");
+      const clockPrayerEl = document.getElementById("clock-prayer");
+      const clockPrayerName = clockPrayerEl.querySelector(".clock-prayer__name");
+      const marqueeTime = document.getElementById("marquee-time");
+      const PRAYER_ICON =
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 2.6c-4.1 0-7.4 3.3-7.4 7.4 0 2.2 1 4.2 2.5 5.5-2.4 1.4-4 4-4 7.2 0 4.4 3.6 8 8 8 3.5 0 6.5-2.3 7.5-5.4-1.4 1.6-3.5 2.6-5.8 2.6-4.2 0-7.6-3.4-7.6-7.6 0-3.2 2-5.9 4.8-7-2.3-1.4-3.9-3.9-3.9-6.8 0-4.3 3.5-7.8 7.9-7.5z"/></svg>';
+      const marqueeDate = document.getElementById("marquee-date");
+      const idleAyahEl = document.getElementById("idle-ayah");
+      const idleAyahAr = idleAyahEl.querySelector(".idle-ayah__ar");
+      const idleAyahEn = idleAyahEl.querySelector(".idle-ayah__en");
+      const idleAyahRef = idleAyahEl.querySelector(".idle-ayah__ref");
+      const ctx = field.getContext("2d", { alpha: false });
+      const pctx = particleCanvas.getContext("2d", { alpha: true });
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const loaded = load();
+      const state = loaded || {
+        title: "What matters",
+        items: [
+          { id: uid(), text: "Protect the morning", done: false },
+          { id: uid(), text: "Ship one real thing", done: false },
+          { id: uid(), text: "Leave room to rest", done: false }
+        ]
+      };
+      state.locked = !!(loaded && loaded.locked);
+      state.theme = normalizeTheme(loaded && loaded.theme);
+      if (loaded && typeof loaded.prayerLat === "number" && typeof loaded.prayerLon === "number") {
+        state.prayerLat = loaded.prayerLat;
+        state.prayerLon = loaded.prayerLon;
+        state.prayerPlace = loaded.prayerPlace || "";
+      }
+
+      let idleTimer = 0;
+      let toastTimer = 0;
+      let verseTimer = 0;
+      let corpusState = "ready";
+      let wakeLock = null;
+      let lastTick = 0;
+      let particleLive = false;
+      let particles = [];
+      let particleEpoch = 0;
+      let lastMinute = -1;
+      let lastPrayerId = null;
+      let idleSky = null;
+      let rebuildTimer = 0;
+      let idleBurst = 0;
+      let idleAnimRaf = 0;
+      const idleShow = { timers: [], phase: "off", burst: 0 };
+      const IDLE_LIST_HOLD = 14000;
+      const IDLE_DISSOLVE = 4200;
+      const IDLE_FADE = 1400;
+      const IDLE_AYAT_HOLD = 60000;
+
+      function uid() {
+        return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+      }
+
+      const btnLock = document.getElementById("btn-lock");
+      const btnTheme = document.getElementById("btn-theme");
+      const lockLabel = document.getElementById("lock-label");
+      const themeInputs = {
+        paper: document.getElementById("theme-paper"),
+        ink: document.getElementById("theme-ink"),
+        sage: document.getElementById("theme-sage"),
+        gold: document.getElementById("theme-gold")
+      };
+
+      function load() {
+        try {
+          const raw = localStorage.getItem(STORE);
+          if (!raw) return null;
+          const data = JSON.parse(raw);
+          if (!data || !Array.isArray(data.items)) return null;
+          return data;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function normalizeTheme(theme) {
+        const out = {};
+        Object.keys(DEFAULT_THEME).forEach(function (key) {
+          const v = theme && theme[key];
+          out[key] = /^#[0-9a-fA-F]{6}$/.test(v || "") ? v : DEFAULT_THEME[key];
+        });
+        return out;
+      }
+
+      function hexRgb(hex) {
+        const n = parseInt(hex.slice(1), 16);
+        return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+      }
+
+      function rgbaHex(hex, a) {
+        const c = hexRgb(hex);
+        return "rgba(" + c.r + "," + c.g + "," + c.b + "," + a + ")";
+      }
+
+      function applyTheme(theme) {
+        const t = normalizeTheme(theme);
+        state.theme = t;
+        const root = document.documentElement;
+        root.style.setProperty("--paper", t.paper);
+        root.style.setProperty("--ink", t.ink);
+        root.style.setProperty("--sage", t.sage);
+        root.style.setProperty("--gold", t.gold);
+        root.style.setProperty("--ink-soft", rgbaHex(t.ink, 0.62));
+        root.style.setProperty("--ink-faint", rgbaHex(t.ink, 0.34));
+        root.style.setProperty("--line", rgbaHex(t.ink, 0.1));
+        Object.keys(themeInputs).forEach(function (key) {
+          if (themeInputs[key]) themeInputs[key].value = t[key];
+        });
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", t.paper);
+      }
+
+      function setThemeOpen(open) {
+        const on = !!open && !state.locked;
+        body.classList.toggle("is-theme-open", on);
+        btnTheme.setAttribute("aria-expanded", on ? "true" : "false");
+      }
+
+      function syncEditableLock() {
+        const on = !state.locked;
+        titleEl.contentEditable = on;
+        Array.prototype.forEach.call(listEl.querySelectorAll(".item-text"), function (el) {
+          el.contentEditable = on;
+        });
+        body.classList.toggle("is-locked", !!state.locked);
+        btnLock.setAttribute("aria-pressed", state.locked ? "true" : "false");
+        btnLock.setAttribute("aria-label", state.locked ? "Unlock list" : "Lock list");
+        btnLock.title = state.locked ? "Unlock list" : "Lock list";
+        lockLabel.textContent = state.locked ? "Locked" : "Open";
+        if (state.locked) setThemeOpen(false);
+      }
+
+      function setLocked(locked) {
+        state.locked = !!locked;
+        if (state.locked && document.activeElement) document.activeElement.blur();
+        syncEditableLock();
+        save();
+      }
+
+      function save() {
+        state.title = titleEl.textContent.trim();
+        try {
+          localStorage.setItem(STORE, JSON.stringify({
+            title: state.title,
+            items: state.items.map(function (item) {
+              return { id: item.id, text: item.text, done: !!item.done };
+            }),
+            locked: !!state.locked,
+            theme: normalizeTheme(state.theme),
+            prayerLat: typeof state.prayerLat === "number" ? state.prayerLat : undefined,
+            prayerLon: typeof state.prayerLon === "number" ? state.prayerLon : undefined,
+            prayerPlace: state.prayerPlace || undefined
+          }));
+        } catch (e) {}
+      }
+
+      function toast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("is-on");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toastEl.classList.remove("is-on");
+        }, 1800);
+      }
+
+      function isTyping() {
+        const el = document.activeElement;
+        return !!(el && (el.isContentEditable || /^(INPUT|TEXTAREA)$/.test(el.tagName)));
+      }
+
+      function armIdle() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () {
+          if (isTyping()) {
+            armIdle();
+            return;
+          }
+          setActive(false);
+        }, IDLE_MS);
+      }
+
+      function clearIdleShow() {
+        idleShow.phase = "off";
+        idleShow.burst = 0;
+        idleBurst = 0;
+        idleShow.timers.forEach(clearTimeout);
+        idleShow.timers = [];
+        if (idleAnimRaf) cancelAnimationFrame(idleAnimRaf);
+        idleAnimRaf = 0;
+        body.classList.remove("is-ayat-show", "is-ayat-dissolve");
+        idleAyahEl.hidden = true;
+        particleCanvas.style.opacity = "";
+      }
+
+      function fillIdleAyah(v) {
+        if (!v) {
+          idleAyahAr.textContent = "";
+          idleAyahEn.textContent = "";
+          idleAyahRef.textContent = "";
+          idleAyahEl.removeAttribute("title");
+          return;
+        }
+        idleAyahAr.textContent = v.ar || "";
+        idleAyahEn.textContent = v.excerpt || v.en || "";
+        idleAyahRef.textContent = v.s + ":" + v.a + "  ·  " + v.name;
+        idleAyahEl.title = v.en || "";
+      }
+
+      function idleLater(fn, ms) {
+        idleShow.timers.push(setTimeout(fn, ms));
+      }
+
+      function animateIdleBurst(from, to, ms, done) {
+        if (reduceMotion) {
+          idleShow.burst = to;
+          idleBurst = to;
+          if (done) done();
+          return;
+        }
+        const start = performance.now();
+        function frame(now) {
+          if (!particleLive || idleShow.phase === "off") return;
+          const t = Math.min(1, (now - start) / ms);
+          const eased = t * t * (3 - 2 * t);
+          idleShow.burst = from + (to - from) * eased;
+          idleBurst = idleShow.burst;
+          if (t < 1) {
+            idleAnimRaf = requestAnimationFrame(frame);
+          } else if (done) {
+            done();
+          }
+        }
+        idleAnimRaf = requestAnimationFrame(frame);
+      }
+
+      function beginDissolveList() {
+        if (!particleLive) return;
+        idleShow.phase = "dissolve-list";
+        animateIdleBurst(idleShow.burst, 1, IDLE_DISSOLVE, function () {
+          if (!particleLive) return;
+          body.classList.add("is-ayat-dissolve");
+          idleLater(showIdleAyah, IDLE_FADE * 0.35);
+        });
+      }
+
+      function showIdleAyah() {
+        if (!particleLive || !window.QuranBeside || !QuranBeside.random) return;
+        const v = QuranBeside.random();
+        fillIdleAyah(v);
+        idleAyahEl.hidden = false;
+        body.classList.remove("is-ayat-dissolve");
+        body.classList.add("is-ayat-show");
+        idleShow.phase = "hold-ayat";
+        idleLater(hideIdleAyah, IDLE_AYAT_HOLD);
+      }
+
+      function hideIdleAyah() {
+        if (!particleLive) return;
+        idleShow.phase = "hide-ayat";
+        body.classList.remove("is-ayat-show");
+        body.classList.add("is-ayat-dissolve");
+        idleLater(revealIdleList, IDLE_FADE);
+      }
+
+      function revealIdleList() {
+        if (!particleLive) return;
+        idleShow.phase = "reveal-list";
+        body.classList.remove("is-ayat-dissolve", "is-ayat-show");
+        idleAyahEl.hidden = true;
+        fillIdleAyah(null);
+        particleCanvas.style.opacity = "1";
+        buildParticles();
+        animateIdleBurst(1, 0, IDLE_DISSOLVE, function () {
+          if (!particleLive) return;
+          idleShow.phase = "hold-list";
+          idleLater(beginDissolveList, IDLE_LIST_HOLD);
+        });
+      }
+
+      function startIdleShow() {
+        clearIdleShow();
+        if (!particleLive) return;
+        idleShow.phase = "hold-list";
+        idleShow.burst = 0;
+        idleBurst = 0;
+        particleCanvas.style.opacity = "1";
+        idleLater(beginDissolveList, IDLE_LIST_HOLD);
+      }
+
+      function setActive(on) {
+        body.classList.toggle("is-active", on);
+        body.classList.toggle("is-idle", !on);
+        if (on) {
+          armIdle();
+          particleLive = false;
+          idleSky = null;
+          body.style.backgroundColor = "";
+          applyTheme(state.theme);
+          clearIdleShow();
+        } else {
+          clearTimeout(idleTimer);
+          particleLive = true;
+          particleEpoch = performance.now();
+          refreshIdleSky(new Date());
+          renderMarquee(true);
+          buildParticles();
+          startIdleShow();
+        }
+      }
+
+      function fillAside(aside, v) {
+        const ar = aside.querySelector(".ayah-ar");
+        const en = aside.querySelector(".ayah-en");
+        const ref = aside.querySelector(".ayah-ref");
+        if (!v) {
+          ar.textContent = "";
+          en.textContent = "";
+          ref.textContent = "";
+          aside.removeAttribute("title");
+          return;
+        }
+        ar.textContent = v.ar || "";
+        en.textContent = v.excerpt || v.en || "";
+        ref.textContent = v.s + ":" + v.a + "  ·  " + v.name;
+        aside.title = v.en || "";
+      }
+
+      function assignVerses() {
+        if (!window.QuranBeside || !QuranBeside.related) return;
+        state.items.forEach(function (item) {
+          if (!(item.text || "").trim()) {
+            item.verse = null;
+            item.verses = [];
+            item.verseAt = 0;
+            return;
+          }
+          const list = QuranBeside.related(item.text || "");
+          const same = item.verses && list.length === item.verses.length && list.every(function (v, i) {
+            return item.verses[i] && item.verses[i].key === v.key;
+          });
+          if (same) return;
+          item.verses = list;
+          item.verseAt = 0;
+          item.verse = list[0] || null;
+        });
+      }
+
+      function paintVerses() {
+        assignVerses();
+        const rows = listEl.querySelectorAll(".item");
+        state.items.forEach(function (item, i) {
+          const aside = rows[i] && rows[i].querySelector(".ayah");
+          if (!aside) return;
+          const blank = !(item.text || "").trim();
+          aside.classList.remove("is-dim");
+          if (blank || !item.verse) {
+            aside.classList.toggle("is-empty", !!blank);
+            fillAside(aside, null);
+            return;
+          }
+          aside.classList.remove("is-empty", "is-wait", "is-error");
+          fillAside(aside, item.verse);
+        });
+      }
+
+      const VERSE_HOLD = 11000;
+      const VERSE_FADE = 900;
+
+      function stepAside(item, aside) {
+        if (!item.verses || item.verses.length < 2) return;
+        item.verseAt = ((item.verseAt || 0) + 1) % item.verses.length;
+        item.verse = item.verses[item.verseAt];
+        fillAside(aside, item.verse);
+      }
+
+      function rotateVerses() {
+        if (particleLive) return;
+        const rows = listEl.querySelectorAll(".item");
+        state.items.forEach(function (item, i) {
+          const aside = rows[i] && rows[i].querySelector(".ayah");
+          if (!aside || !item.verses || item.verses.length < 2) return;
+          const delay = reduceMotion ? 0 : i * 420;
+          setTimeout(function () {
+            if (!aside.isConnected) return;
+            if (reduceMotion) {
+              stepAside(item, aside);
+              return;
+            }
+            aside.classList.add("is-dim");
+            setTimeout(function () {
+              if (!aside.isConnected) return;
+              stepAside(item, aside);
+              aside.classList.remove("is-dim");
+            }, VERSE_FADE);
+          }, delay);
+        });
+      }
+
+      function scheduleVerses() {
+        clearTimeout(verseTimer);
+        verseTimer = setTimeout(function () {
+          paintVerses();
+          if (particleLive) buildParticles();
+        }, 140);
+      }
+
+      function renderList() {
+        const n = state.items.length;
+        const size = n > 5 ? "clamp(1.15rem, 2.7vh, 4vh)" : n > 3 ? "clamp(1.28rem, 3.05vh, 4.6vh)" : "clamp(1.4rem, 3.4vh, 5.4vh)";
+        document.documentElement.style.setProperty("--list-size", size);
+        titleEl.textContent = state.title || "";
+        listEl.innerHTML = state.items.map(function (item, i) {
+          return (
+            '<li class="item' + (item.done ? " is-done" : "") + '" data-id="' + item.id + '">' +
+              '<button class="num" type="button" title="Mark done" aria-label="Toggle done">' + String(i + 1).padStart(2, "0") + "</button>" +
+              '<div class="item-body">' +
+                '<div class="item-text" contenteditable="true" spellcheck="false"></div>' +
+                '<div class="item-tools">' +
+                  '<button class="ghost" type="button" data-act="up" aria-label="Move up">Up</button>' +
+                  '<button class="ghost" type="button" data-act="down" aria-label="Move down">Down</button>' +
+                  '<button class="ghost" type="button" data-act="del" aria-label="Remove">Remove</button>' +
+                "</div>" +
+              "</div>" +
+              '<aside class="ayah" aria-label="Related verse">' +
+                '<p class="ayah-ar" dir="rtl" lang="ar"></p>' +
+                '<p class="ayah-en"></p>' +
+                '<p class="ayah-ref"></p>' +
+              "</aside>" +
+            "</li>"
+          );
+        }).join("");
+        Array.prototype.forEach.call(listEl.querySelectorAll(".item"), function (row, i) {
+          row.querySelector(".item-text").textContent = state.items[i].text;
+        });
+        paintVerses();
+        syncEditableLock();
+      }
+
+      function indexOfRow(el) {
+        const row = el.closest(".item");
+        if (!row) return -1;
+        return state.items.findIndex(function (item) { return item.id === row.dataset.id; });
+      }
+
+      function addItem(text) {
+        if (state.locked) return;
+        const value = (text || "").trim();
+        if (!value) return;
+        if (state.items.length >= MAX) {
+          toast("Seven is enough");
+          return;
+        }
+        value.split(/\n+/).forEach(function (line) {
+          const t = line.trim();
+          if (!t || state.items.length >= MAX) return;
+          state.items.push({ id: uid(), text: t.slice(0, 140), done: false });
+        });
+        save();
+        renderList();
+      }
+
+      listEl.addEventListener("click", function (e) {
+        if (state.locked) return;
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        const i = indexOfRow(btn);
+        if (i < 0) return;
+        const act = btn.dataset.act;
+        if (btn.classList.contains("num")) {
+          state.items[i].done = !state.items[i].done;
+        } else if (act === "del") {
+          state.items.splice(i, 1);
+        } else if (act === "up" && i > 0) {
+          state.items.splice(i - 1, 0, state.items.splice(i, 1)[0]);
+        } else if (act === "down" && i < state.items.length - 1) {
+          state.items.splice(i + 1, 0, state.items.splice(i, 1)[0]);
+        }
+        save();
+        renderList();
+      });
+
+      listEl.addEventListener("input", function (e) {
+        if (state.locked) return;
+        const text = e.target.closest(".item-text");
+        if (!text) return;
+        const i = indexOfRow(text);
+        if (i < 0) return;
+        state.items[i].text = text.textContent.replace(/\n/g, " ").trimStart();
+        save();
+        scheduleVerses();
+      });
+
+      titleEl.addEventListener("input", function () {
+        if (state.locked) return;
+        save();
+      });
+
+      function submitAdd() {
+        addItem(addEl.value);
+        addEl.value = "";
+      }
+
+      document.getElementById("composer").addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (state.locked) return;
+        submitAdd();
+      });
+
+      addEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          submitAdd();
+        }
+      });
+
+      orbit.addEventListener("keydown", function (e) {
+        if (e.key !== "Enter") return;
+        const t = e.target;
+        if (t && t.isContentEditable) {
+          e.preventDefault();
+          t.blur();
+        }
+      });
+
+      function clockParts() {
+        const now = new Date();
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const h12 = ((now.getHours() + 11) % 12) + 1;
+        return {
+          now: now,
+          time: h12 + ":" + mm,
+          date: now.toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          }),
+          minute: now.getMinutes()
+        };
+      }
+
+      function fillMarquee(root, html, durationVar, pxPerSec) {
+        const track = root.querySelector(".marquee__track");
+        const copy = '<div class="marquee__copy">' + html + "</div>";
+        track.innerHTML = copy + copy;
+        const width = track.firstElementChild ? track.firstElementChild.scrollWidth : 800;
+        const seconds = Math.max(28, width / pxPerSec);
+        root.style.setProperty(durationVar, seconds.toFixed(1) + "s");
+      }
+
+      function renderMarquee(force) {
+        const parts = clockParts();
+        const timeTrack = marqueeTime.querySelector(".marquee__track");
+        const needsBuild = force || !timeTrack.firstElementChild;
+        if (needsBuild) {
+          lastMinute = parts.minute;
+          const timeUnits = new Array(6).fill(
+            '<span class="marquee__unit"><strong>' + parts.time + '</strong>' +
+            '<span class="marquee__prayer" hidden>' + PRAYER_ICON + '<span class="marquee__prayer-name"></span></span>' +
+            "<em>" + parts.date + "</em></span>" +
+            '<span class="marquee__dot">·</span>'
+          ).join("");
+          const dateUnits = new Array(8).fill(
+            '<span class="marquee__unit">' + parts.date + "</span>" +
+            '<span class="marquee__dot">·</span>'
+          ).join("");
+          fillMarquee(marqueeTime, timeUnits, "--marquee-s", Math.max(48, window.innerWidth * 0.042));
+          fillMarquee(marqueeDate, dateUnits, "--marquee-date-s", Math.max(36, window.innerWidth * 0.028));
+          updatePrayerIndicator(parts.now);
+          return;
+        }
+        if (parts.minute === lastMinute) return;
+        lastMinute = parts.minute;
+        Array.prototype.forEach.call(marqueeTime.querySelectorAll(".marquee__unit strong"), function (el) {
+          el.textContent = parts.time;
+        });
+        Array.prototype.forEach.call(marqueeTime.querySelectorAll(".marquee__unit em"), function (el) {
+          el.textContent = parts.date;
+        });
+        Array.prototype.forEach.call(marqueeDate.querySelectorAll(".marquee__unit"), function (el) {
+          el.textContent = parts.date;
+        });
+      }
+
+      function applyPrayerLocationFromState() {
+        if (!window.PrayerTimes) return;
+        if (typeof state.prayerLat === "number" && typeof state.prayerLon === "number") {
+          PrayerTimes.setLocation(state.prayerLat, state.prayerLon, state.prayerPlace || "");
+        }
+      }
+
+      function persistPrayerLocation() {
+        if (!window.PrayerTimes) return;
+        const loc = PrayerTimes.getLocation();
+        state.prayerLat = loc.lat;
+        state.prayerLon = loc.lon;
+        state.prayerPlace = loc.label;
+        save();
+      }
+
+      function refreshIdleSky(now) {
+        if (!particleLive || !window.PrayerTimes) {
+          idleSky = null;
+          return;
+        }
+        idleSky = PrayerTimes.skyBlend(now);
+        if (idleSky && idleSky.baseHex) {
+          body.style.backgroundColor = idleSky.baseHex;
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", idleSky.baseHex);
+        }
+      }
+
+      function updatePrayerIndicator(now) {
+        if (!window.PrayerTimes || typeof SunCalc === "undefined") return;
+        const prayer = PrayerTimes.current(now);
+        const id = prayer ? prayer.id : null;
+        body.classList.toggle("is-prayer-time", !!prayer);
+
+        if (clockPrayerEl) {
+          if (prayer) {
+            clockPrayerEl.hidden = false;
+            clockPrayerEl.title = prayer.label + " · " + (state.prayerPlace || PrayerTimes.getLocation().label);
+            clockPrayerEl.setAttribute("aria-label", PrayerTimes.ariaLabel(prayer, now));
+            clockPrayerName.textContent = prayer.short;
+          } else {
+            clockPrayerEl.hidden = true;
+            clockPrayerEl.removeAttribute("aria-label");
+          }
+        }
+
+        Array.prototype.forEach.call(
+          marqueeTime.querySelectorAll(".marquee__prayer"),
+          function (el) {
+            if (prayer) {
+              el.hidden = false;
+              el.setAttribute("aria-hidden", "false");
+              el.title = prayer.label;
+              const nameEl = el.querySelector(".marquee__prayer-name");
+              if (nameEl) nameEl.textContent = prayer.short;
+            } else {
+              el.hidden = true;
+              el.setAttribute("aria-hidden", "true");
+            }
+          }
+        );
+        lastPrayerId = id;
+      }
+
+      function tickClock() {
+        const parts = clockParts();
+        timeEl.textContent = parts.time;
+        timeEl.setAttribute("datetime", parts.now.toISOString());
+        dateEl.textContent = parts.date;
+        updatePrayerIndicator(parts.now);
+        if (particleLive) refreshIdleSky(parts.now);
+        if (particleLive) renderMarquee(false);
+      }
+
+      function canvasFit(el, maxW, dprCap) {
+        const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
+        const w = Math.round(Math.min(maxW, window.innerWidth) * dpr);
+        const h = Math.round((w * window.innerHeight) / Math.max(window.innerWidth, 1));
+        if (el.width !== w || el.height !== h) {
+          el.width = w;
+          el.height = h;
+          return true;
+        }
+        return false;
+      }
+
+      function sizeField() {
+        canvasFit(field, 1600, 1.5);
+        const resized = canvasFit(particleCanvas, 1600, 1.25);
+        if (resized && particleLive) {
+          clearTimeout(rebuildTimer);
+          rebuildTimer = setTimeout(buildParticles, 180);
+        }
+      }
+
+      function sampleGlyphs(cw, ch) {
+        const off = document.createElement("canvas");
+        off.width = cw;
+        off.height = ch;
+        const c = off.getContext("2d");
+        c.clearRect(0, 0, cw, ch);
+        const vh = ch / 100;
+        const left = cw * 0.045;
+        const right = cw * 0.52;
+        const leftW = cw * 0.4;
+        const rightW = cw * 0.42;
+        const itemSize = state.items.length > 5 ? 2.55 * vh : state.items.length > 3 ? 2.9 * vh : 3.25 * vh;
+        const titleSize = Math.max(22, 4.6 * vh);
+        const estimated = 8 * vh + titleSize + state.items.length * itemSize * 3.1;
+        let y = Math.max(ch * 0.07, (ch - estimated) * 0.42);
+
+        c.textBaseline = "alphabetic";
+        c.direction = "ltr";
+        c.textAlign = "left";
+        c.font = "400 " + Math.max(11, 1.25 * vh) + "px Outfit, sans-serif";
+        c.fillStyle = "#8ec5d1";
+        (function drawKicker(text, origin) {
+          var cx = origin;
+          var gap = Math.max(2, vh * 0.28);
+          for (var k = 0; k < text.length; k++) {
+            c.fillText(text[k], cx, y);
+            cx += c.measureText(text[k]).width + gap;
+          }
+        })("PROTECT THESE FIRST", left);
+        c.fillStyle = "#d4a574";
+        c.font = "400 " + Math.max(11, 1.25 * vh) + "px Outfit, sans-serif";
+        c.fillText("FROM THE QURAN", right, y);
+        y += 4.4 * vh;
+
+        const title = (state.title || "What matters").trim();
+        c.font = "italic 400 " + titleSize + "px Fraunces, Georgia, serif";
+        c.fillStyle = "#e7e2d6";
+        c.fillText(title, left, y);
+        y += titleSize * 1.2 + 1.6 * vh;
+
+        const numSize = itemSize * 0.52;
+        state.items.forEach(function (item, i) {
+          const rowY = y;
+          const ink = item.done ? "rgba(231,226,214,0.58)" : "#e7e2d6";
+          const gold = item.done ? "rgba(212,165,116,0.62)" : "#d4a574";
+          c.direction = "ltr";
+          c.textAlign = "left";
+          c.font = "300 " + Math.max(12, numSize) + "px Outfit, sans-serif";
+          c.fillStyle = gold;
+          c.fillText(String(i + 1).padStart(2, "0"), left, rowY);
+          c.font = "300 " + Math.max(15, itemSize) + "px Fraunces, Georgia, serif";
+          c.fillStyle = ink;
+          const lines = wrapLines(c, item.text || "", leftW - cw * 0.05);
+          lines.forEach(function (line, li) {
+            c.fillText(line, left + cw * 0.04, rowY + li * itemSize * 1.12);
+          });
+          let ly = rowY + Math.max(itemSize, lines.length * itemSize * 1.12);
+
+          let ry = rowY;
+          const v = item.verse;
+          if (v && v.ar) {
+            const block = Math.min(rightW, cw * 0.32);
+            const arSize = Math.max(13, itemSize * 0.62);
+            c.font = "400 " + arSize + "px Amiri, serif";
+            c.fillStyle = ink;
+            c.direction = "rtl";
+            c.textAlign = "right";
+            const arLines = wrapLines(c, v.ar, block).slice(0, 2);
+            arLines.forEach(function (line, li) {
+              c.fillText(line, right + block, ry + li * arSize * 1.45);
+            });
+            ry += arLines.length * arSize * 1.45 + vh * 0.35;
+            c.direction = "ltr";
+            c.textAlign = "left";
+            const enSize = Math.max(11, itemSize * 0.4);
+            c.font = "italic 300 " + enSize + "px Fraunces, Georgia, serif";
+            c.fillStyle = "rgba(231,226,214,0.74)";
+            const enLines = wrapLines(c, v.excerpt || "", block).slice(0, 3);
+            enLines.forEach(function (line, li) {
+              c.fillText(line, right, ry + li * enSize * 1.28);
+            });
+            ry += enLines.length * enSize * 1.28 + vh * 0.55;
+            c.font = "400 " + Math.max(10, itemSize * 0.28) + "px Outfit, sans-serif";
+            c.fillStyle = gold;
+            c.fillText(v.s + ":" + v.a + "  ·  " + (v.name || ""), right, ry);
+            ry += itemSize * 0.4;
+          }
+          y = Math.max(ly, ry) + itemSize * 0.7;
+        });
+
+        const data = c.getImageData(0, 0, cw, ch).data;
+        let step = 1;
+        function collect(s) {
+          const pts = [];
+          for (let py = 0; py < ch; py += s) {
+            for (let px = 0; px < cw; px += s) {
+              const i = (py * cw + px) * 4;
+              if (data[i + 3] < 48) continue;
+              pts.push({
+                hx: px,
+                hy: py,
+                r: data[i],
+                g: data[i + 1],
+                b: data[i + 2],
+                a: data[i + 3] / 255
+              });
+            }
+          }
+          return pts;
+        }
+        let pts = collect(step);
+        while (pts.length > 14000 && step < 4) {
+          step += 1;
+          pts = collect(step);
+        }
+        return pts;
+      }
+
+      function buildParticles() {
+        if (!particleLive) return;
+        const cw = particleCanvas.width;
+        const ch = particleCanvas.height;
+        if (!cw || !ch) return;
+        const spawn = function () {
+          if (!particleLive) return;
+          const pts = sampleGlyphs(cw, ch);
+          particles = pts.map(function (pt, i) {
+            return {
+              x: pt.hx,
+              y: pt.hy,
+              hx: pt.hx,
+              hy: pt.hy,
+              vx: 0,
+              vy: 0,
+              r: pt.r,
+              g: pt.g,
+              b: pt.b,
+              a: pt.a,
+              s: 1.7 + (i % 4) * 0.45,
+              phase: i * 0.37
+            };
+          });
+        };
+        if (document.fonts && document.fonts.status !== "loaded" && document.fonts.ready) {
+          document.fonts.ready.then(spawn);
+        } else {
+          spawn();
+        }
+      }
+
+      function stepParticles(dt, now) {
+        const tSec = now / 1000;
+        const burst = particleLive ? idleBurst : 0;
+        const spring = 0.14 * (1 - burst * 0.92);
+        const noise = 0.35 + burst * 2.4;
+        const damp = 0.88 - burst * 0.06;
+        const cw = particleCanvas.width;
+        const ch = particleCanvas.height;
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          const fx = Math.sin(tSec * 0.7 + p.phase + p.hy * 0.02);
+          const fy = Math.cos(tSec * 0.55 + p.phase + p.hx * 0.015);
+          p.vx += fx * noise * dt;
+          p.vy += fy * noise * dt;
+          p.vx += (p.hx - p.x) * spring;
+          p.vy += (p.hy - p.y) * spring;
+          if (burst > 0.2) {
+            p.vx += (p.x - cw * 0.5) * burst * 0.004;
+            p.vy += Math.sin(p.phase) * burst * 0.12;
+          }
+          p.vx *= damp;
+          p.vy *= damp;
+          p.x += p.vx;
+          p.y += p.vy;
+        }
+      }
+
+      function drawParticles() {
+        const w = particleCanvas.width;
+        const h = particleCanvas.height;
+        pctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          pctx.fillStyle = "rgba(" + p.r + "," + p.g + "," + p.b + "," + Math.min(1, p.a * 0.95).toFixed(3) + ")";
+          pctx.fillRect(p.x, p.y, p.s, p.s);
+        }
+      }
+
+      function themePaperHex() {
+        const hex = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim();
+        return /^#[0-9a-fA-F]{6}$/.test(hex) ? hex : "#07080a";
+      }
+
+      function paintField(t) {
+        const w = field.width;
+        const h = field.height;
+        const sky = particleLive && idleSky ? idleSky : null;
+        const baseHex = sky ? sky.baseHex : themePaperHex();
+
+        ctx.fillStyle = baseHex;
+        ctx.fillRect(0, 0, w, h);
+
+        const ax = 0.22 + 0.08 * Math.sin(t * 0.07);
+        const ay = sky ? 0.72 + 0.06 * Math.cos(t * 0.04) : 0.28 + 0.1 * Math.cos(t * 0.045);
+        const bx = sky ? 0.5 + 0.12 * Math.sin(t * 0.035) : 0.78 + 0.1 * Math.cos(t * 0.053);
+        const by = sky ? 0.18 + 0.08 * Math.sin(t * 0.038) : 0.62 + 0.12 * Math.sin(t * 0.038);
+
+        const g1 = ctx.createRadialGradient(w * ax, h * ay, 0, w * ax, h * ay, w * (sky ? 0.78 : 0.62));
+        if (sky) {
+          g1.addColorStop(0, sky.horizon);
+          g1.addColorStop(0.55, sky.cool);
+          g1.addColorStop(1, "rgba(0, 0, 0, 0)");
+        } else {
+          g1.addColorStop(0, "rgba(61, 90, 102, 0.28)");
+          g1.addColorStop(1, "rgba(7, 8, 10, 0)");
+        }
+        ctx.fillStyle = g1;
+        ctx.fillRect(0, 0, w, h);
+
+        const g2 = ctx.createRadialGradient(w * bx, h * by, 0, w * bx, h * by, w * (sky ? 0.68 : 0.55));
+        if (sky) {
+          g2.addColorStop(0, sky.cool);
+          g2.addColorStop(1, "rgba(0, 0, 0, 0)");
+        } else {
+          g2.addColorStop(0, "rgba(196, 165, 116, 0.14)");
+          g2.addColorStop(1, "rgba(7, 8, 10, 0)");
+        }
+        ctx.fillStyle = g2;
+        ctx.fillRect(0, 0, w, h);
+
+        if (sky) {
+          const washA = 0.03 + 0.02 * Math.sin(t * 0.11);
+          ctx.fillStyle = sky.wash.replace(/,\s*[\d.]+\)$/, "," + washA.toFixed(4) + ")");
+          ctx.fillRect(0, 0, w, h);
+          if (window.StarField && window.PrayerTimes) {
+            const night = PrayerTimes.nightStrength(new Date());
+            const lon = PrayerTimes.getLocation().lon;
+            StarField.draw(ctx, w, h, t, night, new Date(), lon, reduceMotion);
+          }
+        } else {
+          const wash = 0.045 + 0.035 * Math.sin(t * 0.11);
+          ctx.fillStyle = "rgba(232, 226, 214," + wash.toFixed(4) + ")";
+          ctx.fillRect(0, 0, w, h);
+        }
+      }
+
+      let prevFrame = 0;
+      function orbitFrame(now) {
+        const t = now / 1000;
+        const dt = Math.min(0.05, prevFrame ? (now - prevFrame) / 1000 : 0.016);
+        prevFrame = now;
+        if (!particleLive) {
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const ampX = Math.max(18, vw * 0.0075);
+          const ampY = Math.max(14, vh * 0.012);
+          const x = Math.sin(t * 0.061) * ampX + Math.sin(t * 0.027) * ampX * 0.35;
+          const y = Math.cos(t * 0.047) * ampY + Math.sin(t * 0.019) * ampY * 0.4;
+          const bright = 0.96 + 0.04 * Math.sin(t * 0.09);
+          orbit.style.transform = "translate3d(" + x.toFixed(2) + "px," + y.toFixed(2) + "px,0)";
+          orbit.style.filter = "brightness(" + bright.toFixed(3) + ")";
+        }
+        if (now - lastTick > 40) {
+          paintField(t);
+          lastTick = now;
+        }
+        if (particleLive && particles.length) {
+          stepParticles(dt, now);
+          drawParticles();
+        }
+        requestAnimationFrame(orbitFrame);
+      }
+
+      async function holdWake() {
+        try {
+          if (navigator.wakeLock) wakeLock = await navigator.wakeLock.request("screen");
+        } catch (e) {}
+      }
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") holdWake();
+      });
+
+      function wrapLines(context, text, maxWidth) {
+        const words = text.split(/\s+/);
+        const lines = [];
+        let line = "";
+        words.forEach(function (word) {
+          const next = line ? line + " " + word : word;
+          if (context.measureText(next).width > maxWidth && line) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = next;
+          }
+        });
+        if (line) lines.push(line);
+        return lines.length ? lines : [""];
+      }
+
+      async function renderPoster() {
+        await document.fonts.ready;
+        const w = 3840;
+        const h = 2160;
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const c = canvas.getContext("2d");
+        c.fillStyle = "#07080a";
+        c.fillRect(0, 0, w, h);
+
+        const a = c.createRadialGradient(w * 0.28, h * 0.22, 0, w * 0.28, h * 0.22, w * 0.55);
+        a.addColorStop(0, "rgba(61, 90, 102, 0.22)");
+        a.addColorStop(1, "rgba(7, 8, 10, 0)");
+        c.fillStyle = a;
+        c.fillRect(0, 0, w, h);
+        const b = c.createRadialGradient(w * 0.8, h * 0.7, 0, w * 0.8, h * 0.7, w * 0.5);
+        b.addColorStop(0, "rgba(196, 165, 116, 0.1)");
+        b.addColorStop(1, "rgba(7, 8, 10, 0)");
+        c.fillStyle = b;
+        c.fillRect(0, 0, w, h);
+
+        const now = new Date();
+        const hh = now.getHours();
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const h12 = ((hh + 11) % 12) + 1;
+        const pad = 220;
+
+        c.fillStyle = "#e7e2d6";
+        c.font = "300 220px Outfit, system-ui, sans-serif";
+        c.fillText(h12 + ":" + mm, pad, 360);
+        c.fillStyle = "rgba(231,226,214,0.55)";
+        c.font = "400 36px Outfit, system-ui, sans-serif";
+        c.letterSpacing = "8px";
+        c.fillText(now.toLocaleDateString("en-US", {
+          weekday: "long", month: "long", day: "numeric", year: "numeric"
+        }).toUpperCase(), pad, 430);
+
+        c.fillStyle = "rgba(231,226,214,0.32)";
+        c.font = "400 28px Outfit, system-ui, sans-serif";
+        c.textAlign = "right";
+        c.fillText("PRIORITY FIELD", w - pad, 300);
+        c.fillStyle = "#d4a574";
+        c.font = "italic 300 40px Fraunces, Georgia, serif";
+        c.fillText("On a mission", w - pad, 360);
+        c.textAlign = "left";
+        c.letterSpacing = "0px";
+
+        c.strokeStyle = "rgba(231,226,214,0.12)";
+        c.beginPath();
+        c.moveTo(pad, 490);
+        c.lineTo(w - pad, 490);
+        c.stroke();
+
+        c.fillStyle = "#8ec5d1";
+        c.font = "400 28px Outfit, system-ui, sans-serif";
+        c.fillText("PROTECT THESE FIRST", pad, 600);
+        c.fillStyle = "#d4a574";
+        c.textAlign = "right";
+        c.fillText("FROM THE QURAN", w - pad, 600);
+        c.textAlign = "left";
+
+        const heading = (state.title || "What matters").trim();
+        c.fillStyle = "#e7e2d6";
+        c.font = "italic 300 108px Fraunces, Georgia, serif";
+        c.fillText(heading, pad, 740);
+
+        assignVerses();
+        let y = 880;
+        const textW = Math.round(w * 0.36);
+        const verseX = Math.round(w * 0.5);
+        const verseW = Math.min(w - pad - verseX, 1280);
+        state.items.forEach(function (item, i) {
+          const row = y;
+          const num = String(i + 1).padStart(2, "0");
+          c.direction = "ltr";
+          c.textAlign = "left";
+          c.fillStyle = item.done ? "rgba(231,226,214,0.28)" : "#d4a574";
+          c.font = "300 40px Outfit, system-ui, sans-serif";
+          c.fillText(num, pad, row);
+          c.fillStyle = item.done ? "rgba(231,226,214,0.32)" : "#e7e2d6";
+          c.font = "300 52px Fraunces, Georgia, serif";
+          const lines = wrapLines(c, item.text || "", textW);
+          lines.forEach(function (line, li) {
+            c.fillText(line, pad + 130, row + li * 66);
+          });
+          if (item.done) {
+            const width = Math.min(textW, c.measureText(lines[0] || "").width);
+            c.strokeStyle = "rgba(231,226,214,0.35)";
+            c.beginPath();
+            c.moveTo(pad + 130, row - 16);
+            c.lineTo(pad + 130 + width, row - 16);
+            c.stroke();
+          }
+          let leftH = Math.max(70, lines.length * 66);
+          let rightH = 0;
+          const v = item.verse;
+          if (v && v.ar) {
+            c.font = "400 42px Amiri, serif";
+            c.fillStyle = item.done ? "rgba(231,226,214,0.45)" : "#e7e2d6";
+            c.direction = "rtl";
+            c.textAlign = "right";
+            const arLines = wrapLines(c, v.ar, verseW).slice(0, 2);
+            arLines.forEach(function (line, li) {
+              c.fillText(line, verseX + verseW, row + li * 58);
+            });
+            let vy = arLines.length * 58 + 16;
+            c.direction = "ltr";
+            c.textAlign = "left";
+            c.font = "italic 300 30px Fraunces, Georgia, serif";
+            c.fillStyle = "rgba(231,226,214,0.78)";
+            const enLines = wrapLines(c, v.excerpt || "", verseW).slice(0, 4);
+            enLines.forEach(function (line, li) {
+              c.fillText(line, verseX, row + vy + li * 40);
+            });
+            vy += enLines.length * 40 + 34;
+            c.font = "400 22px Outfit, system-ui, sans-serif";
+            c.fillStyle = "#d4a574";
+            c.fillText(v.s + ":" + v.a + "   " + (v.name || ""), verseX, row + vy);
+            rightH = vy + 16;
+          }
+          y += Math.max(leftH, rightH, 90) + 28;
+        });
+
+        return canvas;
+      }
+
+      function stamp() {
+        const d = new Date();
+        const p = function (n) { return String(n).padStart(2, "0"); };
+        const slug = (state.title || "what-matters").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        return slug + "-" + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
+      }
+
+      async function savePng() {
+        const canvas = await renderPoster();
+        const blob = await new Promise(function (resolve) {
+          canvas.toBlob(resolve, "image/png");
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = stamp() + ".png";
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast("PNG saved");
+      }
+
+      async function savePdf() {
+        const canvas = await renderPoster();
+        const url = canvas.toDataURL("image/png");
+        const frame = window.open("", "_blank");
+        if (!frame) {
+          toast("Allow pop-ups to save PDF");
+          return;
+        }
+        frame.document.write(
+          "<!DOCTYPE html><html><head><title>" + (state.title || "What matters") + "</title>" +
+          "<style>@page{size:landscape;margin:0}html,body{margin:0;background:#07080a;height:100%}" +
+          "img{width:100%;height:100vh;object-fit:contain;display:block}</style></head>" +
+          "<body><img src=\"" + url + "\" alt=\"\" /></body></html>"
+        );
+        frame.document.close();
+        frame.onload = function () {
+          frame.focus();
+          frame.print();
+        };
+        toast("Print to PDF");
+      }
+
+      async function toggleFull() {
+        try {
+          if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+          else await document.exitFullscreen();
+        } catch (e) {
+          toast("Fullscreen blocked");
+        }
+      }
+
+      document.getElementById("btn-png").addEventListener("click", function () {
+        savePng().catch(function () { toast("Could not save PNG"); });
+      });
+      document.getElementById("btn-pdf").addEventListener("click", function () {
+        savePdf().catch(function () { toast("Could not save PDF"); });
+      });
+      document.getElementById("btn-full").addEventListener("click", toggleFull);
+
+      btnLock.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setLocked(!state.locked);
+      });
+
+      btnTheme.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setThemeOpen(!body.classList.contains("is-theme-open"));
+      });
+
+      document.getElementById("dock").addEventListener("pointerdown", function (e) {
+        e.stopPropagation();
+        setActive(true);
+      });
+
+      document.addEventListener("pointerdown", function (e) {
+        if (!body.classList.contains("is-theme-open")) return;
+        if (e.target.closest("#dock")) return;
+        setThemeOpen(false);
+      });
+
+      Object.keys(themeInputs).forEach(function (key) {
+        const input = themeInputs[key];
+        if (!input) return;
+        input.addEventListener("input", function () {
+          const next = normalizeTheme(state.theme);
+          next[key] = input.value;
+          applyTheme(next);
+          save();
+          paintField(performance.now() / 1000);
+          if (particleLive) buildParticles();
+        });
+      });
+
+      document.addEventListener("mousemove", function () { setActive(true); });
+      document.addEventListener("pointerdown", function () { setActive(true); });
+      document.addEventListener("keydown", function (e) {
+        setActive(true);
+        const typing = isTyping();
+        if (e.key === "Escape") {
+          if (document.activeElement) document.activeElement.blur();
+          setActive(false);
+        }
+        if (typing) return;
+        if (e.key === "f" || e.key === "F") {
+          e.preventDefault();
+          toggleFull();
+        }
+        if (!state.locked && (e.key === "/" || e.key === "n" || e.key === "N")) {
+          e.preventDefault();
+          addEl.focus();
+        }
+      });
+
+      window.addEventListener("resize", sizeField);
+      applyTheme(state.theme);
+      syncEditableLock();
+      applyPrayerLocationFromState();
+      if (window.StarField) StarField.init();
+      if (window.PrayerTimes) {
+        PrayerTimes.tryGeolocation(function (ok) {
+          if (ok) persistPrayerLocation();
+          tickClock();
+        });
+      }
+      renderList();
+      tickClock();
+      setInterval(tickClock, 1000);
+      sizeField();
+      paintField(0);
+      renderMarquee(true);
+      requestAnimationFrame(orbitFrame);
+      holdWake();
+      setActive(false);
+      setInterval(rotateVerses, VERSE_HOLD);
+    })();
+  </script>
+</body>
+</html>

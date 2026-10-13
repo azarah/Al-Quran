@@ -1,0 +1,655 @@
+﻿<!doctype html>
+<html lang="en" class="zs-shared-chrome">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-zone Sun & Moon Comparison</title>
+  <meta name="theme-color" content="#3d5a66" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../zs%20assets/zs-portfolio-theme.css" />
+  <style>
+    :root {
+      --rule: rgba(38, 48, 58, 0.12);
+      --accent-ui: var(--sage-deep);
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Outfit", system-ui, sans-serif;
+      background: transparent;
+      color: var(--ink);
+      margin: 0;
+      padding: 2rem 1rem 4rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    body[dir="rtl"] { font-family: "Outfit", "Segoe UI", Tahoma, sans-serif; }
+    .doc {
+      max-width: 900px;
+      width: 100%;
+      background: var(--surface);
+      padding: 2.5rem 2.5rem 3rem;
+      box-shadow: 0 14px 48px rgba(26, 34, 48, 0.1);
+      border-radius: var(--radius);
+      border: 1px solid rgba(38, 48, 58, 0.1);
+    }
+    .lang-switcher { position: absolute; top: 1rem; right: 1rem; z-index: 1000; }
+    body[dir="rtl"] .lang-switcher { right: auto; left: 1rem; }
+    .lang-switcher button {
+      padding: 8px 16px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink-soft);
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .lang-switcher button:hover { color: var(--sage-deep); border-color: var(--sage-deep); }
+    .lang-switcher button.active { background: var(--sage-deep); color: var(--paper); border-color: var(--sage-deep); }
+    .row { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; padding: 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); }
+    body[dir="rtl"] .row { flex-direction: row-reverse; }
+    .col { flex: 1; }
+    body[dir="rtl"] .col[style*="text-align:right"] { text-align: left !important; }
+    .big { font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+    .muted { color: var(--ink-soft); font-size: 0.9rem; font-weight: 300; }
+    .pill { background: var(--mist); padding: 6px 8px; border-radius: 999px; font-size: 0.85rem; color: var(--ink-soft); }
+    .sun { font-weight: 700; color: var(--ink); }
+    code { background: var(--mist); padding: 2px 6px; border-radius: 4px; color: var(--sage-deep); font-size: 0.88em; }
+    .compass-container { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; }
+    body[dir="rtl"] .compass-container { flex-direction: row-reverse; }
+    .compass { width: 60px; height: 60px; position: relative; border: 2px solid var(--ink-soft); border-radius: 50%; background: var(--mist); }
+    .compass-rose { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; }
+    .compass-needle { position: absolute; top: 50%; left: 50%; transform-origin: center bottom; width: 2px; height: 45%; background: var(--accent-ui); border-radius: 2px; }
+    .compass-needle::after { content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 6px solid var(--accent-ui); }
+    .compass-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: var(--ink); border-radius: 50%; z-index: 2; }
+    .compass-label { font-size: 0.75rem; color: var(--ink-soft); }
+    #title { font-family: "Fraunces", Georgia, serif; font-size: 1.5rem; font-weight: 400; color: var(--ink); margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+  </style>
+  <!-- zs-theme-boot:start -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("zs-theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- zs-theme-boot:end -->
+  <!-- zs-theme-assets:start -->
+  <link rel="stylesheet" href="../../zs%20assets/site-shared-chrome.css" />
+  <link rel="stylesheet" href="../../zs%20assets/site-theme.css" />
+  <script src="../../zs%20assets/site-shared-chrome.js" defer></script>
+  <script src="../../zs%20assets/site-theme.js" defer></script>
+  <script src="../../zs%20assets/site-search.js" defer></script>
+  <!-- zs-theme-assets:end -->
+  <!-- zs-favicon:start -->
+  <link rel="icon" href="../../zs%20assets/Asset%206.webp" type="image/webp" />
+  <!-- zs-favicon:end -->
+</head>
+<body>
+  <!-- zs-include:header:start -->
+<header class="site">
+  <div class="site-header__left">
+    <a class="mark" href="../../index.html#top" aria-label="Zarah Sharda — lobby">
+      <img class="mark-logo" src="../../zs%20assets/Asset%206.webp" alt="" width="36" height="36" loading="eager" decoding="async" />
+    </a>
+    <form class="site-search" role="search" data-root="../../" aria-label="Search the studio">
+      <label class="site-search__label" for="site-search-input">Search</label>
+      <div class="site-search__field">
+        <svg class="site-search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
+          <path d="M15.5 15.5 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+        <input
+          id="site-search-input"
+          class="site-search__input"
+          type="search"
+          name="q"
+          placeholder="Search studio…"
+          autocomplete="off"
+          spellcheck="false"
+          enterkeyhint="search"
+          aria-autocomplete="list"
+          aria-controls="site-search-results"
+          aria-expanded="false"
+        />
+        <button type="button" class="site-search__clear" hidden aria-label="Clear search">&times;</button>
+      </div>
+      <div
+        id="site-search-results"
+        class="site-search__results"
+        role="listbox"
+        aria-label="Search results"
+        hidden
+      ></div>
+    </form>
+  </div>
+  <div class="site-header__right">
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="../../index.html#top">Lobby</a></li>
+        <li><a href="../../garden.html">Garden</a></li>
+        <li><a href="../../journal.html">Journal</a></li>
+        <li><a href="mailto:zsstudio@charlettahudson.com">Contact</a></li>
+      </ul>
+    </nav>
+    <span class="site-header__divider" aria-hidden="true"></span>
+    <button
+      type="button"
+      class="theme-toggle"
+      id="theme-toggle"
+      aria-label="Switch to desert night mode"
+      aria-pressed="false"
+    >
+      <span class="theme-toggle__icon" aria-hidden="true"></span>
+      <span class="theme-toggle__label">Night</span>
+    </button>
+    <span class="site-header__divider" aria-hidden="true"></span>
+    <div
+      class="nav-chicago-widget"
+      id="nav-chicago-widget"
+      aria-label="Chicago, Illinois — current time and weather"
+      title="Chicago, IL — local time and Open-Meteo forecast"
+    >
+      <span class="nav-chicago-widget__label">Chicago</span>
+      <div class="nav-chicago-widget__weather">
+        <span class="nav-chicago-widget__wx-icon" id="chi-wx-icon" aria-hidden="true">&mdash;</span>
+        <span class="nav-chicago-widget__temp" id="chi-temp">&mdash;</span>
+      </div>
+      <div class="nav-chicago-widget__clock">
+        <span id="chi-date"></span>
+        <time id="chi-time" datetime=""></time>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- zs-include:header:end -->
+<div class="zs-app" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+  <div class="doc" style="position: relative;">
+  <div class="lang-switcher">
+    <button id="lang-en" class="active" onclick="setLanguage('en')">English</button>
+    <button id="lang-ar" onclick="setLanguage('ar')">العربية</button>
+  </div>
+  <h2 id="title">Multi-zone time + Sun/Moon comparison</h2>
+  <p class="muted" id="subtitle">Reference = <span id="refName">UTC</span>. Data updates every second. Sun & moon computed with SunCalc (JS).</p>
+  <p class="muted" style="margin-top:0.75rem"><a href="day-slot-planner.html">Day slot planner</a> — break goals into 30-minute blocks sized to today’s sunlight budget.</p>
+
+  <div id="list"></div>
+  </div>
+</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+  <script>
+    // Language support
+    let currentLang = localStorage.getItem('lang') || 'en';
+    
+    const translations = {
+      en: {
+        title: 'Multi-zone time + Sun/Moon comparison',
+        subtitle: 'Reference = {ref}. Data updates every second. Sun & moon computed with SunCalc (JS).',
+        offset: 'offset',
+        min: 'min',
+        sun: 'Sun',
+        daylight: 'Daylight',
+        asr: 'Asr',
+        solarNoon: 'solar noon',
+        asrTime: 'Asr time',
+        moon: 'Moon',
+        phase: 'phase illum',
+        moonlight: 'Moonlight',
+        moonrise: 'moonrise',
+        moonset: 'moonset',
+        dawn: 'dawn',
+        sunrise: 'sunrise',
+        sunset: 'sunset',
+        dusk: 'dusk',
+        sunlight: 'sunlight',
+        h: 'h',
+        night: 'Night',
+        nightCivil: 'civil (24h − dawn→dusk)',
+        nightSun: 'sun below horizon (sunset→next sunrise)',
+        nightAstro: 'astronomical −18° (dusk→next dawn)',
+        qibla: 'Qibla',
+        inMecca: 'You are in Mecca',
+        alt: 'alt',
+        az: 'az',
+        places: {
+          mec: 'Mecca',
+          chi: 'Chicago',
+          lon: 'London',
+          dub: 'Dubai',
+          tk: 'Tokyo',
+          ref: 'UTC (reference)'
+        },
+        directions: {
+          N: 'N', NNE: 'NNE', NE: 'NE', ENE: 'ENE', E: 'E', ESE: 'ESE', SE: 'SE', SSE: 'SSE',
+          S: 'S', SSW: 'SSW', SW: 'SW', WSW: 'WSW', W: 'W', WNW: 'WNW', NW: 'NW', NNW: 'NNW'
+        }
+      },
+      ar: {
+        title: 'مقارنة الوقت متعدد المناطق + الشمس والقمر',
+        subtitle: 'المرجع = {ref}. يتم تحديث البيانات كل ثانية. تم حساب الشمس والقمر باستخدام SunCalc (JS).',
+        offset: 'الإزاحة',
+        min: 'دقيقة',
+        sun: 'الشمس',
+        daylight: 'ضوء النهار',
+        asr: 'العصر',
+        solarNoon: 'الظهر الشمسي',
+        asrTime: 'وقت العصر',
+        moon: 'القمر',
+        phase: 'إضاءة الطور',
+        moonlight: 'ضوء القمر',
+        moonrise: 'شروق القمر',
+        moonset: 'غروب القمر',
+        dawn: 'الفجر',
+        sunrise: 'شروق الشمس',
+        sunset: 'غروب الشمس',
+        dusk: 'المغرب',
+        sunlight: 'ضوء الشمس',
+        h: 'ساعة',
+        night: 'الليل',
+        nightCivil: 'مدني (٢٤ س − الفجر←الغسق)',
+        nightSun: 'بدون شمس (غروب→شروق الغد)',
+        nightAstro: 'فلكي −١٨° (مساء→فجر الغد)',
+        qibla: 'القبلة',
+        inMecca: 'أنت في مكة',
+        alt: 'الارتفاع',
+        az: 'السمت',
+        places: {
+          mec: 'مكة',
+          chi: 'شيكاغو',
+          lon: 'لندن',
+          dub: 'دبي',
+          tk: 'طوكيو',
+          ref: 'UTC (مرجع)'
+        },
+        directions: {
+          N: 'ش', NNE: 'ش ش شر', NE: 'ش شر', ENE: 'شر ش شر', E: 'شر', ESE: 'شر ج شر', SE: 'ج شر', SSE: 'ج ج شر',
+          S: 'ج', SSW: 'ج ج غ', SW: 'ج غ', WSW: 'غ ج غ', W: 'غ', WNW: 'غ ش غ', NW: 'ش غ', NNW: 'ش ش غ'
+        }
+      }
+    };
+
+    function t(key, params = {}) {
+      const keys = key.split('.');
+      let value = translations[currentLang];
+      for (const k of keys) {
+        value = value?.[k];
+      }
+      if (typeof value === 'string' && params) {
+        return value.replace(/{(\w+)}/g, (match, param) => params[param] || match);
+      }
+      return value || key;
+    }
+
+    // --- configure places (name, lat, lon, IANA tz) ---
+    const places = [
+      { id:'mec', nameEn:'Mecca', nameAr:'مكة', lat:21.43, lon:39.83, tz:'Asia/Riyadh' },
+      { id:'chi', nameEn:'Chicago', nameAr:'شيكاغو', lat:41.8781, lon:-87.6298, tz:'America/Chicago' },
+      { id:'lon', nameEn:'London', nameAr:'لندن', lat:51.5074, lon:-0.1278, tz:'Europe/London' },
+      { id:'dub', nameEn:'Dubai', nameAr:'دبي', lat:25.2048, lon:55.2708, tz:'Asia/Dubai' },
+      { id:'tk', nameEn:'Tokyo', nameAr:'طوكيو', lat:35.6895, lon:139.6917, tz:'Asia/Tokyo' },
+      { id:'ref', nameEn:'UTC (reference)', nameAr:'UTC (مرجع)', lat:0, lon:0, tz:'UTC' }
+    ];
+
+    const refPlace = places.find(p=>p.id==='ref');
+    const mecca = places.find(p=>p.id==='mec');
+
+    // Calculate bearing from one point to another (in degrees, 0-360, where 0 is North)
+    const calculateBearing = (lat1, lon1, lat2, lon2) => {
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const lat1Rad = lat1 * Math.PI / 180;
+      const lat2Rad = lat2 * Math.PI / 180;
+      
+      const y = Math.sin(dLon) * Math.cos(lat2Rad);
+      const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - 
+                Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+      
+      let bearing = Math.atan2(y, x) * 180 / Math.PI;
+      bearing = (bearing + 360) % 360; // Normalize to 0-360
+      return bearing;
+    };
+
+    // Convert bearing to compass direction
+    const bearingToDirection = (bearing) => {
+      const directionKeys = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 
+                             'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+      const index = Math.round(bearing / 22.5) % 16;
+      return t(`directions.${directionKeys[index]}`);
+    };
+
+    // utilities
+    const fmtTime = (date, tz) => new Intl.DateTimeFormat(undefined, {
+      hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZone: tz
+    }).format(date);
+
+    const fmtOffset = (date, tz) => {
+      // compute offset in minutes between tz and UTC at that date
+      const ud = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+      const tzd = new Date(date.toLocaleString('en-US', { timeZone: tz }));
+      return Math.round((tzd - ud) / 60000);
+    };
+
+    // Calculate Asr time (standard method: shadow = object length + shadow at noon)
+    const calculateAsrTime = (date, lat, lon, tz) => {
+      // Find solar noon (when sun is at highest point)
+      const times = SunCalc.getTimes(date, lat, lon);
+      const solarNoon = times.solarNoon ? new Date(times.solarNoon) : null;
+      
+      if (!solarNoon) return null;
+      
+      // Get sun position at solar noon to calculate declination
+      const noonPos = SunCalc.getPosition(solarNoon, lat, lon);
+      const latRad = lat * Math.PI / 180;
+      
+      // Calculate solar declination from noon altitude
+      // At noon: altitude = 90 - |lat - decl|
+      const noonAltRad = noonPos.altitude;
+      const noonAltDeg = noonAltRad * 180 / Math.PI;
+      const declDeg = lat - (90 - noonAltDeg);
+      const declRad = declDeg * Math.PI / 180;
+      
+      // Calculate required altitude angle for Asr (standard method)
+      // Asr occurs when shadow length = object length + shadow at noon
+      // Formula: altitude = arccot(1 + tan(|lat - decl|))
+      const delta = Math.abs(latRad - declRad);
+      const tanDelta = Math.tan(delta);
+      const cotAsr = 1 + tanDelta;
+      const asrAltitudeRad = Math.atan(1 / cotAsr);
+      const asrAltitudeDeg = asrAltitudeRad * 180 / Math.PI;
+      
+      // Search for the time when sun altitude equals asrAltitudeDeg (after noon, before sunset)
+      const startTime = new Date(solarNoon);
+      const endTime = times.sunset ? new Date(times.sunset) : new Date(startTime.getTime() + 6 * 3600000);
+      
+      // Binary search for the exact time
+      let low = startTime.getTime();
+      let high = endTime.getTime();
+      let bestTime = null;
+      let bestDiff = Infinity;
+      
+      // Iterative search
+      for (let i = 0; i < 50; i++) {
+        const mid = new Date((low + high) / 2);
+        const pos = SunCalc.getPosition(mid, lat, lon);
+        const altDeg = pos.altitude * 180 / Math.PI;
+        const diff = Math.abs(altDeg - asrAltitudeDeg);
+        
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestTime = new Date(mid);
+        }
+        
+        if (altDeg < asrAltitudeDeg) {
+          high = mid.getTime();
+        } else {
+          low = mid.getTime();
+        }
+        
+        if (Math.abs(high - low) < 1000) break; // 1 second precision
+      }
+      
+      return bestTime;
+    };
+
+    const renderPlaceCard = (p) => {
+      const name = currentLang === 'ar' ? p.nameAr : p.nameEn;
+      return `
+        <div class="row" id="card-${p.id}">
+          <div class="col">
+            <div class="big">${name} <span class="pill">${p.tz}</span></div>
+            <div class="muted">lat:${p.lat}, lon:${p.lon}</div>
+          </div>
+          <div class="col" style="text-align:right">
+            <div class="big" id="time-${p.id}">--:--:--</div>
+            <div class="muted" id="off-${p.id}">${t('offset')}: -- ${t('min')}</div>
+            <div style="margin-top:8px" id="sun-${p.id}"></div>
+            <div style="margin-top:6px" id="daylight-${p.id}"></div>
+            <div style="margin-top:6px" id="night-${p.id}"></div>
+            <div style="margin-top:6px" id="asr-${p.id}"></div>
+            <div style="margin-top:6px" id="moon-${p.id}"></div>
+            <div style="margin-top:6px" id="moonlight-${p.id}"></div>
+            <div style="margin-top:8px" id="compass-${p.id}"></div>
+          </div>
+        </div>
+      `;
+    };
+
+    // create DOM
+    const container = document.getElementById('list');
+    function renderCards() {
+      if (container) {
+        container.innerHTML = places.map(renderPlaceCard).join('');
+      }
+    }
+
+    // update loop
+    function update() {
+      const now = new Date();
+
+      // reference time (UTC or reference place local)
+      const refNameEl = document.getElementById('refName');
+      if (refNameEl) {
+        const refName = currentLang === 'ar' ? refPlace.nameAr : refPlace.nameEn;
+        refNameEl.textContent = refName + ' (' + refPlace.tz + ')';
+      }
+
+      places.forEach(p => {
+        const timeEl = document.getElementById(`time-${p.id}`);
+        if (!timeEl) return; // Skip if element doesn't exist yet
+        
+        // local time string via Intl with IANA tz
+        timeEl.textContent = fmtTime(now, p.tz);
+
+        // offset in minutes relative to UTC (positive = ahead)
+        const offsetMin = fmtOffset(now, p.tz);
+        const offsetText = `UTC ${offsetMin >= 0 ? '+' : ''}${(offsetMin/60).toFixed(2)} ${t('h')} (${offsetMin} ${t('min')})`;
+        document.getElementById(`off-${p.id}`).textContent = `${t('offset')}: ${offsetText}`;
+
+        // SunCalc computations (sun position, sunrise/sunset)
+        const sunPos = SunCalc.getPosition(now, p.lat, p.lon); // {altitude, azimuth}
+        const times = SunCalc.getTimes(now, p.lat, p.lon);    // sunrise, sunset, dawn, dusk
+        const moon = SunCalc.getMoonPosition(now, p.lat, p.lon);
+        const moonIll = SunCalc.getMoonIllumination(now); // fraction, phase
+        const moonTimes = SunCalc.getMoonTimes(now, p.lat, p.lon); // moonrise, moonset
+
+        const altitudeDeg = (sunPos.altitude * 180/Math.PI).toFixed(2);
+        const azimuthDeg  = (sunPos.azimuth * 180/Math.PI + 180).toFixed(1); // SunCalc azimuth is -pi..pi
+        const dawnT = times.dawn ? new Date(times.dawn) : null;
+        const sunriseT = times.sunrise ? new Date(times.sunrise) : null;
+        const sunsetT  = times.sunset  ? new Date(times.sunset)  : null;
+        const duskT = times.dusk ? new Date(times.dusk) : null;
+        const sunlightLength = sunriseT && sunsetT ? ((sunsetT - sunriseT)/3600000).toFixed(2) : 'n/a';
+        const daylightLength = dawnT && duskT ? ((duskT - dawnT)/3600000).toFixed(2) : 'n/a';
+
+        document.getElementById(`sun-${p.id}`).innerHTML =
+          `<span class="sun">${t('sun')}</span> ${t('alt')}: ${altitudeDeg}°, ${t('az')}: ${azimuthDeg}°; ${t('dawn')}: ${dawnT ? fmtTime(dawnT, p.tz) : '—'}, ${t('sunrise')}: ${sunriseT ? fmtTime(sunriseT, p.tz) : '—'}, ${t('sunset')}: ${sunsetT ? fmtTime(sunsetT, p.tz) : '—'}, ${t('dusk')}: ${duskT ? fmtTime(duskT, p.tz) : '—'} (${t('sunlight')} ${sunlightLength} ${t('h')})`;
+
+        document.getElementById(`daylight-${p.id}`).innerHTML =
+          `<span class="sun">${t('daylight')}</span> ${t('dawn')}: ${dawnT ? fmtTime(dawnT, p.tz) : '—'}, ${t('dusk')}: ${duskT ? fmtTime(duskT, p.tz) : '—'} (${t('daylight')} ${daylightLength} ${t('h')})`;
+
+        // --- Night intervals (SunCalc): civil, sun-down, astronomical −18° ---
+        const MS = 3600000;
+        const validT = (d) => d && !isNaN(new Date(d).getTime());
+
+        let civilNightH = null;
+        if (validT(dawnT) && validT(duskT)) {
+          const civilDayH = (duskT - dawnT) / MS;
+          civilNightH = 24 - civilDayH;
+          if (civilNightH < 0 || civilNightH > 24) civilNightH = null;
+        }
+
+        const nextCal = new Date(now);
+        nextCal.setDate(nextCal.getDate() + 1);
+        const timesNext = SunCalc.getTimes(nextCal, p.lat, p.lon);
+
+        let sunDownNightH = null;
+        if (validT(sunriseT) && validT(sunsetT)) {
+          const nextSunrise = timesNext.sunrise && validT(timesNext.sunrise)
+            ? new Date(timesNext.sunrise)
+            : null;
+          if (nextSunrise && nextSunrise > sunsetT) {
+            sunDownNightH = (nextSunrise - sunsetT) / MS;
+          }
+        }
+
+        let astroNightH = null;
+        const nightStart = times.night && validT(times.night) ? new Date(times.night) : null;
+        const nightEndNext =
+          timesNext.nightEnd && validT(timesNext.nightEnd) ? new Date(timesNext.nightEnd) : null;
+        if (nightStart && nightEndNext && nightEndNext > nightStart) {
+          astroNightH = (nightEndNext - nightStart) / MS;
+        }
+
+        const fmtH = (x) => (x != null && isFinite(x) ? x.toFixed(2) : '—');
+        document.getElementById(`night-${p.id}`).innerHTML =
+          `<span class="sun">${t('night')}</span> ${t('nightCivil')} ${fmtH(civilNightH)} ${t('h')}; ` +
+          `${t('nightSun')} ${fmtH(sunDownNightH)} ${t('h')}; ${t('nightAstro')} ${fmtH(astroNightH)} ${t('h')}`;
+
+        // Calculate Asr time
+        const asrT = calculateAsrTime(now, p.lat, p.lon, p.tz);
+        const solarNoon = times.solarNoon ? new Date(times.solarNoon) : null;
+        const asrTimeStr = asrT ? fmtTime(asrT, p.tz) : '—';
+        const solarNoonStr = solarNoon ? fmtTime(solarNoon, p.tz) : '—';
+        document.getElementById(`asr-${p.id}`).innerHTML =
+          `<span class="sun">${t('asr')}</span> ${t('solarNoon')}: ${solarNoonStr}, ${t('asrTime')}: ${asrTimeStr}`;
+
+        const moonAlt = (moon.altitude * 180/Math.PI).toFixed(2);
+        const moonAz  = (moon.azimuth * 180/Math.PI + 180).toFixed(1);
+        const moonPhase = (moonIll.phase * 100).toFixed(1) + '%';
+        document.getElementById(`moon-${p.id}`).innerHTML =
+          `<span class="sun">${t('moon')}</span> ${t('alt')}: ${moonAlt}°, ${t('az')}: ${moonAz}°; ${t('phase')}: ${moonIll.fraction.toFixed(2)} (${moonPhase})`;
+
+        // Moonlight hours calculation
+        let moonriseT = null;
+        let moonsetT = null;
+        let moonlightLength = 'n/a';
+        
+        // Check if moonTimes exists and has valid data
+        // SunCalc.getMoonTimes returns {rise, set} or {alwaysUp, alwaysDown}
+        if (moonTimes) {
+          // Use 'rise' and 'set' properties (not 'moonrise' and 'moonset')
+          if (moonTimes.rise && !isNaN(moonTimes.rise.getTime())) {
+            moonriseT = new Date(moonTimes.rise);
+          }
+          if (moonTimes.set && !isNaN(moonTimes.set.getTime())) {
+            moonsetT = new Date(moonTimes.set);
+          }
+          
+          // Handle special cases
+          if (moonTimes.alwaysUp) {
+            moonlightLength = '24.00';
+            moonriseT = null;
+            moonsetT = null;
+          } else if (moonTimes.alwaysDown) {
+            moonlightLength = '0.00';
+            moonriseT = null;
+            moonsetT = null;
+          } else if (moonriseT && moonsetT) {
+            // Calculate duration - handle case where moonset might be before moonrise (next day)
+            let duration;
+            if (moonsetT > moonriseT) {
+              duration = (moonsetT - moonriseT) / 3600000;
+            } else {
+              // Moonset is before moonrise, meaning it's the next day's moonset
+              duration = (moonsetT.getTime() + 86400000 - moonriseT.getTime()) / 3600000;
+            }
+            moonlightLength = duration.toFixed(2);
+          } else if (moonriseT && !moonsetT) {
+            // Only moonrise, no moonset (shouldn't happen normally, but handle it)
+            moonlightLength = 'n/a';
+          } else if (!moonriseT && moonsetT) {
+            // Only moonset, no moonrise (shouldn't happen normally, but handle it)
+            moonlightLength = 'n/a';
+          }
+        }
+        
+        document.getElementById(`moonlight-${p.id}`).innerHTML =
+          `<span class="sun">${t('moonlight')}</span> ${t('moonrise')}: ${moonriseT ? fmtTime(moonriseT, p.tz) : '—'}, ${t('moonset')}: ${moonsetT ? fmtTime(moonsetT, p.tz) : '—'} (${t('moonlight')} ${moonlightLength} ${t('h')})`;
+
+        // Calculate bearing to Mecca (skip if this is Mecca itself)
+        if (p.id !== 'mec' && mecca) {
+          const bearing = calculateBearing(p.lat, p.lon, mecca.lat, mecca.lon);
+          const direction = bearingToDirection(bearing);
+          const bearingStr = bearing.toFixed(1) + '°';
+          
+          // Compass directions in current language
+          const dirLabels = currentLang === 'ar' 
+            ? { N: 'ش', E: 'شر', S: 'ج', W: 'غ' }
+            : { N: 'N', E: 'E', S: 'S', W: 'W' };
+          
+          // Create compass SVG
+          const compassHtml = `
+            <div class="compass-container">
+              <div class="compass">
+                <svg class="compass-rose" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="#ddd" stroke-width="1"/>
+                  <line x1="50" y1="10" x2="50" y2="20" stroke="#333" stroke-width="2"/>
+                  <text x="50" y="8" text-anchor="middle" font-size="8" fill="#333">${dirLabels.N}</text>
+                  <line x1="90" y1="50" x2="80" y2="50" stroke="#333" stroke-width="2"/>
+                  <text x="92" y="54" text-anchor="middle" font-size="8" fill="#333">${dirLabels.E}</text>
+                  <line x1="50" y1="90" x2="50" y2="80" stroke="#333" stroke-width="2"/>
+                  <text x="50" y="95" text-anchor="middle" font-size="8" fill="#333">${dirLabels.S}</text>
+                  <line x1="10" y1="50" x2="20" y2="50" stroke="#333" stroke-width="2"/>
+                  <text x="8" y="54" text-anchor="middle" font-size="8" fill="#333">${dirLabels.W}</text>
+                  <line x1="50" y1="50" x2="${50 + 35 * Math.sin(bearing * Math.PI / 180)}" y2="${50 - 35 * Math.cos(bearing * Math.PI / 180)}" 
+                        stroke="#c00" stroke-width="3" stroke-linecap="round" marker-end="url(#arrowhead-${p.id})"/>
+                  <defs>
+                    <marker id="arrowhead-${p.id}" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                      <polygon points="0 0, 10 3, 0 6" fill="#c00"/>
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
+              <div>
+                <div class="sun">${t('qibla')}</div>
+                <div class="muted">${bearingStr} ${direction}</div>
+              </div>
+            </div>
+          `;
+          document.getElementById(`compass-${p.id}`).innerHTML = compassHtml;
+        } else if (p.id === 'mec') {
+          document.getElementById(`compass-${p.id}`).innerHTML = 
+            `<div class="muted" style="margin-top:8px">${t('inMecca')}</div>`;
+        }
+      });
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('lang', lang);
+      document.documentElement.lang = lang;
+      document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      const langEnBtn = document.getElementById('lang-en');
+      const langArBtn = document.getElementById('lang-ar');
+      if (langEnBtn) langEnBtn.classList.toggle('active', lang === 'en');
+      if (langArBtn) langArBtn.classList.toggle('active', lang === 'ar');
+      const titleEl = document.getElementById('title');
+      const subtitleEl = document.getElementById('subtitle');
+      if (titleEl) titleEl.textContent = t('title');
+      if (subtitleEl) subtitleEl.innerHTML = t('subtitle', { ref: '<span id="refName">UTC</span>' });
+      renderCards();
+      update();
+    }
+
+    // Initialize language and render
+    renderCards();
+    setLanguage(currentLang);
+
+    // tick every second
+    update();
+    setInterval(update, 1000);
+  </script>
+<!-- zs-include:footer:start -->
+<footer class="site-foot">
+  &copy; <span id="y">2026</span> Charletta Hudson &middot; Content Developer for brands that serve people. Template collaboratively designed by <a href="https://muhammadhakeem.com">Muhammad Hakeem</a>
+</footer>
+<!-- zs-include:footer:end -->
+</body>
+</html>

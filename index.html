@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#07080a" />
+  <title>Al-Quran · Study portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #07080a;
+      --ink: #e7e2d6;
+      --ink-soft: rgba(231, 226, 214, 0.62);
+      --ink-faint: rgba(231, 226, 214, 0.34);
+      --sage: #8ec5d1;
+      --gold: #d4a574;
+      --line: rgba(231, 226, 214, 0.1);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --safe: max(4.5vh, env(safe-area-inset-top));
+      --pad: clamp(1.25rem, 5vw, 4rem);
+      --max: 52rem;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      background: var(--paper);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100%;
+      color: var(--ink);
+      font-family: Outfit, system-ui, sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #field {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      display: block;
+    }
+
+    .grain {
+      position: fixed;
+      inset: -20%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.045;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+      animation: grain-drift 48s linear infinite;
+    }
+
+    @keyframes grain-drift {
+      0% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(-3%, 2%, 0); }
+      100% { transform: translate3d(0, 0, 0); }
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      padding: var(--safe) var(--pad) clamp(3rem, 8vh, 6rem);
+    }
+
+    .shell__inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    header.mast {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+      padding-bottom: clamp(1.5rem, 4vh, 3rem);
+      margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mast__brand {
+      flex: 1;
+      min-width: 12rem;
+    }
+
+    .mast__brand h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 5.5vw, 3.4rem);
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      color: var(--ink);
+    }
+
+    .mast__brand p {
+      margin-top: 0.65em;
+      font-size: clamp(0.72rem, 1.05vw, 0.95rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .mast__brand .ar {
+      display: block;
+      margin-top: 0.85em;
+      font-family: Amiri, serif;
+      font-size: clamp(1.15rem, 2.4vw, 1.65rem);
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .clock {
+      text-align: right;
+    }
+
+    .clock time {
+      display: block;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 300;
+      letter-spacing: -0.045em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .clock .date {
+      margin-top: 0.35em;
+      font-size: clamp(0.62rem, 0.85vw, 0.78rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    .hero {
+      margin-bottom: clamp(2rem, 5vh, 3.5rem);
+    }
+
+    .hero a {
+      display: block;
+      padding: clamp(1.1rem, 2.8vh, 1.6rem) clamp(1.2rem, 3vw, 1.75rem);
+      border: 1px solid rgba(142, 197, 209, 0.35);
+      border-radius: 999px;
+      background: rgba(142, 197, 209, 0.08);
+      color: var(--ink);
+      text-decoration: none;
+      transition: background 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+
+    .hero a:hover,
+    .hero a:focus-visible {
+      background: rgba(142, 197, 209, 0.16);
+      border-color: rgba(142, 197, 209, 0.55);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .hero a strong {
+      display: block;
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(1.25rem, 2.8vw, 1.65rem);
+      letter-spacing: -0.02em;
+    }
+
+    .hero a em {
+      display: block;
+      margin-top: 0.35em;
+      font-style: italic;
+      font-family: Fraunces, Georgia, serif;
+      font-weight: 300;
+      color: var(--sage);
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+    }
+
+    .hero a span {
+      display: block;
+      margin-top: 0.5em;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    .kicker {
+      font-size: clamp(0.62rem, 0.85vw, 0.75rem);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.85em;
+    }
+
+    section + section {
+      margin-top: clamp(2rem, 5vh, 3rem);
+    }
+
+    .portal {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .portal li {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .portal a {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: baseline;
+      gap: clamp(0.75rem, 2vw, 1.25rem);
+      padding: clamp(0.85rem, 2vh, 1.15rem) 0;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.2s var(--ease), padding-left 0.25s var(--ease);
+    }
+
+    .portal a:hover,
+    .portal a:focus-visible {
+      color: var(--sage);
+      padding-left: 0.35rem;
+      outline: none;
+    }
+
+    .portal .num {
+      font-size: clamp(0.62rem, 0.85vw, 0.72rem);
+      letter-spacing: 0.12em;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-faint);
+      min-width: 1.6em;
+    }
+
+    .portal .label strong {
+      font-weight: 400;
+      font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+      letter-spacing: -0.02em;
+    }
+
+    .portal .label em {
+      display: block;
+      margin-top: 0.2em;
+      font-style: normal;
+      font-size: clamp(0.78rem, 1.4vw, 0.88rem);
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+
+    .portal .arrow {
+      color: var(--gold);
+      opacity: 0.45;
+      font-size: 1.1rem;
+      transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+
+    .portal a:hover .arrow,
+    .portal a:focus-visible .arrow {
+      opacity: 1;
+      transform: translateX(3px);
+    }
+
+    footer.foot {
+      margin-top: clamp(3rem, 8vh, 5rem);
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      line-height: 1.6;
+    }
+
+    footer.foot a {
+      color: var(--sage);
+      text-decoration: none;
+    }
+
+    footer.foot a:hover { text-decoration: underline; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .grain { animation: none; }
+      .portal a, .hero a { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="shell">
+    <div class="shell__inner">
+      <header class="mast">
+        <div class="mast__brand">
+          <h1>Al-Quran</h1>
+          <p>Study portal</p>
+          <span class="ar" dir="rtl" lang="ar">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
+        </div>
+        <div class="clock">
+          <time id="clock-time" datetime="">—</time>
+          <p class="date" id="clock-date"></p>
+        </div>
+      </header>
+
+      <div class="hero">
+        <a href="priority-screensaver.html">
+          <strong>Priority field</strong>
+          <em>On a mission</em>
+          <span>Full-screen screensaver · priorities &amp; ayāt</span>
+        </a>
+      </div>
+
+      <section aria-labelledby="sec-read">
+        <p class="kicker" id="sec-read">Read &amp; listen</p>
+        <ul class="portal">
+          <li><a href="Al-Quran-Study.html"><span class="num">01</span><span class="label"><strong>Unified study</strong><em>Search, bookmarks, and reading flow</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Voices.html"><span class="num">02</span><span class="label"><strong>Voices of the Book</strong><em>Who speaks, and how</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sec-words">
+        <p class="kicker" id="sec-words">Words &amp; letters</p>
+        <ul class="portal">
+          <li><a href="Al-Quran-Roots.html"><span class="num">03</span><span class="label"><strong>Root words</strong><em>Frequency and patterns in the Arabic</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Letters.html"><span class="num">04</span><span class="label"><strong>Letter context</strong><em>Muqattaʿāt and letter diagrams</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Names.html"><span class="num">05</span><span class="label"><strong>Names of Allah</strong><em>Asmāʾ al-Ḥusnā in the text</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sec-people">
+        <p class="kicker" id="sec-people">People &amp; creation</p>
+        <ul class="portal">
+          <li><a href="Al-Quran-People.html"><span class="num">06</span><span class="label"><strong>Believers &amp; others</strong><em>Figures across the narrative</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Angels.html"><span class="num">07</span><span class="label"><strong>Angels</strong><em>Malāʾika in the Qur'an</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Genealogy.html"><span class="num">08</span><span class="label"><strong>Genealogy &amp; places</strong><em>Lines and locations</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sec-law">
+        <p class="kicker" id="sec-law">Law &amp; life</p>
+        <ul class="portal">
+          <li><a href="Al-Quran-Formulas.html"><span class="num">09</span><span class="label"><strong>Mercy, forgiveness &amp; laws</strong><em>Themes and formulas in the text</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Contracts.html"><span class="num">10</span><span class="label"><strong>Contracts</strong><em>Debt, divorce, and obligations</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Marriage.html"><span class="num">11</span><span class="label"><strong>Marriage contract</strong><em>Mahr, witnesses, and terms</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+          <li><a href="Al-Quran-Calculators.html"><span class="num">12</span><span class="label"><strong>Rule calculators</strong><em>ʿIddah, inheritance helpers, and more</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sec-sky">
+        <p class="kicker" id="sec-sky">Time &amp; sky</p>
+        <ul class="portal">
+          <li><a href="Prayer-TimeEstimate.html"><span class="num">13</span><span class="label"><strong>Prayer &amp; sun times</strong><em>Multi-zone SunCalc comparison</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sec-play">
+        <p class="kicker" id="sec-play">Explore</p>
+        <ul class="portal">
+          <li><a href="Al-Quran-Rpg-Pitch.html"><span class="num">14</span><span class="label"><strong>As-Sirāt</strong><em>Quran-inspired RPG pitch</em></span><span class="arrow" aria-hidden="true">→</span></a></li>
+        </ul>
+      </section>
+
+      <footer class="foot">
+        <p>Local study pages · Open a link above or launch <a href="priority-screensaver.html">Priority field</a> for the wall.</p>
+        <p style="margin-top:0.6em">Night sky on the screensaver uses the <a href="https://github.com/astronexus/HYG-Database" rel="noopener noreferrer">HYG catalog</a> (CC BY-SA 4.0).</p>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const field = document.getElementById("field");
+      const ctx = field.getContext("2d", { alpha: false });
+      const timeEl = document.getElementById("clock-time");
+      const dateEl = document.getElementById("clock-date");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let lastTick = 0;
+
+      function sizeField() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        const w = Math.round(window.innerWidth * dpr);
+        const h = Math.round(window.innerHeight * dpr);
+        if (field.width !== w || field.height !== h) {
+          field.width = w;
+          field.height = h;
+        }
+      }
+
+      function paintField(t) {
+        const w = field.width;
+        const h = field.height;
+        ctx.fillStyle = "#07080a";
+        ctx.fillRect(0, 0, w, h);
+
+        const ax = 0.22 + 0.08 * Math.sin(t * 0.07);
+        const ay = 0.28 + 0.1 * Math.cos(t * 0.045);
+        const bx = 0.78 + 0.1 * Math.cos(t * 0.053);
+        const by = 0.62 + 0.12 * Math.sin(t * 0.038);
+
+        const g1 = ctx.createRadialGradient(w * ax, h * ay, 0, w * ax, h * ay, w * 0.62);
+        g1.addColorStop(0, "rgba(61, 90, 102, 0.28)");
+        g1.addColorStop(1, "rgba(7, 8, 10, 0)");
+        ctx.fillStyle = g1;
+        ctx.fillRect(0, 0, w, h);
+
+        const g2 = ctx.createRadialGradient(w * bx, h * by, 0, w * bx, h * by, w * 0.55);
+        g2.addColorStop(0, "rgba(196, 165, 116, 0.14)");
+        g2.addColorStop(1, "rgba(7, 8, 10, 0)");
+        ctx.fillStyle = g2;
+        ctx.fillRect(0, 0, w, h);
+
+        if (!reduceMotion) {
+          const wash = 0.045 + 0.035 * Math.sin(t * 0.11);
+          ctx.fillStyle = "rgba(232, 226, 214," + wash.toFixed(4) + ")";
+          ctx.fillRect(0, 0, w, h);
+        }
+      }
+
+      function tickClock() {
+        const now = new Date();
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const h12 = ((now.getHours() + 11) % 12) + 1;
+        timeEl.textContent = h12 + ":" + mm;
+        timeEl.setAttribute("datetime", now.toISOString());
+        dateEl.textContent = now.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+        });
+      }
+
+      function frame(now) {
+        if (!reduceMotion && now - lastTick > 40) {
+          paintField(now / 1000);
+          lastTick = now;
+        }
+        requestAnimationFrame(frame);
+      }
+
+      sizeField();
+      paintField(0);
+      tickClock();
+      setInterval(tickClock, 1000);
+      window.addEventListener("resize", function () {
+        sizeField();
+        paintField(performance.now() / 1000);
+      });
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
